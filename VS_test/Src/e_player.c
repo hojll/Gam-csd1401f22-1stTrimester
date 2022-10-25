@@ -4,6 +4,7 @@
 Messenger g_messenger;
 #define PLAYER_SPEED 100.f
 #define ROLL_SPEED PLAYER_SPEED*2.f
+#define ROLL_DURATION 0.5f
 ////////////////////////////////////////////////////////////////////////
 /*--------*/
 // PLAYER //
@@ -15,9 +16,10 @@ void Player_ActiveUpdate(E_Player* player) {
 	// Placeholder logic
 	CP_Vector movementAxis = CP_Vector_Zero();
 	int newLookDir = -(int)CP_Input_KeyDown(KEY_A) + (int)CP_Input_KeyDown(KEY_D);
-	player->go.faceDir = newLookDir | player->go.faceDir;
+	if (newLookDir)
+		player->go.faceDir = newLookDir;
 	movementAxis.x += (float)newLookDir;
-	player->go.vel = CP_Vector_Scale(movementAxis, PLAYER_SPEED * CP_System_GetDt());
+	player->go.vel = CP_Vector_Scale(movementAxis, PLAYER_SPEED);
 	// Shooting
 	if (CP_Input_KeyTriggered(KEY_SPACE)) {
 		SpawnBulletMessage bullet;
@@ -30,6 +32,7 @@ void Player_ActiveUpdate(E_Player* player) {
 	// Rolling
 	if (CP_Input_KeyTriggered(KEY_LEFT_SHIFT)) {
 		player->state = STATE_PLAYER_ROLLING;
+		player->go.timer = 0.f;
 	}
 }
 
@@ -39,7 +42,13 @@ void Player_ActiveUpdate(E_Player* player) {
 /// <param name="player">pointer to player</param>
 void Player_RollUpdate(E_Player* player) {
 	// Can be changed any time. Const values until then
-	
+	player->go.timer += g_scaledDt;
+	if (player->go.timer > ROLL_DURATION) {
+		player->state = STATE_PLAYER_ACTIVE;
+		return;
+	}
+	// If it's not over then update velocity
+	player->go.vel.x = (float)player->go.faceDir * ROLL_SPEED;
 }
 
 void Player_DeadUpdate(E_Player* player) {
@@ -52,6 +61,7 @@ E_Player InitializePlayer() {
 	// Point the update functions
 	retVal.Update[STATE_PLAYER_DEAD] = Player_DeadUpdate;
 	retVal.Update[STATE_PLAYER_ACTIVE] = Player_ActiveUpdate;
+	retVal.Update[STATE_PLAYER_ROLLING] = Player_RollUpdate;
 	retVal.state = STATE_PLAYER_ACTIVE;
 	retVal.active = 0;
 	retVal.go.dir.x = 1.f;	// A base direction

@@ -9,13 +9,13 @@
 #define MAX_PLAYERS 2
 
 Messenger g_messenger;
+float g_scaledDt;
 /*----------------------*/
 // All the entities here//
 /*----------------------*/
 E_Player player[MAX_PLAYERS];
 int playerCount;
 E_BulletTest bullets[MAX_BULLETS];
-
 #pragma region MESSAGES
 void MessageSpawnBullet(void* messageInfo) {
     SpawnBulletMessage* bulletMSG = (SpawnBulletMessage*)messageInfo;
@@ -48,6 +48,7 @@ void game_init(void)
         bullets[i].go.pos = CP_Vector_Zero();
         bullets[i].go.vel = CP_Vector_Zero();
     }
+    g_scaledDt = 0.f;
     g_messenger.messages[MSG_SPAWN_BULLET] = MessageSpawnBullet;
     playerCount = 1;
     CP_Settings_TextSize(50.0f);
@@ -59,16 +60,18 @@ void game_update(void)
 {
     // Clean Render
     CP_Graphics_ClearBackground(CP_Color_Create(150, 150, 150, 255));
+    // Update scaled dt
+    g_scaledDt = CP_System_GetDt();
     // Update players
     for (int i = 0; i < playerCount; ++i) {
         player[i].Update[player[i].state](&player[i]);
         // Update position
-        player[i].go.pos = CP_Vector_Add(player[i].go.pos, player[i].go.vel);
+        player[i].go.pos = CP_Vector_Add(player[i].go.pos, CP_Vector_Scale(player[i].go.vel, g_scaledDt));
     }
     // Update bullets
     for (int i = 0; i < MAX_BULLETS; ++i) {
         // DO NOT KEEP THIS. VEL SHOULD BE UPDATED IN BULLET UPDATE
-        bullets[i].go.pos = CP_Vector_Add(bullets[i].go.pos, CP_Vector_Scale(bullets[i].go.vel, CP_System_GetDt()));
+        bullets[i].go.pos = CP_Vector_Add(bullets[i].go.pos, CP_Vector_Scale(bullets[i].go.vel, g_scaledDt));
     }
     if (CP_Input_KeyTriggered(KEY_Q))
         CP_Engine_Terminate();

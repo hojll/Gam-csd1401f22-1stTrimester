@@ -20,8 +20,9 @@ typedef struct GameObject {
 	CP_Vector dir;	// Remove if not using next week
 	int faceDir;
 	int active;
+	float timer; // Anything you want
 }GameObject;
-
+float g_scaledDt; // global variable dt
 
 /*--------------------------------------------------------------------*/
 // ALL THE ENTITY STRUCTS COME HERE
