@@ -63,7 +63,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);CProcessingd.lib</AdditionalDependencies>
@@ -85,7 +85,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -100,17 +100,15 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Src\bullet_go.c" />
+    <ClCompile Include="..\Src\entities.c" />
     <ClCompile Include="..\Src\game.c" />
-    <ClCompile Include="..\Src\gameObject.c" />
     <ClCompile Include="..\Src\main.c" />
-    <ClCompile Include="..\Src\player_go.c" />
+    <ClCompile Include="..\Src\messenger.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Src\bullet_go.h" />
+    <ClInclude Include="..\Src\entities.h" />
     <ClInclude Include="..\Src\game.h" />
-    <ClInclude Include="..\Src\gameObject.h" />
-    <ClInclude Include="..\Src\player_go.h" />
+    <ClInclude Include="..\Src\messenger.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

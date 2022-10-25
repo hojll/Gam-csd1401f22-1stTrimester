@@ -1,139 +1,95 @@
 #include <stdio.h>
 #include "cprocessing.h"
-#include "bullet_go.h"
-#include "player_go.h"
-#include "gameObject.h"
 #include <stdlib.h>
+#include "entities.h"
+#include "messenger.h"
 
-#define MAX_GAMEOBJECTS 500
 
-GameObject *allGameObjects[MAX_GAMEOBJECTS];
-Player* player;
+#define MAX_BULLETS 100
+#define MAX_PLAYERS 2
 
-void AddToGameObjectList(GameObject* gameObject)
-{
-    for (int i = 0; i < MAX_GAMEOBJECTS; i++)
-    {
-        if (allGameObjects[i] == NULL || !allGameObjects[i]->active)
-        {
-            allGameObjects[i] = gameObject;
-            return;
-        }
+Messenger g_messenger;
+////////////
+E_Player player[MAX_PLAYERS];
+int playerCount;
+E_BulletTest bullets[MAX_BULLETS];
+
+#pragma region MESSAGES
+void MessageSpawnBullet(void* messageInfo) {
+    SpawnBulletMessage* bulletMSG = (SpawnBulletMessage*)messageInfo;
+    // Spawn bullet here
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        E_BulletTest* curr = &bullets[i];
+        if (curr->go.active)
+            continue;
+        curr->go.active = 1;
+        curr->go.vel = bulletMSG->vel;
+        curr->go.pos = bulletMSG->position;
+        break;
     }
-    // If no space available, cannot be added to the list. This is because idk how to dynamically allocate more slots in c, might not be possible
 }
-
+#pragma endregion
 void game_init(void)
 {
     CP_System_SetWindowSize(900, 900);
     CP_Settings_RectMode(CP_POSITION_CENTER);
     //Assets/DigiPen_Singapore_WEB_RED.png
-
+    player[0] = InitializePlayer();
+    player[1] = InitializePlayer();
+    for (int i = 0; i < MAX_PLAYERS; ++i) {
+        player[i].go.pos = CP_Vector_Zero();
+        player[i].go.vel = CP_Vector_Zero();
+        player[i].go.pos.y = 100.f;
+    }
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        bullets[i].go.active = 0;
+        bullets[i].go.pos = CP_Vector_Zero();
+        bullets[i].go.vel = CP_Vector_Zero();
+    }
+    g_messenger.messages[MSG_SPAWN_BULLET] = MessageSpawnBullet;
+    playerCount = 1;
     CP_Settings_TextSize(50.0f);
     CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
 
-    player = malloc(sizeof(Player));
-    player->base = malloc(sizeof(GameObject));
-    CreatePlayer(
-        player,
-        CP_Vector_Set(CP_System_GetWindowWidth() / 2.f, CP_System_GetWindowHeight() / 2.f),
-        CP_Vector_Set(1, 0),
-        NULL,
-        30.f
-    );
-    player->speed = 200.f;
-    AddToGameObjectList(player->base);
 }
 
 void game_update(void)
 {
     // Clean Render
     CP_Graphics_ClearBackground(CP_Color_Create(150, 150, 150, 255));
-
-    //PLAYER INPUTS
-    if (CP_Input_KeyTriggered(KEY_SPACE))
-    {
-        Bullet* new_bullet = malloc(sizeof(Bullet));
-        new_bullet->base = malloc(sizeof(GameObject));
-        CreateBullet(
-            new_bullet,
-            player->base->pos,
-            CP_Vector_Set(1, 0),
-            NULL,
-            10.f,
-            500.f,
-            1.f);
-        AddToGameObjectList(new_bullet->base);
+    // Update players
+    for (int i = 0; i < playerCount; ++i) {
+        player[i].Update[player[i].state](&player[i]);
+        // Update position
+        player[i].go.pos = CP_Vector_Add(player[i].go.pos, player[i].go.vel);
     }
-    if (CP_Input_KeyDown(KEY_W))
-        player->base->pos = CP_Vector_Add(player->base->pos, CP_Vector_Scale(CP_Vector_Set(0, -1), player->speed * CP_System_GetDt()));
-    if (CP_Input_KeyDown(KEY_A))
-        player->base->pos = CP_Vector_Add(player->base->pos, CP_Vector_Scale(CP_Vector_Set(-1, 0), player->speed * CP_System_GetDt()));
-    if (CP_Input_KeyDown(KEY_S))
-        player->base->pos = CP_Vector_Add(player->base->pos, CP_Vector_Scale(CP_Vector_Set(0, 1), player->speed * CP_System_GetDt()));
-    if (CP_Input_KeyDown(KEY_D))
-        player->base->pos = CP_Vector_Add(player->base->pos, CP_Vector_Scale(CP_Vector_Set(1, 0), player->speed * CP_System_GetDt()));
-
+    // Update bullets
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        // DO NOT KEEP THIS. VEL SHOULD BE UPDATED IN BULLET UPDATE
+        bullets[i].go.pos = CP_Vector_Add(bullets[i].go.pos, CP_Vector_Scale(bullets[i].go.vel, CP_System_GetDt()));
+    }
     if (CP_Input_KeyTriggered(KEY_Q))
         CP_Engine_Terminate();
 
-    //UPDATE LOOP
-    for (int i = 0; i < MAX_GAMEOBJECTS; i++)
-    {
-        if (allGameObjects[i] != NULL && allGameObjects[i]->active)
-        {
-            switch (allGameObjects[i]->type)
-            {
-                case PLAYER:
-                    ((Player*)allGameObjects[i]->parent)->update(allGameObjects[i]->parent);
-                case BULLET:
-                    ((Bullet*)allGameObjects[i]->parent)->update(allGameObjects[i]->parent);
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
 
-    //RENDER LOOP
-    for (int i = 0; i < MAX_GAMEOBJECTS; i++)
-    {
-        if (allGameObjects[i] != NULL && allGameObjects[i]->active)
-        {
-            switch (allGameObjects[i]->type)
-            {
-                case PLAYER:
-                    CP_Settings_Fill(CP_Color_Create(0, 0, 255, 255));
-                    CP_Graphics_DrawCircle(allGameObjects[i]->pos.x, allGameObjects[i]->pos.y, allGameObjects[i]->spriteScale);
-                    break;
-                case BULLET:
-                    CP_Settings_Fill(CP_Color_Create(255, 0, 0, 255));
-                    CP_Graphics_DrawCircle(allGameObjects[i]->pos.x, allGameObjects[i]->pos.y, allGameObjects[i]->spriteScale);
-                    break;
-                default:
-                    break;
-            }
-        }
+    // Render stuff here
+    // 1
+    // Player 
+    const CP_Color playerColor = CP_Color_Create(100, 0, 0, 255);
+    CP_Settings_Fill(playerColor);
+    for (int i = 0; i < playerCount; ++i) {
+        const float PLAYER_SIZE_TEMP = 50.f;
+        CP_Graphics_DrawCircle(player[i].go.pos.x, player[i].go.pos.y, PLAYER_SIZE_TEMP);
+    }
+    // Bullets
+    const CP_Color bulletColor = CP_Color_Create(0, 100, 0, 255);
+    CP_Settings_Fill(bulletColor);
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        const float BULLET_SIZE_TEMP = 20.f;
+        CP_Graphics_DrawCircle(bullets[i].go.pos.x, bullets[i].go.pos.y, BULLET_SIZE_TEMP);
     }
 }
 
 void game_exit(void)
 {
-    for (int i = 0; i < MAX_GAMEOBJECTS; i++)
-    {
-        if (allGameObjects[i] != NULL && allGameObjects[i]->active)
-        {
-            switch (allGameObjects[i]->type)
-            {
-                case PLAYER:
-                    ((Player*)allGameObjects[i]->parent)->destroy(allGameObjects[i]->parent);
-                case BULLET:
-                    ((Bullet*)allGameObjects[i]->parent)->destroy(allGameObjects[i]->parent);
-                    break;
-                default:
-                    break;
-            }
-
-        }
-    }
 }
