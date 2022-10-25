@@ -9,7 +9,9 @@
 #define MAX_PLAYERS 2
 
 Messenger g_messenger;
-////////////
+/*----------------------*/
+// All the entities here//
+/*----------------------*/
 E_Player player[MAX_PLAYERS];
 int playerCount;
 E_BulletTest bullets[MAX_BULLETS];

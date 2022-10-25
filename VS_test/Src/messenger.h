@@ -3,6 +3,7 @@
 #include "cprocessing.h"
 typedef enum MessageType {
 	MSG_SPAWN_BULLET,
+	MSG_GAME_OVER,
 	MSG_NUM_MESSAGE_TYPE
 }MessageType;
 

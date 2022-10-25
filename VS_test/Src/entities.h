@@ -9,10 +9,16 @@
 //	int maxFrame;
 //	float elapsedTime;
 //};
+typedef enum LOOK_DIR {
+	LEFT = -1,
+	NONE = 0,
+	RIGHT = 1
+}LOOK_DIR;
 typedef struct GameObject {
 	CP_Vector pos;
 	CP_Vector vel;
-	CP_Vector dir;
+	CP_Vector dir;	// Remove if not using next week
+	int faceDir;
 	int active;
 }GameObject;
 
@@ -24,18 +30,20 @@ typedef struct GameObject {
 /*--------*/
 // PLAYER //
 /*--------*/
+// Forward declaration here to allow pointers to itself in update
 typedef struct E_Player E_Player;
 typedef enum PLAYER_STATES {
-	PLAYER_DEAD,
-	PLAYER_ACTIVE,
-	PLAYER_NUM_STATES
+	STATE_PLAYER_DEAD,
+	STATE_PLAYER_ACTIVE,
+	STATE_PLAYER_ROLLING,
+	STATE_PLAYER_NUM_STATES
 }PLAYER_STATES;
 typedef struct E_Player{
 	GameObject go;
 	// Other variables here
 	int active;
 	PLAYER_STATES state;
-	void (*Update[PLAYER_NUM_STATES])(E_Player*);
+	void (*Update[STATE_PLAYER_NUM_STATES])(E_Player*);
 };
 // FUNCTIONS
 E_Player InitializePlayer();
@@ -45,6 +53,7 @@ E_Player InitializePlayer();
 // ENEMY //
 /*-------*/
 // CAN BE used for more than 1 type of enemy
+// Forward declaration here to allow pointers to itself in update
 typedef struct E_EnemyTest E_EnemyTest;
 typedef enum ENEMY_TEST_STATES {
 	ENEMY_TEST_DEAD,
