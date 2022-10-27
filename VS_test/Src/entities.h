@@ -46,6 +46,7 @@ typedef struct E_Player{
 	GameObject go;
 	// Other variables here
 	PLAYER_STATES state;
+	CP_BOOL grounded;
 	void (*Update[STATE_PLAYER_NUM_STATES])(E_Player*);
 };
 // FUNCTIONS

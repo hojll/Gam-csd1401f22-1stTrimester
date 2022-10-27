@@ -51,6 +51,7 @@ void game_init(void)
         player[i].go.pos.x = 450.f;
         player[i].go.width = 50.f;
         player[i].go.height = 50.f;
+        player[i].grounded = 0;
     }
     for (int i = 0; i < MAX_BULLETS; ++i) {
         bullets[i].go.active = 0;
@@ -61,24 +62,50 @@ void game_init(void)
     // Walls
     // Bottom
     walls[0].pos = CP_Vector_Set(450, 850);
-    walls[0].height = 10.f;
+    walls[0].height = 30.f;
     walls[0].width = 800.f;
     walls[0].active = 1;
     // Top
     walls[1].pos = CP_Vector_Set(450, 50);
-    walls[1].height = 10.f;
+    walls[1].height = 30.f;
     walls[1].width = 800.f;
     walls[1].active = 1;
     // Left
     walls[2].pos = CP_Vector_Set(50, 450);
-    walls[2].height = 810.f;
-    walls[2].width = 10.f;
+    walls[2].height = 830.f;
+    walls[2].width = 30.f;
     walls[2].active = 1;
     // Right
     walls[3].pos = CP_Vector_Set(850, 450);
-    walls[3].height = 810.f;
-    walls[3].width = 10.f;
+    walls[3].height = 830.f;
+    walls[3].width = 30.f;
     walls[3].active = 1;
+
+    // Walls in the level
+    walls[4].pos = CP_Vector_Set(250, 650);
+    walls[4].height = 20.f;
+    walls[4].width = 200.f;
+    walls[4].active = 1;
+
+    walls[5].pos = CP_Vector_Set(650, 650);
+    walls[5].height = 20.f;
+    walls[5].width = 200.f;
+    walls[5].active = 1;
+
+    walls[6].pos = CP_Vector_Set(450, 450);
+    walls[6].height = 20.f;
+    walls[6].width = 300.f;
+    walls[6].active = 1;
+
+    walls[7].pos = CP_Vector_Set(250, 250);
+    walls[7].height = 20.f;
+    walls[7].width = 200.f;
+    walls[7].active = 1;
+
+    walls[8].pos = CP_Vector_Set(650, 250);
+    walls[8].height = 20.f;
+    walls[8].width = 200.f;
+    walls[8].active = 1;
 
     g_scaledDt = 0.f;
     g_messenger.messages[MSG_SPAWN_BULLET] = MessageSpawnBullet;
@@ -110,10 +137,12 @@ void game_update(void)
         CP_Engine_Terminate();
 
     // Collision Loops
+    // Player - x
     for (int i = 0; i < playerCount; ++i)
     {
         if (!player[i].go.active)
             continue;
+        CP_BOOL player_grounded_flag = 0;
 
         // Player - Wall
         for (int j = 0; j < MAX_WALLS; ++j)
@@ -122,8 +151,50 @@ void game_update(void)
                 continue;
             if (AABB(player[i].go, walls[j]))
             {
-                printf("peen");
-                player[i].go.pos = player[i].go.prevPos;
+                COLLISION_DIRECTION collision_dir = AABB_Direction(player[i].go, walls[j]);
+                if (collision_dir == COLLISION_TOP )
+                {
+                    player[i].go.pos.y = walls[j].pos.y - walls[j].height / 2.f - player[i].go.height / 2.f;
+                    player->grounded = 1;
+                    player->go.vel.y = 0;
+                }
+                else if (collision_dir == COLLISION_BOTTOM)
+                {
+                    player[i].go.pos.y = walls[j].pos.y + walls[j].height / 2.f + player[i].go.height / 2.f;
+                    player->go.vel.y = 0;
+                }
+                else if (collision_dir == COLLISION_LEFT)
+                    player[i].go.pos.x = walls[j].pos.x - walls[j].width / 2.f - player[i].go.width / 2.f;
+                else
+                    player[i].go.pos.x = walls[j].pos.x + walls[j].width / 2.f + player[i].go.width / 2.f;
+            }
+
+            // Grounded check (Walking off platforms)
+            if (!player[i].grounded)
+                continue;
+            // This creates a point right below the player and check if there is a wall there
+            if (Point_AABB(CP_Vector_Set(player[i].go.pos.x, player[i].go.pos.y + player[i].go.height / 2.f + 0.1f), walls[j]))
+                player_grounded_flag = 1;
+        }
+
+        if (!player_grounded_flag)
+            player[i].grounded = 0;
+    }
+
+    // Bullet - x
+    for (int i = 0; i < MAX_BULLETS; ++i)
+    {
+        if (!bullets[i].go.active)
+            continue;
+
+        // Bullet - Wall
+        for (int j = 0; j < MAX_WALLS; ++j)
+        {
+            if (!walls[j].active)
+                continue;
+            if (AABB(bullets[i].go, walls[j]))
+            {
+                bullets[i].go.active = 0;
             }
         }
     }

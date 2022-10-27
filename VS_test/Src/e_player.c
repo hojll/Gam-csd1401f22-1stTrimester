@@ -1,10 +1,14 @@
 #include "entities.h"
 #include <stdio.h>
 #include "messenger.h"
+#include "collision.h"
 Messenger g_messenger;
 #define PLAYER_SPEED 250.f
 #define ROLL_SPEED PLAYER_SPEED*2.f
 #define ROLL_DURATION 0.5f
+#define GRAVITY 60.f
+#define MAX_GRAV_VEL 500.f
+#define JUMP_VEL -1000.f
 ////////////////////////////////////////////////////////////////////////
 /*--------*/
 // PLAYER //
@@ -14,15 +18,31 @@ void Player_ActiveUpdate(E_Player* player) {
 	// INPUT LOGIC HERE
 	// If 2 players, maybe add var, playerNumber into struct?
 	// Placeholder logic
-	CP_Vector movementAxis = CP_Vector_Zero();
+
+	// Player Movement
 	int newLookDir = -((int)CP_Input_KeyDown(KEY_A) || (int)CP_Input_KeyDown(KEY_LEFT)) 
 		+ ((int)CP_Input_KeyDown(KEY_D) || (int)CP_Input_KeyDown(KEY_RIGHT));
 	if (newLookDir)
 		player->go.faceDir = newLookDir;
-	movementAxis.x += (float)newLookDir;
-	player->go.vel = CP_Vector_Scale(movementAxis, PLAYER_SPEED);
+	player->go.vel.x = (float)newLookDir * PLAYER_SPEED;
+
+	// Gravity
+	if (!player->grounded && player->go.vel.y < MAX_GRAV_VEL)
+		player->go.vel.y += GRAVITY;
+	
+	// Jump
+	if (player->grounded && (CP_Input_KeyDown(KEY_W) || CP_Input_KeyDown(KEY_UP)))
+	{
+		player->go.vel.y = JUMP_VEL * ((int)CP_Input_KeyDown(KEY_W) || (int)CP_Input_KeyDown(KEY_UP));
+		player->grounded = 0;
+	}
+
+	printf("x_vel:%.2f, y_vel:%.2f\n", player->go.vel.x, player->go.vel.y);
+
+	// Update Pos
 	player->go.prevPos = player->go.pos;
 	player->go.pos = CP_Vector_Add(player->go.pos, CP_Vector_Scale(player->go.vel, g_scaledDt));
+
 
 	// Shooting
 	if (CP_Input_KeyTriggered(KEY_SPACE)) {
