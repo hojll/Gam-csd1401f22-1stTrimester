@@ -16,11 +16,14 @@ typedef enum LOOK_DIR {
 }LOOK_DIR;
 typedef struct GameObject {
 	CP_Vector pos;
+	CP_Vector prevPos; // Collision
 	CP_Vector vel;
 	CP_Vector dir;	// Remove if not using next week
 	int faceDir;
 	int active;
 	float timer; // Anything you want
+	float width; // Collision
+	float height; // Collision
 }GameObject;
 float g_scaledDt; // global variable dt
 
@@ -42,7 +45,6 @@ typedef enum PLAYER_STATES {
 typedef struct E_Player{
 	GameObject go;
 	// Other variables here
-	int active;
 	PLAYER_STATES state;
 	void (*Update[STATE_PLAYER_NUM_STATES])(E_Player*);
 };
