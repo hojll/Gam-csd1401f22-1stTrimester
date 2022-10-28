@@ -4,7 +4,8 @@
 #include "entities.h"
 #include "messenger.h"
 #include "collision.h"
-
+#include "e_player.h"
+#include "utilities.h"
 
 #define MAX_BULLETS 100
 #define MAX_PLAYERS 2
@@ -164,9 +165,15 @@ void game_update(void)
                     player->go.vel.y = 0;
                 }
                 else if (collision_dir == COLLISION_LEFT)
+                {
                     player[i].go.pos.x = walls[j].pos.x - walls[j].width / 2.f - player[i].go.width / 2.f;
+                    player[i].state = STATE_PLAYER_ACTIVE;
+                }
                 else
+                {
                     player[i].go.pos.x = walls[j].pos.x + walls[j].width / 2.f + player[i].go.width / 2.f;
+                    player[i].state = STATE_PLAYER_ACTIVE;
+                }
             }
 
             // Grounded check (Walking off platforms)
@@ -204,10 +211,23 @@ void game_update(void)
     // Render stuff here
     // Player 
     const CP_Color playerColor = CP_Color_Create(100, 0, 0, 255);
-    CP_Settings_Fill(playerColor);
     for (int i = 0; i < playerCount; ++i) {
         if (player[i].go.active)
+        {
+            CP_Settings_Fill(playerColor);
             CP_Graphics_DrawCircle(player[i].go.pos.x, player[i].go.pos.y, player[i].go.height);
+            if (player[i].state == STATE_PLAYER_ROLLING)
+            {
+                for (int j = 0; j < PLAYER_ROLL_AFTERIMAGE; j++)
+                    if (!CP_Vector_Equal(player->rollPrevPos[j], CP_Vector_Zero()))
+                    {
+                        CP_Settings_StrokeWeight(0.f);
+                        CP_Settings_Fill(CP_Color_Create(100, 0, 0, player[i].rollAlpha[j]));
+                        CP_Graphics_DrawCircle(player[i].rollPrevPos[j].x, player[i].rollPrevPos[j].y, player[i].go.height);
+                        CP_Settings_StrokeWeight(3.f);
+                    }
+            }
+        }
     }
     // Bullets
     const CP_Color bulletColor = CP_Color_Create(0, 100, 0, 255);

@@ -31,28 +31,6 @@ float g_scaledDt; // global variable dt
 // ALL THE ENTITY STRUCTS COME HERE
 
 ////////////////////////////////////////////////////////////////////////
-/*--------*/
-// PLAYER //
-/*--------*/
-// Forward declaration here to allow pointers to itself in update
-typedef struct E_Player E_Player;
-typedef enum PLAYER_STATES {
-	STATE_PLAYER_DEAD,
-	STATE_PLAYER_ACTIVE,
-	STATE_PLAYER_ROLLING,
-	STATE_PLAYER_NUM_STATES
-}PLAYER_STATES;
-typedef struct E_Player{
-	GameObject go;
-	// Other variables here
-	PLAYER_STATES state;
-	CP_BOOL grounded;
-	void (*Update[STATE_PLAYER_NUM_STATES])(E_Player*);
-};
-// FUNCTIONS
-E_Player InitializePlayer();
-
-////////////////////////////////////////////////////////////////////////
 /*-------*/
 // ENEMY //
 /*-------*/
