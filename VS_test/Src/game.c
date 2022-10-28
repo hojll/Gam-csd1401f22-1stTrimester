@@ -173,7 +173,8 @@ void game_update(void)
             if (!player[i].grounded)
                 continue;
             // This creates a point right below the player and check if there is a wall there
-            if (Point_AABB(CP_Vector_Set(player[i].go.pos.x, player[i].go.pos.y + player[i].go.height / 2.f + 0.1f), walls[j]))
+            if (Point_AABB(CP_Vector_Set(player[i].go.pos.x + player[i].go.width / 2.f, player[i].go.pos.y + player[i].go.height / 2.f + 0.1f), walls[j])||
+                Point_AABB(CP_Vector_Set(player[i].go.pos.x - player[i].go.width / 2.f, player[i].go.pos.y + player[i].go.height / 2.f + 0.1f), walls[j]))
                 player_grounded_flag = 1;
         }
 
