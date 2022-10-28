@@ -20,6 +20,7 @@ E_Player player[MAX_PLAYERS];
 int playerCount;
 E_BulletTest bullets[MAX_BULLETS];
 GameObject walls[MAX_WALLS];
+int current_bullet_count, total_bullet_count; // For UI by Joel
 
 #pragma region MESSAGES
 void MessageSpawnBullet(void* messageInfo) {
@@ -114,6 +115,8 @@ void game_init(void)
     CP_Settings_TextSize(50.0f);
     CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
 
+    //Bullet count for UI stuff
+    current_bullet_count = total_bullet_count = 15;
 }
 
 void game_update(void)
@@ -244,6 +247,14 @@ void game_update(void)
         if (walls[i].active)
             CP_Graphics_DrawRect(walls[i].pos.x, walls[i].pos.y, walls[i].width, walls[i].height);
     }
+
+    // UI ELEMENTS
+    update_timer();
+    if (CP_Input_KeyTriggered(KEY_SPACE))
+    {
+        current_bullet_count -= 1;
+    }
+    update_bullet_bar(current_bullet_count, total_bullet_count);
 }
 
 void game_exit(void)
