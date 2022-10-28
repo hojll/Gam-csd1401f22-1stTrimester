@@ -7,10 +7,15 @@
 #include "e_player.h"
 #include "utilities.h"
 #include "ui.h"
+#include "e_text_popup.h"
 
 #define MAX_BULLETS 100
 #define MAX_PLAYERS 2
 #define MAX_WALLS 10
+#define MAX_TEXT_POPUP 20
+
+#define DEFAULT_FONT_SIZE 100.0f
+#define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
 
 Messenger g_messenger;
 float g_scaledDt;
@@ -22,6 +27,7 @@ int playerCount;
 E_BulletTest bullets[MAX_BULLETS];
 GameObject walls[MAX_WALLS];
 int current_bullet_count, total_bullet_count; // For UI by Joel
+TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
 
 #pragma region MESSAGES
 void MessageSpawnBullet(void* messageInfo) {
@@ -118,6 +124,10 @@ void game_init(void)
 
     //Bullet count for UI stuff
     current_bullet_count = total_bullet_count = 15;
+    for (int i = 0; i < MAX_TEXT_POPUP; ++i)
+    {
+        set_popup(&popUp[i], 0.0f, 0.0f, DEFAULT_FONT_COLOR, DEFAULT_FONT_SIZE, 0, "initializing");
+    }
 }
 
 void game_update(void)
@@ -252,12 +262,27 @@ void game_update(void)
     }
 
     // UI ELEMENTS
+    CP_Settings_TextSize(DEFAULT_FONT_SIZE);
+    CP_Settings_Fill(DEFAULT_FONT_COLOR);
     update_timer();
     if (CP_Input_KeyTriggered(KEY_SPACE))
     {
         current_bullet_count -= 1;
+        for (int i = 0; i < MAX_TEXT_POPUP; ++i)
+        {
+            if (!(popUp[i].go.active))
+            {
+                set_popup(&popUp[i], CP_Input_GetMouseX(), CP_Input_GetMouseY(), CP_Color_Create(255, 0, 0, 255), DEFAULT_FONT_SIZE, 3.0f, "CLICK");
+                break;
+            }
+        }
     }
     update_bullet_bar(current_bullet_count, total_bullet_count);
+    for (int i = 0; i < MAX_TEXT_POPUP; ++i)
+    {
+        update_popup(&popUp[i]);
+        draw_popup(&popUp[i]);
+    }
 }
 
 void game_exit(void)

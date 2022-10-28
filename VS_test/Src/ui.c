@@ -4,7 +4,6 @@
 float time = 100.0f;
 char timer_text[5];
 
-
 void set_timer(float time_in_seconds)
 {
     time = time_in_seconds;
