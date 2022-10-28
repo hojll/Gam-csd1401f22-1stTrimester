@@ -6,6 +6,7 @@
 #include "collision.h"
 #include "e_player.h"
 #include "utilities.h"
+#include "ui.h"
 
 #define MAX_BULLETS 100
 #define MAX_PLAYERS 2
