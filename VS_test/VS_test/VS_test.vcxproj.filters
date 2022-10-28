@@ -24,9 +24,6 @@
     <ClCompile Include="..\Src\e_player.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\messenger.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\collision.c">
       <Filter>Source Files</Filter>
     </ClCompile>

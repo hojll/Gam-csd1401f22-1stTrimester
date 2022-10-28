@@ -189,6 +189,8 @@ void game_update(void)
                 player_grounded_flag = 1;
         }
 
+
+
         if (!player_grounded_flag)
             player[i].grounded = 0;
     }
