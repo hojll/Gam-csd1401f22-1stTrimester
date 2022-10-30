@@ -8,8 +8,10 @@
 #include "utilities.h"
 #include "ui.h"
 #include "e_text_popup.h"
+#include "e_basicenemy_1.h"
 
 #define MAX_BULLETS 100
+#define MAX_ENEMIES 100
 #define MAX_PLAYERS 2
 #define MAX_WALLS 10
 #define MAX_TEXT_POPUP 20
@@ -24,10 +26,16 @@ float g_scaledDt;
 /*----------------------*/
 E_Player player[MAX_PLAYERS];
 int playerCount;
+
 E_BulletTest bullets[MAX_BULLETS];
 GameObject walls[MAX_WALLS];
+
+E_Basic_Enemy_1 enemies[MAX_ENEMIES];
+
 int current_bullet_count, total_bullet_count; // For UI by Joel
 TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
+
+
 
 #pragma region MESSAGES
 void MessageSpawnBullet(void* messageInfo) {
@@ -45,6 +53,22 @@ void MessageSpawnBullet(void* messageInfo) {
 }
 #pragma endregion
 
+// Idk why ur pragma region no rike me 
+void MessageSpawnEnemy(void* messageInfo) {
+    SpawnEnemyMessage* enemyMsg = (SpawnEnemyMessage*)messageInfo;
+    // Spawn enemy here
+    for (int j = 0; j < MAX_ENEMIES; ++j)
+    {
+        E_Basic_Enemy_1* curr = &enemies[j];
+        if (curr->go.active)
+            continue;
+        curr->go.active = 1;
+        curr->go.pos = enemyMsg->position;
+        break;
+    }
+}
+
+
 void game_init(void)
 {
     CP_System_SetWindowSize(900, 900);
@@ -52,7 +76,7 @@ void game_init(void)
     //Assets/DigiPen_Singapore_WEB_RED.png
     player[0] = InitializePlayer();
     //player[1] = InitializePlayer();
-
+    srand(123);
     for (int i = 0; i < MAX_PLAYERS; ++i) {
         player[i].go.pos = CP_Vector_Zero();
         player[i].go.vel = CP_Vector_Zero();
@@ -67,6 +91,8 @@ void game_init(void)
         bullets[i].go.pos = CP_Vector_Zero();
         bullets[i].go.vel = CP_Vector_Zero();
     }
+
+    InitEnemyList(enemies, (int)MAX_ENEMIES);
 
     // Walls
     // Bottom
@@ -117,7 +143,11 @@ void game_init(void)
     walls[8].active = 1;
 
     g_scaledDt = 0.f;
+    
     g_messenger.messages[MSG_SPAWN_BULLET] = MessageSpawnBullet;
+    g_messenger.messages[MSG_SPAWN_ENEMY] = MessageSpawnEnemy;
+
+
     playerCount = 1;
     CP_Settings_TextSize(50.0f);
     CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
@@ -148,8 +178,18 @@ void game_update(void)
         if (bullets[i].go.active)
             bullets[i].go.pos = CP_Vector_Add(bullets[i].go.pos, CP_Vector_Scale(bullets[i].go.vel, g_scaledDt));
     }
+    
+    UpdateEnemyList(enemies, MAX_ENEMIES);
+
     if (CP_Input_KeyTriggered(KEY_Q))
         CP_Engine_Terminate();
+
+    // Debug Spawn Enemy
+    if (CP_Input_KeyTriggered(KEY_EQUAL)) {
+        SpawnEnemyMessage enemy;
+        enemy.position = player->go.pos;
+        g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
+    }
 
     // Collision Loops
     // Player - x
@@ -223,8 +263,25 @@ void game_update(void)
         }
     }
 
+    // Enemies 
+    for (int j = 0; j < MAX_ENEMIES; ++j)
+    {
+        if (!enemies[j].go.active)
+            continue;
+        if (AABB(enemies[j].go, walls[2]) || AABB(enemies[j].go, walls[3]))
+        {
+            if (enemies[j].go.dir.x >= 1)
+                enemies[j].go.dir.x = -1;
+            else
+                enemies[j].go.dir.x = 1;
+        }
+    }
+    
 
+    //----------------------------------------------------------------------------------------------------------------------
     // Render stuff here
+    //----------------------------------------------------------------------------------------------------------------------
+
     // Player 
     const CP_Color playerColor = CP_Color_Create(100, 0, 0, 255);
     for (int i = 0; i < playerCount; ++i) {
@@ -245,6 +302,7 @@ void game_update(void)
             }
         }
     }
+
     // Bullets
     const CP_Color bulletColor = CP_Color_Create(0, 100, 0, 255);
     CP_Settings_Fill(bulletColor);
@@ -253,6 +311,16 @@ void game_update(void)
         if (bullets[i].go.active)
             CP_Graphics_DrawCircle(bullets[i].go.pos.x, bullets[i].go.pos.y, BULLET_SIZE_TEMP);
     }
+
+    // Enemies 
+    const CP_Color enemyColor = CP_Color_Create(125, 181, 130, 255);
+    CP_Settings_Fill(enemyColor);
+    for (int i = 0; i < MAX_ENEMIES; ++i)
+    {
+        if(enemies[i].go.active)
+            CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
+    }
+
     // Walls
     const CP_Color wallColor = CP_Color_Create(120, 120, 120, 255);
     CP_Settings_Fill(wallColor);
@@ -277,6 +345,7 @@ void game_update(void)
             }
         }
     }
+
     update_bullet_bar(current_bullet_count, total_bullet_count);
     for (int i = 0; i < MAX_TEXT_POPUP; ++i)
     {
@@ -284,6 +353,8 @@ void game_update(void)
         draw_popup(&popUp[i]);
     }
 }
+
+
 
 void game_exit(void)
 {
