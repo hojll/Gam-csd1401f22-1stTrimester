@@ -18,9 +18,6 @@ void Enemy_ActiveUpdate(E_Basic_Enemy_1 *enemy)
 {
 	if (enemy->go.active)
 	{
-		if (enemy->grounded)
-			printf("IsGrounded\n"); 
-
 		enemy->go.vel.x = enemy->go.dir.x * E_SPEED;
 		enemy->go.vel.y = enemy->go.dir.y * E_SPEED;
 
