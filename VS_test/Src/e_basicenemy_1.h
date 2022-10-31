@@ -22,11 +22,19 @@ typedef struct E_Basic_Enemy_1 {
 
 	void (*Update[STATE_ENEMY_NUM_STATES])(E_BASIC_ENEMY_STATES_1*);
 };
+/*-----------------------------------------------------------------*/
+// Other references
+/*-----------------------------------------------------------------*/
 
+/*-----------------------------------------------------------------*/
+// Functions 
+/*-----------------------------------------------------------------*/
 E_Basic_Enemy_1 InitializeEnemy();
 
 void InitEnemyList(E_Basic_Enemy_1 arr[], int size);
 
 void UpdateEnemyList(E_Basic_Enemy_1 arr[], int size);
+
+void EnemytoWallCollision(E_Basic_Enemy_1 enemy, GameObject wallreference[]);
 
 #endif

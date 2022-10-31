@@ -9,5 +9,7 @@ CP_BOOL CP_Vector_Equal(CP_Vector vector1, CP_Vector vector2)
 
 int returnRange(int min, int max)
 {
-	return ((int)rand() / (int)RAND_MAX) * (max - min) + min;
+	int retval = (rand() % (max - min + 1)) + min;
+	//printf("retval %d\n", retval);
+	return retval;
 }

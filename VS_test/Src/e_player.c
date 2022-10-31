@@ -38,7 +38,7 @@ void Player_ActiveUpdate(E_Player* player) {
 		player->grounded = 0;
 	}
 
-	printf("x_vel:%.2f, y_vel:%.2f\n", player->go.vel.x, player->go.vel.y);
+	//printf("x_vel:%.2f, y_vel:%.2f\n", player->go.vel.x, player->go.vel.y);
 
 	// Update Pos
 	player->go.prevPos = player->go.pos;

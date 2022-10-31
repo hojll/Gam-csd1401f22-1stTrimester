@@ -87,7 +87,6 @@ void game_init(void)
     //Assets/DigiPen_Singapore_WEB_RED.png
     player[0] = InitializePlayer();
     //player[1] = InitializePlayer();
-    srand(123);
     for (int i = 0; i < MAX_PLAYERS; ++i) {
         player[i].go.pos = CP_Vector_Zero();
         player[i].go.vel = CP_Vector_Zero();
@@ -286,6 +285,7 @@ void game_update(void)
             else
                 enemies[j].go.dir.x = 1;
         }
+        EnemytoWallCollision(enemies[j], walls);
     }
     
 
