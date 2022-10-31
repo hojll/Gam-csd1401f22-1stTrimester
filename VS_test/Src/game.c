@@ -9,6 +9,7 @@
 #include "ui.h"
 #include "e_text_popup.h"
 #include "e_basicenemy_1.h"
+#include "spriteData.h"
 
 #define MAX_BULLETS 100
 #define MAX_ENEMIES 100
@@ -19,8 +20,18 @@
 #define DEFAULT_FONT_SIZE 100.0f
 #define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
 
+/*
+In “Configuration Properties->Debugging- Working Directory”
+$(SolutionDir)bin\$(Configuration)-$(Platform)\
+Use this in release mode settings if no work.
+*/
+
 Messenger g_messenger;
 float g_scaledDt;
+/*-------*/
+// MEDIA //
+/*-------*/
+CP_Image sprites[NUM_SPRITES];
 /*----------------------*/
 // All the entities here//
 /*----------------------*/
