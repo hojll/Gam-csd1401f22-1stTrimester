@@ -47,7 +47,7 @@ CP_Vector e_spawnPos1, e_spawnPos2; // Enemy spawn locations
 GameObject ai_nodes[MAX_PATHFINDING_NODES];
 CP_BOOL shownodes = 0;
 
-int current_bullet_count, total_bullet_count; // For UI by Joel
+int total_bullet_count; // For UI by Joel
 TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
 
 
@@ -168,7 +168,7 @@ void game_init(void)
     CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
 
     //Bullet count for UI stuff
-    current_bullet_count = total_bullet_count = 10;
+    total_bullet_count = player[0].currAmmo;
     for (int i = 0; i < MAX_TEXT_POPUP; ++i)
     {
         set_popup(&popUp[i], 0.0f, 0.0f, DEFAULT_FONT_COLOR, DEFAULT_FONT_SIZE, 0, "initializing");
@@ -373,20 +373,20 @@ void game_update(void)
     CP_Settings_TextSize(DEFAULT_FONT_SIZE);
     CP_Settings_Fill(DEFAULT_FONT_COLOR);
     update_timer();
-    if (CP_Input_KeyTriggered(KEY_SPACE))
+
+    if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
     {
-        current_bullet_count -= 1;
         for (int i = 0; i < MAX_TEXT_POPUP; ++i)
         {
             if (!(popUp[i].go.active))
             {
-                set_popup(&popUp[i], CP_Input_GetMouseX(), CP_Input_GetMouseY(), CP_Color_Create(255, 0, 0, 255), DEFAULT_FONT_SIZE, 3.0f, "CLICK");
+                set_popup(&popUp[i], CP_Input_GetMouseX(), CP_Input_GetMouseY(), CP_Color_Create(255, 0, 0, 255), DEFAULT_FONT_SIZE, 3.0f, "Pickup/Damage");
                 break;
             }
         }
     }
 
-    update_bullet_bar(current_bullet_count, total_bullet_count);
+    update_bullet_bar(player[0].currAmmo, total_bullet_count);
     for (int i = 0; i < MAX_TEXT_POPUP; ++i)
     {
         update_popup(&popUp[i]);
