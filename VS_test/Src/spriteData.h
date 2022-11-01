@@ -1,6 +1,7 @@
 #ifndef SPRITE_DATA_H
 #define SPRITE_DATA_H
 #include <math.h>
+#include "cprocessing.h"
 //#include "cprocessing.h"
 // Edit this enum as you add
 // more sprites
@@ -16,6 +17,7 @@ typedef struct SpriteAnimData {
 	int imageDim[2];	// Y and Y dimensions of image
 	int numFrames;		// number of frames in an animation
 	int imageStart[2];	// Start coord of image
+	short loop;		// 1 is loop, 0 is no loop
 }SpriteAnimData;
 
 // This is what keep tracks of the current animation
@@ -24,15 +26,11 @@ typedef struct SpriteAnimInstance {
 	float frameDuration;
 	float elapsedTime;
 	int currFrame;
+	short state;	// 1 is complete, 0 is incomplete
 }SpriteAnimInstance;
 
-inline void UpdateSpriteAnim(SpriteAnimInstance *anim, float dt) {
-	anim->elapsedTime += dt;
-	int numFramesToSkip = (int)(anim->elapsedTime / anim->frameDuration);
-	anim->elapsedTime = fmodf(anim->elapsedTime, anim->frameDuration);
-	
-	anim->currFrame += numFramesToSkip;
-	if (anim->currFrame > anim->animData->numFrames)
-		anim->currFrame = anim->animData->numFrames;
-}
+SpriteAnimInstance SetSpriteAnim(SpriteAnimData const* animData, float frameDuration);
+void UpdateSpriteAnim(SpriteAnimInstance *anim, float dt);
+void RenderSpriteAnim(SpriteAnimInstance* anim, CP_Image image, float x, float y, float width, float height);
+
 #endif

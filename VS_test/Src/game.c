@@ -32,6 +32,7 @@ float g_scaledDt;
 // MEDIA //
 /*-------*/
 CP_Image sprites[NUM_SPRITES];
+CP_Image spriteData[NUM_SPRITES];
 /*----------------------*/
 // All the entities here//
 /*----------------------*/
@@ -62,7 +63,6 @@ void MessageSpawnBullet(void* messageInfo) {
         break;
     }
 }
-#pragma endregion
 
 // Idk why ur pragma region no rike me 
 void MessageSpawnEnemy(void* messageInfo) {
@@ -78,14 +78,23 @@ void MessageSpawnEnemy(void* messageInfo) {
         break;
     }
 }
+#pragma endregion
 
 
 void game_init(void)
 {
+    /*---------------------*/
+    // MEDIA INITIALIZAION //
+    /*---------------------*/
+    // Initialization of spriteData should be done within entity Initialize
+    // within their respective file
+    sprites[SPRITE_PLAYER] = CP_Image_Load("./Assets/player.png");
+    printf("Image dims: %d, %d", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
+    /////////////////////////
     CP_System_SetWindowSize(900, 900);
     CP_Settings_RectMode(CP_POSITION_CENTER);
     //Assets/DigiPen_Singapore_WEB_RED.png
-    player[0] = InitializePlayer();
+    player[0] = *InitializePlayer();
     //player[1] = InitializePlayer();
     srand(123);
     for (int i = 0; i < MAX_PLAYERS; ++i) {
@@ -185,7 +194,6 @@ void game_update(void)
     }
     // Update bullets
     for (int i = 0; i < MAX_BULLETS; ++i) {
-        // DO NOT KEEP THIS. VEL SHOULD BE UPDATED IN BULLET UPDATE
         if (bullets[i].go.active)
             bullets[i].go.pos = CP_Vector_Add(bullets[i].go.pos, CP_Vector_Scale(bullets[i].go.vel, g_scaledDt));
     }
@@ -299,7 +307,15 @@ void game_update(void)
         if (player[i].go.active)
         {
             CP_Settings_Fill(playerColor);
-            CP_Graphics_DrawCircle(player[i].go.pos.x, player[i].go.pos.y, player[i].go.height);
+            // Drawing image instead
+            RenderSpriteAnim(&player[i].currAnim, sprites[SPRITE_PLAYER], player[i].go.pos.x, 
+                player[i].go.pos.y, player[i].go.height, player[i].go.height);
+             
+            /*CP_Image_DrawSubImage(sprites[0], player[i].go.pos.x, player[i].go.pos.y, player[i].go.height, player[i].go.height,
+                0, 0, 32, 32, 255);*/
+
+            //CP_Image_Draw(sprites[SPRITE_PLAYER], player[i].go.pos.x, player[i].go.pos.y, player[i].go.height, player[i].go.height, 255);
+            //CP_Graphics_DrawCircle(player[i].go.pos.x, player[i].go.pos.y, player[i].go.height);
             if (player[i].state == STATE_PLAYER_ROLLING)
             {
                 for (int j = 0; j < PLAYER_ROLL_AFTERIMAGE; j++)

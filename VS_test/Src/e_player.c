@@ -10,6 +10,11 @@ Messenger g_messenger;
 #define GRAVITY 60.f
 #define MAX_GRAV_VEL 500.f
 #define JUMP_VEL -1000.f
+// DEFINITIONS FOR ANIMATIONS
+#define FRAME_DIM_WIDTH 32
+#define FRAME_DIM_HEIGHT 32
+#define IMAGE_DIM_WIDTH 160
+#define IMAGE_DIM_HEIGHT 32
 ////////////////////////////////////////////////////////////////////////
 /*--------*/
 // PLAYER //
@@ -27,6 +32,9 @@ void Player_ActiveUpdate(E_Player* player) {
 		player->go.faceDir = newLookDir;
 	player->go.vel.x = (float)newLookDir * PLAYER_SPEED;
 
+	// ANIMATIONS
+	UpdateSpriteAnim(&player->currAnim, g_scaledDt);
+
 	// Gravity
 	if (!player->grounded && player->go.vel.y < MAX_GRAV_VEL)
 		player->go.vel.y += GRAVITY;
@@ -38,7 +46,6 @@ void Player_ActiveUpdate(E_Player* player) {
 		player->grounded = 0;
 	}
 
-	printf("x_vel:%.2f, y_vel:%.2f\n", player->go.vel.x, player->go.vel.y);
 
 	// Update Pos
 	player->go.prevPos = player->go.pos;
@@ -107,5 +114,43 @@ E_Player InitializePlayer() {
 	retVal.Update[STATE_PLAYER_ROLLING] = Player_RollUpdate;
 	retVal.state = STATE_PLAYER_ACTIVE;
 	retVal.go.dir.x = 1.f;	// A base direction
+	/*------------*/
+	// ANIMATIONS //
+	/*------------*/
+	// ACTIVE ANIMATION
+	{
+		SpriteAnimData activeAnim = {0};
+		activeAnim.frameDim[0] = FRAME_DIM_WIDTH;
+		activeAnim.frameDim[1] = FRAME_DIM_HEIGHT;
+		activeAnim.imageDim[0] = IMAGE_DIM_WIDTH;
+		activeAnim.imageDim[1] = IMAGE_DIM_HEIGHT;
+
+		activeAnim.numFrames = 5;
+		activeAnim.imageStart[0] = 0;
+		activeAnim.imageStart[1] = 0;
+		activeAnim.loop = 1;
+		retVal.animations[ANIM_PLAYER_ACTIVE] = activeAnim;
+	}
+	/*
+	SPRITE spriteID;
+	int frameDim[2];	// X and Y dimensions of each frame
+	int imageDim[2];	// Y and Y dimensions of image
+	int numFrames;		// number of frames in an animation
+	int imageStart[2];	// Start coord of image
+	short loop;		// 1 is loop, 0 is no loop*/
+	// ROLLING ANIMATION
+	{
+		SpriteAnimData rollingAnim = { 0 };
+		rollingAnim.frameDim[0] = FRAME_DIM_WIDTH;
+		rollingAnim.frameDim[1] = FRAME_DIM_HEIGHT;
+		rollingAnim.numFrames = 5;
+		rollingAnim.imageStart[0] = 0;
+		rollingAnim.imageStart[1] = 0;
+		rollingAnim.loop = 0;
+		retVal.animations[ANIM_PLAYER_ROLLING] = rollingAnim;
+	}
+	retVal.animState = ANIM_PLAYER_ACTIVE;
+	retVal.currAnim = SetSpriteAnim(&retVal.animations[ANIM_PLAYER_ACTIVE], 1.f);
+	///////////////////////////////////////////////////////////
 	return retVal;
 }
