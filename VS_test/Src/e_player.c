@@ -11,6 +11,7 @@ Messenger g_messenger;
 #define GRAVITY 60.f
 #define MAX_GRAV_VEL 500.f
 #define JUMP_VEL -1000.f
+#define DEFAULT_ATTACK_SPEED 0.3f;
 ////////////////////////////////////////////////////////////////////////
 /*--------*/
 // PLAYER //
@@ -47,7 +48,10 @@ void Player_ActiveUpdate(E_Player* player) {
 
 
 	// Shooting
-	if (CP_Input_KeyTriggered(KEY_SPACE)) {
+	player->attackSpeedTimer += g_scaledDt;
+	if (CP_Input_KeyDown(KEY_SPACE) && player->attackSpeedTimer >= player->attackSpeed) {
+		player->attackSpeedTimer = 0.f;
+
 		if (player->currAmmo <= 0)
 			player->currBullet = BULLET_DEFAULT;
 		else
@@ -134,7 +138,8 @@ E_Player InitializePlayer() {
 	retVal.go.height = 50.f;
 	retVal.grounded = 0;
 	retVal.currAmmo = 10;
+	retVal.attackSpeed = DEFAULT_ATTACK_SPEED;
+	retVal.attackSpeedTimer = 0.f;
 	retVal.currBullet = BULLET_SCATTER;
-
 	return retVal;
 }

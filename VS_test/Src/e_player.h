@@ -20,6 +20,8 @@ typedef struct E_Player {
 	float rollAlpha[PLAYER_ROLL_AFTERIMAGE];
 	BULLET_TYPE currBullet;
 	int currAmmo;
+	float attackSpeed;
+	float attackSpeedTimer;
 	void (*Update[STATE_PLAYER_NUM_STATES])(E_Player*);
 };
 // FUNCTIONS
