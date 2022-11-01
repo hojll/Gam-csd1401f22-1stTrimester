@@ -45,7 +45,7 @@ GameObject walls[MAX_WALLS];
 E_Basic_Enemy_1 enemies[MAX_ENEMIES];
 CP_Vector e_spawnPos1, e_spawnPos2; // Enemy spawn locations
 GameObject ai_nodes[MAX_PATHFINDING_NODES];
-CP_BOOL shownodes = 1;
+CP_BOOL shownodes = 0;
 
 int current_bullet_count, total_bullet_count; // For UI by Joel
 TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
@@ -356,6 +356,17 @@ void game_update(void)
     for (int i = 0; i < MAX_WALLS; ++i) {
         if (walls[i].active)
             CP_Graphics_DrawRect(walls[i].pos.x, walls[i].pos.y, walls[i].width, walls[i].height);
+    }
+
+    // Render AI Pathfinding nodes
+    if (shownodes)
+    {
+        const CP_Color nodeColor = CP_Color_Create(118, 78, 191, 255);
+        CP_Settings_Fill(nodeColor);
+        for (int i = 0; i < MAX_PATHFINDING_NODES; ++i)
+        {
+            CP_Graphics_DrawRect(ai_nodes[i].pos.x, ai_nodes[i].pos.y, 20, 20);
+        }
     }
 
     // UI ELEMENTS
