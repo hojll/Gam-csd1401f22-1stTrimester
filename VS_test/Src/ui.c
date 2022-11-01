@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "CProcessing.h"
 
+#define DEFAULT_FONT_SIZE 100.0f
+#define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
+
 float time = 100.0f;
 char timer_text[5];
 
@@ -31,7 +34,7 @@ void bar_system(float x, float y, float width, float height, int value, int tota
     int amount = (int)(width / width_w_pad);
     width_per_cell = (width / amount) - padding;
 
-    amount = amount * percentage;
+    amount = (int)((float)amount * percentage);
 
     CP_Settings_Fill(CP_Color_Create(255, 255, 0, 255));
     CP_Settings_NoStroke();
@@ -46,7 +49,19 @@ void update_bullet_bar(int current_bullet_count, int total_bullet_count)
 {
     CP_Settings_RectMode(CP_POSITION_CORNER);
     
-    bar_system(CP_System_GetWindowWidth() * 0.025f, CP_System_GetWindowHeight() * 0.925f, 200.0f, 30.0f, current_bullet_count, total_bullet_count);
+    if (current_bullet_count <= 0)
+    {
+        bar_system(CP_System_GetWindowWidth() * 0.025f, CP_System_GetWindowHeight() * 0.925f, 200.0f, 30.0f, 1, 1);
+    }
+    else
+    {
+        bar_system(CP_System_GetWindowWidth() * 0.025f, CP_System_GetWindowHeight() * 0.925f, 200.0f, 30.0f, current_bullet_count, total_bullet_count);
+    }
     CP_Settings_RectMode(CP_POSITION_CENTER);
     CP_Settings_Stroke(CP_Color_Create(0, 0, 0, 255));
+}
+
+void draw_button(float x, float y, float width, float height)
+{
+    CP_Graphics_DrawRect(x, y, width, height);
 }

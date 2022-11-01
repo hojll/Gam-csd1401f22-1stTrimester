@@ -20,7 +20,7 @@
 
 #define DEFAULT_FONT_SIZE 100.0f
 #define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
-
+#define MAX_PATHFINDING_NODES 6
 /*
 In �Configuration Properties->Debugging- Working Directory�
 $(SolutionDir)bin\$(Configuration)-$(Platform)\
@@ -44,8 +44,11 @@ E_Bullet bullets[MAX_BULLETS];
 GameObject walls[MAX_WALLS];
 
 E_Basic_Enemy_1 enemies[MAX_ENEMIES];
+CP_Vector e_spawnPos1, e_spawnPos2; // Enemy spawn locations
+GameObject ai_nodes[MAX_PATHFINDING_NODES];
+CP_BOOL shownodes = 0;
 
-int current_bullet_count, total_bullet_count; // For UI by Joel
+int total_bullet_count; // For UI by Joel
 TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
 
 
@@ -106,6 +109,14 @@ void game_init(void)
     }
 
     InitEnemyList(enemies, (int)MAX_ENEMIES);
+    e_spawnPos1 = CP_Vector_Set(250, 110);
+    e_spawnPos2 = CP_Vector_Set(650, 110);
+    ai_nodes[0].pos = CP_Vector_Set(250, 620);
+    ai_nodes[1].pos = CP_Vector_Set(650, 620);
+    ai_nodes[2].pos = CP_Vector_Set(450, 420);
+    ai_nodes[3].pos = CP_Vector_Set(250, 220);
+    ai_nodes[4].pos = CP_Vector_Set(650, 220);
+    ai_nodes[5].pos = CP_Vector_Set(450, 820);
 
     // Walls
     // Bottom
@@ -166,7 +177,7 @@ void game_init(void)
     CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
 
     //Bullet count for UI stuff
-    current_bullet_count = total_bullet_count = 10;
+    total_bullet_count = player[0].currAmmo;
     for (int i = 0; i < MAX_TEXT_POPUP; ++i)
     {
         set_popup(&popUp[i], 0.0f, 0.0f, DEFAULT_FONT_COLOR, DEFAULT_FONT_SIZE, 0, "initializing");
@@ -202,8 +213,13 @@ void game_update(void)
     // Debug Spawn Enemy
     if (CP_Input_KeyTriggered(KEY_EQUAL)) {
         SpawnEnemyMessage enemy;
-        enemy.position = player->go.pos;
-        
+        int random_pos = returnRange(1, 50);
+        if (random_pos <= 25)
+            enemy.position = e_spawnPos1;
+        else
+            enemy.position = e_spawnPos2;
+
+
         g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
     }
 
@@ -358,24 +374,35 @@ void game_update(void)
             CP_Graphics_DrawRect(walls[i].pos.x, walls[i].pos.y, walls[i].width, walls[i].height);
     }
 
+    // Render AI Pathfinding nodes
+    if (shownodes)
+    {
+        const CP_Color nodeColor = CP_Color_Create(118, 78, 191, 255);
+        CP_Settings_Fill(nodeColor);
+        for (int i = 0; i < MAX_PATHFINDING_NODES; ++i)
+        {
+            CP_Graphics_DrawRect(ai_nodes[i].pos.x, ai_nodes[i].pos.y, 20, 20);
+        }
+    }
+
     // UI ELEMENTS
     CP_Settings_TextSize(DEFAULT_FONT_SIZE);
     CP_Settings_Fill(DEFAULT_FONT_COLOR);
     update_timer();
-    if (CP_Input_KeyTriggered(KEY_SPACE))
+
+    if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
     {
-        current_bullet_count -= 1;
         for (int i = 0; i < MAX_TEXT_POPUP; ++i)
         {
             if (!(popUp[i].go.active))
             {
-                set_popup(&popUp[i], CP_Input_GetMouseX(), CP_Input_GetMouseY(), CP_Color_Create(255, 0, 0, 255), DEFAULT_FONT_SIZE, 3.0f, "CLICK");
+                set_popup(&popUp[i], CP_Input_GetMouseX(), CP_Input_GetMouseY(), CP_Color_Create(255, 0, 0, 255), DEFAULT_FONT_SIZE, 3.0f, "Pickup/Damage");
                 break;
             }
         }
     }
 
-    update_bullet_bar(current_bullet_count, total_bullet_count);
+    update_bullet_bar(player[0].currAmmo, total_bullet_count);
     for (int i = 0; i < MAX_TEXT_POPUP; ++i)
     {
         update_popup(&popUp[i]);
