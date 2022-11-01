@@ -8,7 +8,7 @@
 Messenger g_messenger;
 #define E_SPEED 150
 #define GRAVITY 70.f
-#define MAX_GRAV_VEL = 600.f
+#define MAX_GRAV_VEL1 = 600.f
 #define JUMP_VEL 1000.f
 /*----------------------------------------------------*/
 // ENEMI
@@ -20,9 +20,11 @@ void Enemy_ActiveUpdate(E_Basic_Enemy_1 *enemy)
 	{
 		enemy->go.vel.x = enemy->go.dir.x * E_SPEED;
 		enemy->go.pos.x += enemy->go.vel.x * g_scaledDt;
-		if (!enemy->grounded)
+		enemy->go.pos.y += enemy->go.vel.y * g_scaledDt;
+
+		if (!enemy->grounded && enemy->go.vel.y < 600.f)
 		{
-			enemy->go.pos.y += 100.f * g_scaledDt;
+			enemy->go.vel.y += GRAVITY;
 		}
 	}
 }
