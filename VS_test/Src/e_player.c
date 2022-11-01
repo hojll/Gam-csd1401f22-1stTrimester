@@ -3,6 +3,7 @@
 #include "messenger.h"
 #include "collision.h"
 #include "utilities.h"
+
 Messenger g_messenger;
 #define PLAYER_SPEED 250.f
 #define ROLL_SPEED PLAYER_SPEED*3.f
@@ -21,7 +22,7 @@ void Player_ActiveUpdate(E_Player* player) {
 	// Placeholder logic
 
 	// Player Movement
-	int newLookDir = -((int)CP_Input_KeyDown(KEY_A) || (int)CP_Input_KeyDown(KEY_LEFT)) 
+	int newLookDir = -((int)CP_Input_KeyDown(KEY_A) || (int)CP_Input_KeyDown(KEY_LEFT))
 		+ ((int)CP_Input_KeyDown(KEY_D) || (int)CP_Input_KeyDown(KEY_RIGHT));
 	if (newLookDir)
 		player->go.faceDir = newLookDir;
@@ -30,7 +31,7 @@ void Player_ActiveUpdate(E_Player* player) {
 	// Gravity
 	if (!player->grounded && player->go.vel.y < MAX_GRAV_VEL)
 		player->go.vel.y += GRAVITY;
-	
+
 	// Jump
 	if (player->grounded && (CP_Input_KeyDown(KEY_W) || CP_Input_KeyDown(KEY_UP)))
 	{
@@ -47,11 +48,29 @@ void Player_ActiveUpdate(E_Player* player) {
 
 	// Shooting
 	if (CP_Input_KeyTriggered(KEY_SPACE)) {
-		SpawnBulletMessage bullet;
-		bullet.position = player->go.pos;
-		bullet.vel.x = PLAYER_SPEED * 1.5f * player->go.faceDir;
-		bullet.vel.y = 0.f;
+		if (player->currAmmo <= 0)
+			player->currBullet = BULLET_DEFAULT;
+		else
+			player->currAmmo--;
 
+		SpawnBulletMessage bullet;
+		GameObject go;
+		go.pos = player->go.pos;
+		go.vel.x = PLAYER_SPEED * 1.5f * player->go.faceDir;
+		go.vel.y = 0.f;
+		go.width = 20.f;
+		go.height = 20.f;
+		bullet.go = go;
+		bullet.type = player->currBullet;
+		bullet.lifetime = -100.f;
+		switch (player->currBullet)
+		{
+		case BULLET_SCATTER:
+			bullet.color = CP_Color_Create(200, 200, 200, 255);
+			break;
+		default:
+			bullet.color = CP_Color_Create(0, 100, 0, 255);
+		}
 		g_messenger.messages[MSG_SPAWN_BULLET](&bullet);
 	}
 	// Rolling
@@ -107,5 +126,15 @@ E_Player InitializePlayer() {
 	retVal.Update[STATE_PLAYER_ROLLING] = Player_RollUpdate;
 	retVal.state = STATE_PLAYER_ACTIVE;
 	retVal.go.dir.x = 1.f;	// A base direction
+	retVal.go.pos = CP_Vector_Zero();
+	retVal.go.vel = CP_Vector_Zero();
+	retVal.go.pos.y = 200.f;
+	retVal.go.pos.x = 450.f;
+	retVal.go.width = 50.f;
+	retVal.go.height = 50.f;
+	retVal.grounded = 0;
+	retVal.currAmmo = 10;
+	retVal.currBullet = BULLET_SCATTER;
+
 	return retVal;
 }

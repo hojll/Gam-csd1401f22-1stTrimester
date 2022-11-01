@@ -1,6 +1,7 @@
 #ifndef EPLAYER_H
 #define EPLAYER_H
 #include "entities.h"
+#include "e_bullet.h"
 
 #define PLAYER_ROLL_AFTERIMAGE 10
 typedef struct E_Player E_Player;
@@ -17,6 +18,8 @@ typedef struct E_Player {
 	CP_BOOL grounded;
 	CP_Vector rollPrevPos[PLAYER_ROLL_AFTERIMAGE];
 	float rollAlpha[PLAYER_ROLL_AFTERIMAGE];
+	BULLET_TYPE currBullet;
+	int currAmmo;
 	void (*Update[STATE_PLAYER_NUM_STATES])(E_Player*);
 };
 // FUNCTIONS
