@@ -18,13 +18,16 @@ void Enemy_ActiveUpdate(E_Basic_Enemy_1 *enemy)
 {
 	if (enemy->go.active)
 	{
-		enemy->go.vel.x = enemy->go.dir.x * E_SPEED;
-		enemy->go.pos.x += enemy->go.vel.x * g_scaledDt;
+		if (!enemy->tracking)
+		{
+			enemy->go.vel.x = enemy->go.dir.x * E_SPEED;
+			enemy->go.pos.x += enemy->go.vel.x * g_scaledDt;
+		}
+		
 		enemy->go.pos.y += enemy->go.vel.y * g_scaledDt;
-
 		if (!enemy->grounded && enemy->go.vel.y < 600.f)
 		{
-			enemy->go.vel.y += GRAVITY;
+			enemy->go.vel.y += GRAVITY;		
 		}
 	}
 }
@@ -45,10 +48,11 @@ E_Basic_Enemy_1 InitializeEnemy()
 	retval.go.height = 50.f;
 	retval.go.width = 50.f;
 	retval.grounded = 0;
-
+	retval.go.dir.y = 0;
+	retval.go.vel.y = 0;
+	retval.tracking = 0;
 	// random direction
 	int randomdir = returnRange(1, 20);
-	//printf("%d direction\n", randomdir);
 	if (randomdir >= 10)
 	{
 		retval.go.dir.x = 1;
@@ -57,19 +61,17 @@ E_Basic_Enemy_1 InitializeEnemy()
 	{
 		retval.go.dir.x = -1;
 	}
-	retval.go.dir.y = 0;
-	retval.go.vel.y = 0;
-
 	return retval;
 }
 
 // Helper function
-void InitEnemyList(E_Basic_Enemy_1 arr[], int size)
+void InitEnemyList(E_Basic_Enemy_1 arr[], int size, GameObject nodes[])
 {
 	srand(123);	
 	for (int i = 0; i < size; ++i)
 	{
 		arr[i] = InitializeEnemy();
+		arr[i].nodes = nodes;
 	}
 }
 
@@ -122,14 +124,14 @@ void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[])
 					enemy->state = STATE_ENEMY_ACTIVE;
 					enemy->go.pos.x = wallreference[j].pos.x - wallreference[j].width / 2.f - enemy->go.width / 2.f;
 					enemy->go.dir.x = -1;
-					printf("left collision \n");
+					//printf("left collision \n");
 				}
 				else
 				{
 					enemy->state = STATE_ENEMY_ACTIVE;
 					enemy->go.pos.x = wallreference[j].pos.x + wallreference[j].width / 2.f + enemy->go.width / 2.f;					
 					enemy->go.dir.x = 1;
-					printf("right collision \n");
+					//printf("right collision \n");
 				}
 			}
 

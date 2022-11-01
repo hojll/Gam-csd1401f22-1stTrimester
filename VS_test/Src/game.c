@@ -20,7 +20,7 @@
 
 #define DEFAULT_FONT_SIZE 100.0f
 #define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
-#define MAX_PATHFINDING_NODES 6
+
 /*
 In �Configuration Properties->Debugging- Working Directory�
 $(SolutionDir)bin\$(Configuration)-$(Platform)\
@@ -46,7 +46,8 @@ GameObject walls[MAX_WALLS];
 E_Basic_Enemy_1 enemies[MAX_ENEMIES];
 CP_Vector e_spawnPos1, e_spawnPos2; // Enemy spawn locations
 GameObject ai_nodes[MAX_PATHFINDING_NODES];
-CP_BOOL shownodes = 0;
+CP_BOOL shownodes = 1;
+GameObject *playerPrevPlatform;
 
 int total_bullet_count; // For UI by Joel
 TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
@@ -81,6 +82,18 @@ void MessageSpawnEnemy(void* messageInfo) {
             continue;
         curr->go.active = 1;
         curr->go.pos = enemyMsg->position;
+        curr->tracking = enemyMsg->tracking;
+        
+        if (curr->tracking)
+        {            
+            for (int i = 0; i < MAX_PATHFINDING_NODES; ++i)
+            {
+                GameObject* pointer = curr->nodes + i;
+                printf("wall pos %f:%f\n", pointer->pos.y, 
+                    pointer->pos.y);
+            }
+        }
+
         break;
     }
 }
@@ -108,7 +121,9 @@ void game_init(void)
         bullets[i] = InitializeBullet();
     }
 
-    InitEnemyList(enemies, (int)MAX_ENEMIES);
+    InitEnemyList(enemies, (int)MAX_ENEMIES, ai_nodes);
+
+
     e_spawnPos1 = CP_Vector_Set(250, 110);
     e_spawnPos2 = CP_Vector_Set(650, 110);
     ai_nodes[0].pos = CP_Vector_Set(250, 620);
@@ -223,6 +238,15 @@ void game_update(void)
         g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
     }
 
+    if (CP_Input_KeyTriggered(KEY_MINUS)) {
+        SpawnEnemyMessage enemy;
+        enemy.position = CP_Vector_Set(450, 790);
+        enemy.tracking = 1;
+        g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
+    }
+
+
+
     // Collision Loops
     // Player - x
     for (int i = 0; i < playerCount; ++i)
@@ -244,6 +268,7 @@ void game_update(void)
                     player[i].go.pos.y = walls[j].pos.y - walls[j].height / 2.f - player[i].go.height / 2.f;
                     player->grounded = 1;
                     player->go.vel.y = 0;
+                    playerPrevPlatform = &walls[j];                    
                 }
                 else if (collision_dir == COLLISION_BOTTOM)
                 {
@@ -359,11 +384,18 @@ void game_update(void)
 
     // Enemies 
     const CP_Color enemyColor = CP_Color_Create(125, 181, 130, 255);
+    const CP_Color enemyColor2 = CP_Color_Create(20, 227, 199, 255);
     CP_Settings_Fill(enemyColor);
     for (int i = 0; i < MAX_ENEMIES; ++i)
     {
-        if(enemies[i].go.active)
-            CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
+        if (!enemies[i].go.active)
+            continue;
+        if (enemies[i].tracking)
+        {
+            CP_Settings_Fill(enemyColor2);
+        }
+        CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
+        
     }
 
     // Walls
