@@ -20,7 +20,7 @@
 
 #define DEFAULT_FONT_SIZE 100.0f
 #define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
-
+#define MAX_PATHFINDING_NODES 6
 /*
 In “Configuration Properties->Debugging- Working Directory”
 $(SolutionDir)bin\$(Configuration)-$(Platform)\
@@ -43,6 +43,9 @@ E_Bullet bullets[MAX_BULLETS];
 GameObject walls[MAX_WALLS];
 
 E_Basic_Enemy_1 enemies[MAX_ENEMIES];
+CP_Vector e_spawnPos1, e_spawnPos2; // Enemy spawn locations
+GameObject ai_nodes[MAX_PATHFINDING_NODES];
+CP_BOOL shownodes = 1;
 
 int current_bullet_count, total_bullet_count; // For UI by Joel
 TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
@@ -97,6 +100,14 @@ void game_init(void)
     }
 
     InitEnemyList(enemies, (int)MAX_ENEMIES);
+    e_spawnPos1 = CP_Vector_Set(250, 110);
+    e_spawnPos2 = CP_Vector_Set(650, 110);
+    ai_nodes[0].pos = CP_Vector_Set(250, 620);
+    ai_nodes[1].pos = CP_Vector_Set(650, 620);
+    ai_nodes[2].pos = CP_Vector_Set(450, 420);
+    ai_nodes[3].pos = CP_Vector_Set(250, 220);
+    ai_nodes[4].pos = CP_Vector_Set(650, 220);
+    ai_nodes[5].pos = CP_Vector_Set(450, 820);
 
     // Walls
     // Bottom
@@ -194,8 +205,13 @@ void game_update(void)
     // Debug Spawn Enemy
     if (CP_Input_KeyTriggered(KEY_EQUAL)) {
         SpawnEnemyMessage enemy;
-        enemy.position = player->go.pos;
-        
+        int random_pos = returnRange(1, 50);
+        if (random_pos <= 25)
+            enemy.position = e_spawnPos1;
+        else
+            enemy.position = e_spawnPos2;
+
+
         g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
     }
 
