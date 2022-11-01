@@ -176,6 +176,9 @@ void game_update(void)
     CP_Graphics_ClearBackground(CP_Color_Create(150, 150, 150, 255));
     // Update scaled dt
     g_scaledDt = CP_System_GetDt();
+
+    //printf("play pos %.2f,%.2f\n", player->go.pos.x, player->go.pos.y);
+
     // Update players
     for (int i = 0; i < playerCount; ++i) {
         if(player[i].go.active)
@@ -198,6 +201,7 @@ void game_update(void)
     if (CP_Input_KeyTriggered(KEY_EQUAL)) {
         SpawnEnemyMessage enemy;
         enemy.position = player->go.pos;
+        
         g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
     }
 
@@ -278,14 +282,7 @@ void game_update(void)
     {
         if (!enemies[j].go.active)
             continue;
-        if (AABB(enemies[j].go, walls[2]) || AABB(enemies[j].go, walls[3]))
-        {
-            if (enemies[j].go.dir.x >= 1)
-                enemies[j].go.dir.x = -1;
-            else
-                enemies[j].go.dir.x = 1;
-        }
-        EnemytoWallCollision(enemies[j], walls);
+        EnemytoWallCollision(&enemies[j], walls);
     }
     
 
