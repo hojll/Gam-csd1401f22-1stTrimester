@@ -8,7 +8,7 @@
 Messenger g_messenger;
 #define E_SPEED 150
 #define GRAVITY 70.f
-#define MAX_GRAV_VEL = 600.f
+#define MAX_GRAV_VEL1 = 600.f
 #define JUMP_VEL 1000.f
 /*----------------------------------------------------*/
 // ENEMI
@@ -19,19 +19,12 @@ void Enemy_ActiveUpdate(E_Basic_Enemy_1 *enemy)
 	if (enemy->go.active)
 	{
 		enemy->go.vel.x = enemy->go.dir.x * E_SPEED;
-		enemy->go.vel.y = enemy->go.dir.y * E_SPEED;
-
 		enemy->go.pos.x += enemy->go.vel.x * g_scaledDt;
 		enemy->go.pos.y += enemy->go.vel.y * g_scaledDt;
 
 		if (!enemy->grounded && enemy->go.vel.y < 600.f)
 		{
-			enemy->go.dir.y = 1;
 			enemy->go.vel.y += GRAVITY;
-		}
-		else
-		{
-			enemy->go.vel.y = 0;
 		}
 	}
 }
@@ -65,6 +58,8 @@ E_Basic_Enemy_1 InitializeEnemy()
 		retval.go.dir.x = -1;
 	}
 	retval.go.dir.y = 0;
+	retval.go.vel.y = 0;
+
 	return retval;
 }
 
@@ -93,61 +88,65 @@ void UpdateEnemyList(E_Basic_Enemy_1 arr[], int size)
 }
 
 
-void EnemytoWallCollision(E_Basic_Enemy_1 enemy, GameObject wallreference[])
+void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[])
 {
 	//hard code for now
 	for (int i = 0; i < 10; ++i)
 	{
-		if (!enemy.go.active)
+		if (!enemy->go.active)
 			continue;
 		CP_BOOL enemyGroundedFlag = 0;
-
+		//printf("collided \n");
 		// Player - Wall
 		for (int j = 0; j < 10; ++j)
 		{
 			if (!wallreference[j].active)
 				continue;
-			if (AABB(enemy.go, wallreference[j]))
+			if (AABB(enemy->go, wallreference[j]))
 			{
 
-				COLLISION_DIRECTION collision_dir = AABB_Direction(enemy.go, wallreference[j]);
+				COLLISION_DIRECTION collision_dir = AABB_Direction(enemy->go, wallreference[j]);
 				if (collision_dir == COLLISION_TOP)
 				{
-					enemy.go.pos.y = wallreference[j].pos.y - wallreference[j].height / 2.f - wallreference[i].height / 2.f;
-					enemy.grounded = 1;
-					//enemy.go.dir.y = 0;
+					enemy->go.pos.y = wallreference[j].pos.y - wallreference[j].height / 2.f - enemy->go.height / 2.f;
+					enemy->grounded = 1;
+					enemy->go.vel.y = 0;
 				}
 				else if (collision_dir == COLLISION_BOTTOM)
 				{
-					enemy.go.pos.y = wallreference[j].pos.y + wallreference[j].height / 2.f + enemy.go.height / 2.f;
-					enemy.go.dir.y = 0;
+					enemy->go.pos.y = wallreference[j].pos.y + wallreference[j].height / 2.f + enemy->go.height / 2.f;				
+					enemy->go.vel.y = 0;
 				}
 				else if (collision_dir == COLLISION_LEFT)
 				{
-					enemy.go.pos.x = wallreference[j].pos.x - wallreference[j].width / 2.f - enemy.go.width / 2.f;
-					enemy.state = STATE_ENEMY_ACTIVE;
+					enemy->state = STATE_ENEMY_ACTIVE;
+					enemy->go.pos.x = wallreference[j].pos.x - wallreference[j].width / 2.f - enemy->go.width / 2.f;
+					enemy->go.dir.x = -1;
+					printf("left collision \n");
 				}
 				else
 				{
-					enemy.go.pos.x = wallreference[j].pos.x + wallreference[j].width / 2.f + enemy.go.width / 2.f;
-					enemy.state = STATE_ENEMY_ACTIVE;
+					enemy->state = STATE_ENEMY_ACTIVE;
+					enemy->go.pos.x = wallreference[j].pos.x + wallreference[j].width / 2.f + enemy->go.width / 2.f;					
+					enemy->go.dir.x = 1;
+					printf("right collision \n");
 				}
 			}
 
 			// Grounded check (Walking off platforms)
-			if (!enemy.grounded)
+			if (!enemy->grounded)
 				continue;
 			// This creates a point right below the player and check if there is a wall there
-			if (Point_AABB(CP_Vector_Set(enemy.go.pos.x + enemy.go.width / 2.f, enemy.go.pos.y + enemy.go.height / 2.f + 0.1f), wallreference[j]) ||
-				Point_AABB(CP_Vector_Set(enemy.go.pos.x - enemy.go.width / 2.f, enemy.go.pos.y + enemy.go.height / 2.f + 0.1f), wallreference[j]))
+			if (Point_AABB(CP_Vector_Set(enemy->go.pos.x + enemy->go.width / 2.f, enemy->go.pos.y + enemy->go.height / 2.f + 0.1f), wallreference[j]) ||
+				Point_AABB(CP_Vector_Set(enemy->go.pos.x - enemy->go.width / 2.f, enemy->go.pos.y + enemy->go.height / 2.f + 0.1f), wallreference[j]))
 			{
 				enemyGroundedFlag = 1;
-				enemy.go.dir.y = 0;
+				//enemy->go.dir.y = 0;
 
 			}
 		}
 		if (!enemyGroundedFlag)
-			enemy.grounded = 0;		
+			enemy->grounded = 0;		
 	}
 }
 

@@ -35,6 +35,6 @@ void InitEnemyList(E_Basic_Enemy_1 arr[], int size);
 
 void UpdateEnemyList(E_Basic_Enemy_1 arr[], int size);
 
-void EnemytoWallCollision(E_Basic_Enemy_1 enemy, GameObject wallreference[]);
+void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[]);
 
 #endif
