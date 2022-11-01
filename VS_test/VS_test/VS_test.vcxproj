@@ -107,6 +107,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClCompile Include="..\Src\e_text_popup.c" />
     <ClCompile Include="..\Src\game.c" />
     <ClCompile Include="..\Src\main.c" />
+    <ClCompile Include="..\Src\main_menu.c" />
     <ClCompile Include="..\Src\spriteData.c" />
     <ClCompile Include="..\Src\ui.c" />
     <ClCompile Include="..\Src\utilities.c" />
@@ -118,6 +119,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClInclude Include="..\Src\e_bullet.h" />
     <ClInclude Include="..\Src\e_text_popup.h" />
     <ClInclude Include="..\Src\game.h" />
+    <ClInclude Include="..\Src\main_menu.h" />
     <ClInclude Include="..\Src\messenger.h" />
     <ClInclude Include="..\Src\e_player.h" />
     <ClInclude Include="..\Src\spriteData.h" />
