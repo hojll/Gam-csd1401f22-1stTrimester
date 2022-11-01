@@ -20,6 +20,10 @@ void Enemy_ActiveUpdate(E_Basic_Enemy_1 *enemy)
 	{
 		enemy->go.vel.x = enemy->go.dir.x * E_SPEED;
 		enemy->go.pos.x += enemy->go.vel.x * g_scaledDt;
+		if (!enemy->grounded)
+		{
+			enemy->go.pos.y += 100.f * g_scaledDt;
+		}
 	}
 }
 
@@ -52,6 +56,8 @@ E_Basic_Enemy_1 InitializeEnemy()
 		retval.go.dir.x = -1;
 	}
 	retval.go.dir.y = 0;
+	retval.go.vel.y = 0;
+
 	return retval;
 }
 
@@ -100,16 +106,14 @@ void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[])
 				COLLISION_DIRECTION collision_dir = AABB_Direction(enemy->go, wallreference[j]);
 				if (collision_dir == COLLISION_TOP)
 				{
-					enemy->go.pos.y = wallreference[j].pos.y - wallreference[j].height / 2.f - wallreference[i].height / 2.f;
+					enemy->go.pos.y = wallreference[j].pos.y - wallreference[j].height / 2.f - enemy->go.height / 2.f;
 					enemy->grounded = 1;
-					//enemy->go.dir.y = 0;
-					//enemy->go.vel.y = 0;
+					enemy->go.vel.y = 0;
 				}
 				else if (collision_dir == COLLISION_BOTTOM)
 				{
-					enemy->go.pos.y = wallreference[j].pos.y + wallreference[j].height / 2.f + enemy->go.height / 2.f;
-					//enemy->go.dir.y = 0;
-					//enemy->go.vel.y = 0;
+					enemy->go.pos.y = wallreference[j].pos.y + wallreference[j].height / 2.f + enemy->go.height / 2.f;				
+					enemy->go.vel.y = 0;
 				}
 				else if (collision_dir == COLLISION_LEFT)
 				{
