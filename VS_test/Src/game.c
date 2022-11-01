@@ -10,6 +10,7 @@
 #include "e_text_popup.h"
 #include "e_basicenemy_1.h"
 #include "spriteData.h"
+#include "e_bullet.h"
 
 #define MAX_BULLETS 100
 #define MAX_ENEMIES 100
@@ -21,7 +22,7 @@
 #define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
 
 /*
-In “Configuration Properties->Debugging- Working Directory”
+In ï¿½Configuration Properties->Debugging- Working Directoryï¿½
 $(SolutionDir)bin\$(Configuration)-$(Platform)\
 Use this in release mode settings if no work.
 */
@@ -39,7 +40,7 @@ CP_Image spriteData[NUM_SPRITES];
 E_Player player[MAX_PLAYERS];
 int playerCount;
 
-E_BulletTest bullets[MAX_BULLETS];
+E_Bullet bullets[MAX_BULLETS];
 GameObject walls[MAX_WALLS];
 
 E_Basic_Enemy_1 enemies[MAX_ENEMIES];
@@ -54,12 +55,14 @@ void MessageSpawnBullet(void* messageInfo) {
     SpawnBulletMessage* bulletMSG = (SpawnBulletMessage*)messageInfo;
     // Spawn bullet here
     for (int i = 0; i < MAX_BULLETS; ++i) {
-        E_BulletTest* curr = &bullets[i];
+        E_Bullet* curr = &bullets[i];
         if (curr->go.active)
             continue;
+        curr->go = bulletMSG->go;
         curr->go.active = 1;
-        curr->go.vel = bulletMSG->vel;
-        curr->go.pos = bulletMSG->position;
+        curr->bullet_type = bulletMSG->type;
+        curr->lifetime = bulletMSG->lifetime;
+        curr->color = bulletMSG->color;
         break;
     }
 }
@@ -96,20 +99,11 @@ void game_init(void)
     //Assets/DigiPen_Singapore_WEB_RED.png
     player[0] = *InitializePlayer();
     //player[1] = InitializePlayer();
-    srand(123);
     for (int i = 0; i < MAX_PLAYERS; ++i) {
-        player[i].go.pos = CP_Vector_Zero();
-        player[i].go.vel = CP_Vector_Zero();
-        player[i].go.pos.y = 200.f;
-        player[i].go.pos.x = 450.f;
-        player[i].go.width = 50.f;
-        player[i].go.height = 50.f;
-        player[i].grounded = 0;
+        player[i] = InitializePlayer();
     }
     for (int i = 0; i < MAX_BULLETS; ++i) {
-        bullets[i].go.active = 0;
-        bullets[i].go.pos = CP_Vector_Zero();
-        bullets[i].go.vel = CP_Vector_Zero();
+        bullets[i] = InitializeBullet();
     }
 
     InitEnemyList(enemies, (int)MAX_ENEMIES);
@@ -173,7 +167,7 @@ void game_init(void)
     CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
 
     //Bullet count for UI stuff
-    current_bullet_count = total_bullet_count = 15;
+    current_bullet_count = total_bullet_count = 10;
     for (int i = 0; i < MAX_TEXT_POPUP; ++i)
     {
         set_popup(&popUp[i], 0.0f, 0.0f, DEFAULT_FONT_COLOR, DEFAULT_FONT_SIZE, 0, "initializing");
@@ -186,6 +180,9 @@ void game_update(void)
     CP_Graphics_ClearBackground(CP_Color_Create(150, 150, 150, 255));
     // Update scaled dt
     g_scaledDt = CP_System_GetDt();
+
+    //printf("play pos %.2f,%.2f\n", player->go.pos.x, player->go.pos.y);
+
     // Update players
     for (int i = 0; i < playerCount; ++i) {
         if(player[i].go.active)
@@ -195,7 +192,7 @@ void game_update(void)
     // Update bullets
     for (int i = 0; i < MAX_BULLETS; ++i) {
         if (bullets[i].go.active)
-            bullets[i].go.pos = CP_Vector_Add(bullets[i].go.pos, CP_Vector_Scale(bullets[i].go.vel, g_scaledDt));
+            bullets[i].Update(&bullets[i]);
     }
     
     UpdateEnemyList(enemies, MAX_ENEMIES);
@@ -207,6 +204,7 @@ void game_update(void)
     if (CP_Input_KeyTriggered(KEY_EQUAL)) {
         SpawnEnemyMessage enemy;
         enemy.position = player->go.pos;
+        
         g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
     }
 
@@ -277,7 +275,18 @@ void game_update(void)
                 continue;
             if (AABB(bullets[i].go, walls[j]))
             {
-                bullets[i].go.active = 0;
+                bullets[i].collide_pos = bullets[i].go.pos;
+                COLLISION_DIRECTION collision_dir = AABB_Direction(bullets[i].go, walls[j]);
+                if (collision_dir == COLLISION_TOP)
+                    bullets[i].collide_pos.y = walls[j].pos.y - walls[j].height / 2.f - bullets[i].go.height / 2.f;
+                else if (collision_dir == COLLISION_BOTTOM)
+                    bullets[i].collide_pos.y = walls[j].pos.y + walls[j].height / 2.f + bullets[i].go.height / 2.f;
+                else if (collision_dir == COLLISION_LEFT)
+                    bullets[i].collide_pos.x = walls[j].pos.x - walls[j].width / 2.f - bullets[i].go.width / 2.f;
+                else
+                    bullets[i].collide_pos.x = walls[j].pos.x + walls[j].width / 2.f + bullets[i].go.width / 2.f;
+
+                bullets->Destroy(&bullets[i]);
             }
         }
     }
@@ -287,13 +296,7 @@ void game_update(void)
     {
         if (!enemies[j].go.active)
             continue;
-        if (AABB(enemies[j].go, walls[2]) || AABB(enemies[j].go, walls[3]))
-        {
-            if (enemies[j].go.dir.x >= 1)
-                enemies[j].go.dir.x = -1;
-            else
-                enemies[j].go.dir.x = 1;
-        }
+        EnemytoWallCollision(&enemies[j], walls);
     }
     
 
@@ -331,12 +334,12 @@ void game_update(void)
     }
 
     // Bullets
-    const CP_Color bulletColor = CP_Color_Create(0, 100, 0, 255);
-    CP_Settings_Fill(bulletColor);
     for (int i = 0; i < MAX_BULLETS; ++i) {
-        const float BULLET_SIZE_TEMP = 20.f;
         if (bullets[i].go.active)
-            CP_Graphics_DrawCircle(bullets[i].go.pos.x, bullets[i].go.pos.y, BULLET_SIZE_TEMP);
+        {
+            CP_Settings_Fill(bullets[i].color);
+            CP_Graphics_DrawCircle(bullets[i].go.pos.x, bullets[i].go.pos.y, bullets[i].go.height);
+        }
     }
 
     // Enemies 

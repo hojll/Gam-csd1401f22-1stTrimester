@@ -1,6 +1,7 @@
 #ifndef MESSENGER_H
 #define MESSENGER_H
 #include "cprocessing.h"
+#include "e_bullet.h"
 typedef enum MessageType {
 	MSG_SPAWN_BULLET,
 	MSG_SPAWN_ENEMY,
@@ -9,8 +10,10 @@ typedef enum MessageType {
 }MessageType;
 
 typedef struct SpawnBulletMessage {
-	CP_Vector position;
-	CP_Vector vel;
+	GameObject go;
+	BULLET_TYPE type;
+	CP_Color color;
+	float lifetime;
 }SpawnBulletMessage;
 
 typedef struct SpawnEnemyMessage {

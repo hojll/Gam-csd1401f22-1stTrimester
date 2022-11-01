@@ -46,10 +46,6 @@ typedef struct E_EnemyTest{
 	GameObject go;
 	void (*Update[2])(E_EnemyTest*);
 };
-
-typedef struct E_BulletTest {
-	GameObject go;
-}E_BulletTest;
 #pragma endregion
 
 #endif
