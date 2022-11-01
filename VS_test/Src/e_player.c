@@ -130,14 +130,14 @@ void Player_DeadUpdate(E_Player* player) {
 
 }
 
-E_Player InitializePlayer() {
+void InitializePlayer(E_Player *player) {
 	E_Player retVal;
 	// Point the update functions
-	retVal.Update[STATE_PLAYER_DEAD] = Player_DeadUpdate;
-	retVal.Update[STATE_PLAYER_ACTIVE] = Player_ActiveUpdate;
-	retVal.Update[STATE_PLAYER_ROLLING] = Player_RollUpdate;
-	retVal.state = STATE_PLAYER_ACTIVE;
-	retVal.go.dir.x = 1.f;	// A base direction
+	player->Update[STATE_PLAYER_DEAD] = Player_DeadUpdate;
+	player->Update[STATE_PLAYER_ACTIVE] = Player_ActiveUpdate;
+	player->Update[STATE_PLAYER_ROLLING] = Player_RollUpdate;
+	player->state = STATE_PLAYER_ACTIVE;
+	player->go.dir.x = 1.f;	// A base direction
 	/*------------*/
 	// ANIMATIONS //
 	/*------------*/
@@ -153,7 +153,7 @@ E_Player InitializePlayer() {
 		activeAnim.imageStart[0] = 0;
 		activeAnim.imageStart[1] = 0;
 		activeAnim.loop = 1;
-		retVal.animations[ANIM_PLAYER_ACTIVE] = activeAnim;
+		player->animations[ANIM_PLAYER_ACTIVE] = activeAnim;
 	}
 	/*
 	SPRITE spriteID;
@@ -171,21 +171,20 @@ E_Player InitializePlayer() {
 		rollingAnim.imageStart[0] = 0;
 		rollingAnim.imageStart[1] = 0;
 		rollingAnim.loop = 0;
-		retVal.animations[ANIM_PLAYER_ROLLING] = rollingAnim;
+		player->animations[ANIM_PLAYER_ROLLING] = rollingAnim;
 	}
-	retVal.animState = ANIM_PLAYER_ACTIVE;
-	retVal.currAnim = SetSpriteAnim(&retVal.animations[ANIM_PLAYER_ACTIVE], 1.f);
+	player->animState = ANIM_PLAYER_ACTIVE;
+	player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE], 1.f);
 	///////////////////////////////////////////////////////////
-	retVal.go.pos = CP_Vector_Zero();
-	retVal.go.vel = CP_Vector_Zero();
-	retVal.go.pos.y = 200.f;
-	retVal.go.pos.x = 450.f;
-	retVal.go.width = 50.f;
-	retVal.go.height = 50.f;
-	retVal.grounded = 0;
-	retVal.currAmmo = 10;
-	retVal.attackSpeed = DEFAULT_ATTACK_SPEED;
-	retVal.attackSpeedTimer = 0.f;
-	retVal.currBullet = BULLET_SCATTER;
-	return retVal;
+	player->go.pos = CP_Vector_Zero();
+	player->go.vel = CP_Vector_Zero();
+	player->go.pos.y = 200.f;
+	player->go.pos.x = 450.f;
+	player->go.width = 50.f;
+	player->go.height = 50.f;
+	player->grounded = 0;
+	player->currAmmo = 10;
+	player->attackSpeed = DEFAULT_ATTACK_SPEED;
+	player->attackSpeedTimer = 0.f;
+	player->currBullet = BULLET_SCATTER;
 }

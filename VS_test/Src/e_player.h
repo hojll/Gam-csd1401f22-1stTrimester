@@ -35,6 +35,6 @@ typedef struct E_Player {
 	void (*Update[STATE_PLAYER_NUM_STATES])(E_Player*);
 };
 // FUNCTIONS
-E_Player InitializePlayer();
+void InitializePlayer(E_Player*);
 
 #endif // !EPLAYER_H
