@@ -45,7 +45,7 @@ typedef enum ENEMY_TEST_STATES {
 typedef struct E_EnemyTest{
 	GameObject go;
 	void (*Update[2])(E_EnemyTest*);
-};
+} E_EnemyTest;
 #pragma endregion
 
 #endif

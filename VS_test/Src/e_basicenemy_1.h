@@ -25,7 +25,7 @@ typedef struct E_Basic_Enemy_1 {
 	double HP;
 
 	void (*Update[STATE_ENEMY_NUM_STATES])(E_BASIC_ENEMY_STATES_1*);
-};
+} E_Basic_Enemy_1;
 /*-----------------------------------------------------------------*/
 // Other references
 /*-----------------------------------------------------------------*/

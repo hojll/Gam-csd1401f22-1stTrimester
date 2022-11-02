@@ -9,7 +9,7 @@ void UpdateSpriteAnim(SpriteAnimInstance* anim, float dt) {
 	if (anim->currFrame < anim->animData->numFrames) {
 		return;
 	}
-	printf("%d, %d\n", anim->currFrame , anim->animData->numFrames);
+	//printf("%d, %d\n", anim->currFrame , anim->animData->numFrames);
 	// If it reaches the end
 	// This is for looping animations
 	if (anim->animData->loop) {
@@ -37,10 +37,10 @@ void RenderSpriteAnim(SpriteAnimInstance* anim, CP_Image image, float x, float y
 	//CP_Image_DrawSubImage(image, x, y, width, height, anim->animData->imageStart[0], anim->animData->imageStart[1],
 	
 	CP_Image_DrawSubImage(image, x, y, width, height,
-		anim->animData->imageStart[0] + anim->currFrame * anim->animData->frameDim[0],
-		anim->animData->imageStart[1],
-		(anim->currFrame + 1) * 32,
-		anim->animData->frameDim[1], 255);
+		(float)anim->animData->imageStart[0] + anim->currFrame * anim->animData->frameDim[0],
+		(float)anim->animData->imageStart[1],
+		(float)(anim->currFrame + 1) * 32,
+		(float)anim->animData->frameDim[1], 255);
 	/*	anim->animData->imageStart[0] + anim->currFrame * anim->animData->imageDim[0],
 		anim->animData->imageStart[1] + anim->currFrame * anim->animData->imageDim[1], 255);*/
 }

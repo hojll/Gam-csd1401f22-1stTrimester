@@ -33,7 +33,7 @@ typedef struct E_Player {
 	float attackSpeed;
 	float attackSpeedTimer;
 	void (*Update[STATE_PLAYER_NUM_STATES])(E_Player*);
-};
+} E_Player;
 // FUNCTIONS
 void InitializePlayer(E_Player*);
 

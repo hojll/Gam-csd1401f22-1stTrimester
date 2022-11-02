@@ -85,7 +85,7 @@ void UpdateEnemyList(E_Basic_Enemy_1 arr[], int size)
 			continue;
 
 
-		arr[i].Update[arr[i].state](&arr[i],g_scaledDt);
+		arr[i].Update[arr[i].state](&arr[i]);
 	}
 }
 

@@ -112,7 +112,7 @@ void Player_RollUpdate(E_Player* player) {
 	player->go.pos = CP_Vector_Add(player->go.pos, CP_Vector_Scale(player->go.vel, g_scaledDt));
 
 	// Particle Effect (Trail)
-	int currAfterImage = player->go.timer / (ROLL_DURATION / (float)PLAYER_ROLL_AFTERIMAGE);
+	int currAfterImage = (int)(player->go.timer / (ROLL_DURATION / PLAYER_ROLL_AFTERIMAGE));
 	if (CP_Vector_Equal(player->rollPrevPos[currAfterImage], CP_Vector_Zero()))
 	{
 		player->rollPrevPos[currAfterImage] = player->go.pos;
@@ -131,7 +131,6 @@ void Player_DeadUpdate(E_Player* player) {
 }
 
 void InitializePlayer(E_Player *player) {
-	E_Player retVal;
 	// Point the update functions
 	player->Update[STATE_PLAYER_DEAD] = Player_DeadUpdate;
 	player->Update[STATE_PLAYER_ACTIVE] = Player_ActiveUpdate;

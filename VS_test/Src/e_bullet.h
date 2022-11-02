@@ -19,7 +19,7 @@ typedef struct E_Bullet {
 	CP_Color color;
 	void (*Update)(E_Bullet*);
 	void (*Destroy)(E_Bullet*);
-};
+}E_Bullet;
 E_Bullet InitializeBullet();
 void DestroyBullet(E_Bullet* bullet);
 

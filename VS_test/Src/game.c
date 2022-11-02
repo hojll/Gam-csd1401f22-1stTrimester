@@ -195,7 +195,7 @@ void game_init(void)
     total_bullet_count = player[0].currAmmo;
     for (int i = 0; i < MAX_TEXT_POPUP; ++i)
     {
-        set_popup(&popUp[i], 0.0f, 0.0f, DEFAULT_FONT_COLOR, DEFAULT_FONT_SIZE, 0, "initializing");
+        set_popup(&popUp[i], 0.0f, 0.0f, DEFAULT_FONT_COLOR, (int)DEFAULT_FONT_SIZE, 0, "initializing");
     }
 }
 
@@ -211,7 +211,7 @@ void game_update(void)
     // Update players
     for (int i = 0; i < playerCount; ++i) {
         if(player[i].go.active)
-            player[i].Update[player[i].state](&player[i], g_scaledDt);
+            player[i].Update[player[i].state](&player[i]);
         // Update position
     }
     // Update bullets
@@ -365,7 +365,7 @@ void game_update(void)
                     if (!CP_Vector_Equal(player->rollPrevPos[j], CP_Vector_Zero()))
                     {
                         CP_Settings_StrokeWeight(0.f);
-                        CP_Settings_Fill(CP_Color_Create(100, 0, 0, player[i].rollAlpha[j]));
+                        CP_Settings_Fill(CP_Color_Create(100, 0, 0, (int)player[i].rollAlpha[j]));
                         CP_Graphics_DrawCircle(player[i].rollPrevPos[j].x, player[i].rollPrevPos[j].y, player[i].go.height);
                         CP_Settings_StrokeWeight(3.f);
                     }
@@ -428,7 +428,7 @@ void game_update(void)
         {
             if (!(popUp[i].go.active))
             {
-                set_popup(&popUp[i], CP_Input_GetMouseX(), CP_Input_GetMouseY(), CP_Color_Create(255, 0, 0, 255), DEFAULT_FONT_SIZE, 3.0f, "Pickup/Damage");
+                set_popup(&popUp[i], CP_Input_GetMouseX(), CP_Input_GetMouseY(), CP_Color_Create(255, 0, 0, 255), (int)DEFAULT_FONT_SIZE, 3.0f, "Pickup/Damage");
                 break;
             }
         }
