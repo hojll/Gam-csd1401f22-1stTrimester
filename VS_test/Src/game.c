@@ -126,12 +126,12 @@ void game_init(void)
     e_spawnPos1 = CP_Vector_Set(250, 110);
     e_spawnPos2 = CP_Vector_Set(650, 110);
     
-    ai_nodes[0].pos = CP_Vector_Set(200, 600);
-    ai_nodes[1].pos = CP_Vector_Set(700, 600);
-    ai_nodes[2].pos = CP_Vector_Set(450, 400);    
-    ai_nodes[3].pos = CP_Vector_Set(200, 200);
-    ai_nodes[4].pos = CP_Vector_Set(700, 200);    
-    ai_nodes[5].pos = CP_Vector_Set(450, 800);
+    ai_nodes[0].pos = CP_Vector_Set(200, 650);
+    ai_nodes[1].pos = CP_Vector_Set(700, 650);
+    ai_nodes[2].pos = CP_Vector_Set(450, 450);    
+    ai_nodes[3].pos = CP_Vector_Set(200, 250);
+    ai_nodes[4].pos = CP_Vector_Set(700, 250);    
+    ai_nodes[5].pos = CP_Vector_Set(450, 850);
 
     for (int i = 0; i < MAX_PATHFINDING_NODES; i++)
         ai_nodes[i].active = 1; 
@@ -243,7 +243,7 @@ void game_update(void)
 
     if (CP_Input_KeyTriggered(KEY_MINUS)) {
         SpawnEnemyMessage enemy;
-        enemy.position = CP_Vector_Set(790, 790);
+        enemy.position = CP_Vector_Set(100, 790);
         enemy.tracking = 1;
         g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
     }

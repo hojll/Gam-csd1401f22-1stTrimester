@@ -7,9 +7,6 @@
 #define MAX_PATHFINDING_NODES 6
 
 
-float calc_distance;
-float shortest_distance;
-
 
 
 /*-----------------------------------------------------------------*/
@@ -30,6 +27,7 @@ typedef struct E_Basic_Enemy_1 {
 	CP_BOOL tracking;
 	GameObject *nodes;
 	GameObject *myfloor;
+	GameObject* chasenode;
 	// Stats
 	double HP;
 
