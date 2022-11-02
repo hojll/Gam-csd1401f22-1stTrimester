@@ -174,7 +174,7 @@ void InitializePlayer(E_Player *player) {
 		player->animations[ANIM_PLAYER_ROLLING] = rollingAnim;
 	}
 	player->animState = ANIM_PLAYER_ACTIVE;
-	player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE], 1.f);
+	player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE], 0.1f);
 	///////////////////////////////////////////////////////////
 	player->go.pos = CP_Vector_Zero();
 	player->go.vel = CP_Vector_Zero();

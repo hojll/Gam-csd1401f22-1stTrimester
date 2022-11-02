@@ -351,14 +351,14 @@ void game_update(void)
         {
             CP_Settings_Fill(playerColor);
             // Drawing image instead
-            //RenderSpriteAnim(&player[i].currAnim, sprites[SPRITE_PLAYER], player[i].go.pos.x, 
-            //    player[i].go.pos.y, player[i].go.height, player[i].go.height);
+            RenderSpriteAnim(&player[i].currAnim, sprites[SPRITE_PLAYER], player[i].go.pos.x, 
+                player[i].go.pos.y, player[i].go.height, player[i].go.height);
              
-            /*CP_Image_DrawSubImage(sprites[0], player[i].go.pos.x, player[i].go.pos.y, player[i].go.height, player[i].go.height,
-                0, 0, 32, 32, 255);*/
+            //CP_Image_DrawSubImage(sprites[0], player[i].go.pos.x, player[i].go.pos.y, player[i].go.height, player[i].go.height,
+            //    0, 0, 32, 32, 255);
 
             //CP_Image_Draw(sprites[SPRITE_PLAYER], player[i].go.pos.x, player[i].go.pos.y, player[i].go.height, player[i].go.height, 255);
-            CP_Graphics_DrawCircle(player[i].go.pos.x, player[i].go.pos.y, player[i].go.height);
+            //CP_Graphics_DrawCircle(player[i].go.pos.x, player[i].go.pos.y, player[i].go.height);
             if (player[i].state == STATE_PLAYER_ROLLING)
             {
                 for (int j = 0; j < PLAYER_ROLL_AFTERIMAGE; j++)

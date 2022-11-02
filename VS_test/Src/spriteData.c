@@ -35,11 +35,12 @@ SpriteAnimInstance SetSpriteAnim(SpriteAnimData const* animData, float frameDura
 void RenderSpriteAnim(SpriteAnimInstance* anim, CP_Image image, float x, float y, float width, float height)
 {
 	//CP_Image_DrawSubImage(image, x, y, width, height, anim->animData->imageStart[0], anim->animData->imageStart[1],
+	
 	CP_Image_DrawSubImage(image, x, y, width, height,
-		anim->currFrame * 32,
-		0,
+		anim->animData->imageStart[0] + anim->currFrame * anim->animData->frameDim[0],
+		anim->animData->imageStart[1],
 		(anim->currFrame + 1) * 32,
-		32, 255);
+		anim->animData->frameDim[1], 255);
 	/*	anim->animData->imageStart[0] + anim->currFrame * anim->animData->imageDim[0],
 		anim->animData->imageStart[1] + anim->currFrame * anim->animData->imageDim[1], 255);*/
 }
