@@ -2,8 +2,16 @@
 #define E_BASICENEMY_1
 
 #include "entities.h"
+#include "e_player.h"
 
 #define MAX_PATHFINDING_NODES 6
+
+
+float calc_distance;
+float shortest_distance;
+
+
+
 /*-----------------------------------------------------------------*/
 // E_BASICENEMY ENTITY 1
 /*-----------------------------------------------------------------*/
@@ -21,6 +29,7 @@ typedef struct E_Basic_Enemy_1 {
 	CP_BOOL grounded;
 	CP_BOOL tracking;
 	GameObject *nodes;
+	GameObject *myfloor;
 	// Stats
 	double HP;
 
@@ -41,6 +50,6 @@ void UpdateEnemyList(E_Basic_Enemy_1 arr[], int size);
 
 void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[]);
 
-void EnemyPathingTest(E_Basic_Enemy_1 *enemy, GameObject nodes[]);
+void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject walls[], E_Player* player, GameObject* prevfloor, int size);
 
 #endif

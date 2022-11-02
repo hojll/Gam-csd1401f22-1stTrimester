@@ -84,15 +84,15 @@ void MessageSpawnEnemy(void* messageInfo) {
         curr->go.pos = enemyMsg->position;
         curr->tracking = enemyMsg->tracking;
         
-        if (curr->tracking)
+        /*if (curr->tracking)
         {            
+            curr->go.dir.x = 0;
             for (int i = 0; i < MAX_PATHFINDING_NODES; ++i)
             {
                 GameObject* pointer = curr->nodes + i;
-                printf("wall pos %f:%f\n", pointer->pos.y, 
-                    pointer->pos.y);
+                printf("wall pos %f:%f\n", pointer->pos.y, pointer->pos.y);
             }
-        }
+        }*/
 
         break;
     }
@@ -108,7 +108,7 @@ void game_init(void)
     // Initialization of spriteData should be done within entity Initialize
     // within their respective file
     sprites[SPRITE_PLAYER] = CP_Image_Load("./Assets/player.png");
-    printf("Image dims: %d, %d", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
+    printf("Image dims: %d, %d\n", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
     /////////////////////////
     CP_System_SetWindowSize(900, 900);
     CP_Settings_RectMode(CP_POSITION_CENTER);
@@ -121,17 +121,20 @@ void game_init(void)
         bullets[i] = InitializeBullet();
     }
 
+    // AI
     InitEnemyList(enemies, (int)MAX_ENEMIES, ai_nodes);
-
-
     e_spawnPos1 = CP_Vector_Set(250, 110);
     e_spawnPos2 = CP_Vector_Set(650, 110);
-    ai_nodes[0].pos = CP_Vector_Set(250, 620);
-    ai_nodes[1].pos = CP_Vector_Set(650, 620);
-    ai_nodes[2].pos = CP_Vector_Set(450, 420);
-    ai_nodes[3].pos = CP_Vector_Set(250, 220);
-    ai_nodes[4].pos = CP_Vector_Set(650, 220);
-    ai_nodes[5].pos = CP_Vector_Set(450, 820);
+    
+    ai_nodes[0].pos = CP_Vector_Set(200, 600);
+    ai_nodes[1].pos = CP_Vector_Set(700, 600);
+    ai_nodes[2].pos = CP_Vector_Set(450, 400);    
+    ai_nodes[3].pos = CP_Vector_Set(200, 200);
+    ai_nodes[4].pos = CP_Vector_Set(700, 200);    
+    ai_nodes[5].pos = CP_Vector_Set(450, 800);
+
+    for (int i = 0; i < MAX_PATHFINDING_NODES; i++)
+        ai_nodes[i].active = 1; 
 
     // Walls
     // Bottom
@@ -234,13 +237,13 @@ void game_update(void)
         else
             enemy.position = e_spawnPos2;
 
-
+        enemy.tracking = 0;
         g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
     }
 
     if (CP_Input_KeyTriggered(KEY_MINUS)) {
         SpawnEnemyMessage enemy;
-        enemy.position = CP_Vector_Set(450, 790);
+        enemy.position = CP_Vector_Set(790, 790);
         enemy.tracking = 1;
         g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
     }
@@ -337,6 +340,13 @@ void game_update(void)
         if (!enemies[j].go.active)
             continue;
         EnemytoWallCollision(&enemies[j], walls);
+        if (playerPrevPlatform != NULL)
+        {
+            //EnemyPathing(&enemies[j], walls, &player, playerPrevPlatform, MAX_WALLS);
+            EnemyPathing(&enemies[j], ai_nodes, &player, playerPrevPlatform, MAX_PATHFINDING_NODES);
+
+        }
+
     }
     
 
@@ -385,7 +395,6 @@ void game_update(void)
     // Enemies 
     const CP_Color enemyColor = CP_Color_Create(125, 181, 130, 255);
     const CP_Color enemyColor2 = CP_Color_Create(20, 227, 199, 255);
-    CP_Settings_Fill(enemyColor);
     for (int i = 0; i < MAX_ENEMIES; ++i)
     {
         if (!enemies[i].go.active)
@@ -393,6 +402,10 @@ void game_update(void)
         if (enemies[i].tracking)
         {
             CP_Settings_Fill(enemyColor2);
+        }
+        else
+        {
+            CP_Settings_Fill(enemyColor);
         }
         CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
         
