@@ -23,11 +23,15 @@ typedef enum E_BASIC_ENEMY_STATES_1 {
 typedef struct E_Basic_Enemy_1 {
 	GameObject go;
 	E_BASIC_ENEMY_STATES_1 state;
+	
 	CP_BOOL grounded;
 	CP_BOOL tracking;
+
 	GameObject *nodes;
 	GameObject *myfloor;
-	GameObject* chasenode;
+
+	GameObject e_path[MAX_PATHFINDING_NODES];
+	int pathcount;
 	// Stats
 	double HP;
 
@@ -48,6 +52,6 @@ void UpdateEnemyList(E_Basic_Enemy_1 arr[], int size);
 
 void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[]);
 
-void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject walls[], E_Player* player, GameObject* prevfloor, int size);
+void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size);
 
 #endif

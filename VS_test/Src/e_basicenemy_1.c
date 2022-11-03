@@ -168,7 +168,7 @@ void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[])
 }
 
 
-void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject walls[], E_Player* player, GameObject* prevfloor, int size)
+void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size)
 {
 	if (!enemy->tracking)
 		return;
@@ -176,26 +176,14 @@ void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject walls[], E_Player* player, 
 		return;
 
 
-	GameObject* node_ptr = walls;
+	GameObject* node_ptr = nodes;
+	GameObject* shortest_node = NULL;
+
 	float shortest_dist = 0;
-	CP_Vector shortest_point = CP_Vector_Set(0, 0);
+	//CP_Vector shortest_point = CP_Vector_Set(0, 0);
 
 	int direction = 0;
 	CP_BOOL ycheck = 0;
-
-	for (int i = 0; i < size; ++i)
-	{
-		int istaller = 0;
-		if ((node_ptr + i)->pos.y < enemy->go.pos.y)
-			istaller = 1;
-
-		float dist_check_debug = fabsf(CP_Vector_Distance((node_ptr + i)->pos, enemy->go.pos));
-		//printf("%i) x: %.2f y: %.2f | Dist %.2f | taller %i\n", i, (node_ptr + i)->pos.x, (node_ptr + i)->pos.y, dist_check_debug, istaller);
-	}
-	//printf("\n");
-	//exit(0);
-
-
 
 	// move towards player if same floor 
 	// if player changes floor change pathing 
@@ -205,8 +193,10 @@ void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject walls[], E_Player* player, 
 		// check up of down
 		ycheck = player->go.pos.y < enemy->go.pos.x ? 1 : -1;
 		if (ycheck)
-		{
-			int trigger = 0;
+		{			
+			float node_dist_check = fabsf(CP_Vector_Distance((node_ptr)->pos, enemy->go.pos));
+			shortest_dist = node_dist_check;
+			shortest_node = node_ptr;
 			// get closest node
 			for (int i = 0; i < size; ++i)
 			{
@@ -216,35 +206,34 @@ void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject walls[], E_Player* player, 
 					continue;
 				if ((node_ptr + i)->pos.y < enemy->go.pos.y) // ignore platforms that are above me
 					continue;
-				float node_dist_check = fabsf(CP_Vector_Distance((node_ptr + i)->pos, enemy->go.pos));
-				if (trigger == 0)
-				{
-					shortest_dist = node_dist_check;
-					shortest_point = CP_Vector_Set((node_ptr + i)->pos.x, (node_ptr + i)->pos.y);
-					trigger = 1;
-				}
+				node_dist_check = fabsf(CP_Vector_Distance((node_ptr + i)->pos, enemy->go.pos));
+				
 				// distance check between nodes
-
 				if (node_dist_check < shortest_dist)
 				{
 					shortest_dist = node_dist_check;
-					shortest_point = CP_Vector_Set((node_ptr + i)->pos.x, (node_ptr + i)->pos.y);
+					shortest_node = node_ptr + i;
+
+					//shortest_point = CP_Vector_Set((node_ptr + i)->pos.x, (node_ptr + i)->pos.y);
 				}
-
-				enemy->go.dir.x = shortest_point.x > enemy->go.pos.x ? 1 : -1;
+				enemy->go.dir.x = shortest_node->pos.x > enemy->go.pos.x ? 1 : -1;
 			}
-			//printf("shortest point is %.2f,%.2f\n", shortest_point.x, shortest_point.y);			
-			// When reaching close to the node
 
-			CP_Vector shortestpoint_xonly = shortest_point;
+
+			CP_Vector shortestpoint_xonly = shortest_node->pos;
 			shortestpoint_xonly.y = 0;
 			CP_Vector enemypos_xonly = enemy->go.pos;
 			enemypos_xonly.y = 0;
+
+
+
 			CP_Vector shortest_point2 = CP_Vector_Set(0, 0);
 
 			float rangecheck = CP_Vector_Distance(shortestpoint_xonly, enemypos_xonly);
-			int secondtrigger = 0;
-			float shortestnode_2player = 0;
+			
+			GameObject* shortest_node2jump = shortest_node;
+			float shortest_dist2 = 0;
+			int trigger2 = 0;
 			if (rangecheck <= JUMP_RANGE)
 			{
 				// find the closest point to jump to 
@@ -254,27 +243,42 @@ void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject walls[], E_Player* player, 
 						continue;
 					if ((node_ptr + i) == NULL)
 						continue;
-					// if same point ignore
-					if (CP_Vector_Equal((node_ptr + i)->pos, shortest_point)) 
+					if ((node_ptr + i)->pos.y > enemy->go.pos.y) // ignore platforms that are below me
 						continue;
-					// Have to take in account where the player is going to stand
-					shortestnode_2player = CP_Vector_Distance(player->go.pos, (node_ptr + i)->pos);
-					if (secondtrigger == 0)
-					{
-						shortest_dist = shortestnode_2player;
-						shortest_point = CP_Vector_Set((node_ptr + i)->pos.x, (node_ptr + i)->pos.y);
-						secondtrigger = 1;
-					}
-					// distance check between nodes
+					if ((node_ptr + i) == shortest_node)
+						continue;
 
-					if (shortestnode_2player < shortest_dist)
+					float player_2_currentNode_distance = fabsf(CP_Vector_Distance(player->go.pos, (node_ptr + i)->pos));
+					float player_2_prevNode_distance = fabsf(CP_Vector_Distance(player->go.pos, shortest_node2jump->pos));
+					float enemy_2_node_distance = fabsf(CP_Vector_Distance((node_ptr + i)->pos, enemy->go.pos));
+					if (trigger2 == 0)
 					{
-						shortest_dist = shortestnode_2player;
-						shortest_point = CP_Vector_Set((node_ptr + i)->pos.x, (node_ptr + i)->pos.y);
+						shortest_node2jump = node_ptr + i;
+						shortest_dist2 = enemy_2_node_distance;
+						trigger2 = 1;
 					}
-				}
-				
-				enemy->go.dir.x = shortest_point.x > enemy->go.pos.x ? 1 : -1;
+					else
+					{
+						if ((node_ptr + i)->pos.y == shortest_node2jump->pos.y)
+						{
+							if (player_2_prevNode_distance > player_2_currentNode_distance)
+							{
+								shortest_dist2 = enemy_2_node_distance;
+								shortest_node2jump = node_ptr + i;
+							}
+						}
+						else
+						{
+							if (shortest_dist2 > enemy_2_node_distance)
+							{
+								shortest_dist2 = enemy_2_node_distance;
+								shortest_node2jump = node_ptr + i;
+							}
+						}
+					}
+	
+				}				
+				enemy->go.dir.x = shortest_node2jump->pos.x > enemy->go.pos.x ? 1 : -1;
 				enemy->grounded = 0;
 				enemy->go.vel.y = JUMP_VEL;
 
@@ -282,6 +286,8 @@ void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject walls[], E_Player* player, 
 		}
 		else
 		{
+			// platform below me
+
 
 		}
 	}
