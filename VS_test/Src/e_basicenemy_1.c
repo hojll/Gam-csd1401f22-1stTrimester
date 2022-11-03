@@ -30,15 +30,6 @@ void Enemy_ActiveUpdate(E_Basic_Enemy_1 *enemy)
 		{
 			enemy->go.vel.y += GRAVITY;				
 		}
-
-		//if (enemy->grounded)
-		//{
-		//	printf("grounded\n");
-		//}
-		//else
-		//{
-		//	printf("not grounded\n");
-		//}
 	}
 }
 
@@ -112,7 +103,7 @@ void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[])
 		if (!enemy->go.active)
 			continue;
 		CP_BOOL enemyGroundedFlag = 0;
-		//printf("collided \n");
+		
 		// Player - Wall
 		for (int j = 0; j < 10; ++j)
 		{
@@ -139,14 +130,14 @@ void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[])
 					enemy->state = STATE_ENEMY_ACTIVE;
 					enemy->go.pos.x = wallreference[j].pos.x - wallreference[j].width / 2.f - enemy->go.width / 2.f;
 					enemy->go.dir.x = -1;
-					//printf("left collision \n");
+
 				}
 				else
 				{
 					enemy->state = STATE_ENEMY_ACTIVE;
 					enemy->go.pos.x = wallreference[j].pos.x + wallreference[j].width / 2.f + enemy->go.width / 2.f;					
 					enemy->go.dir.x = 1;
-					//printf("right collision \n");
+
 				}
 			}
 
@@ -185,7 +176,7 @@ void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject nodes[], E_Player* player, 
 	int direction = 0;
 	CP_BOOL ycheck = 0;
 	ycheck = player->go.pos.y < enemy->go.pos.y ? 1 : 0;
-	printf("ycheck %d\n", ycheck);
+
 	// move towards player if same floor 
 	// if player changes floor change pathing 
 	if (prevfloor != enemy->myfloor && enemy->grounded)
@@ -222,10 +213,12 @@ void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject nodes[], E_Player* player, 
 			shortestpoint_xonly.y = 0;
 			CP_Vector enemypos_xonly = enemy->go.pos;
 			enemypos_xonly.y = 0;
+
 			// Check how close the enemy needs to be before jumping
 			float rangecheck = CP_Vector_Distance(shortestpoint_xonly, enemypos_xonly);			
 			GameObject* shortest_node2jump = shortest_node;
 			float shortest_dist2 = 0;
+			
 			int trigger2 = 0;
 			if (rangecheck <= JUMP_RANGE)
 			{
@@ -238,7 +231,7 @@ void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject nodes[], E_Player* player, 
 						continue;
 					if ((node_ptr + i)->pos.y > enemy->go.pos.y) // ignore platforms that are below me
 						continue;
-					if ((node_ptr + i) == shortest_node)
+					if ((node_ptr + i) == shortest_node) // ignore the shortest that i am running 2 
 						continue;
 
 					float player_2_currentNode_distance = fabsf(CP_Vector_Distance(player->go.pos, (node_ptr + i)->pos));
@@ -282,7 +275,77 @@ void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject nodes[], E_Player* player, 
 		}
 		else
 		{
+			float node_dist_check = fabsf(CP_Vector_Distance((node_ptr)->pos, enemy->go.pos));
+			shortest_dist = node_dist_check;
+			shortest_node = node_ptr;
+			// Get closest node / descending point
+			for (int i = 0; i < size; ++i)
+			{
+				if ((node_ptr + i)->active == 0)
+					continue;
+				if ((node_ptr + i) == NULL)
+					continue;
+
+				node_dist_check = fabsf(CP_Vector_Distance((node_ptr + i)->pos, enemy->go.pos));
+				// distance check between nodes				
+				if (node_dist_check < shortest_dist)
+				{
+					shortest_dist = node_dist_check;
+					shortest_node = node_ptr + i;
+				}
+			}
+
+			// find the next floor to descend to
+			int trigger2 = 0;
+			GameObject* shortest_node2jump = shortest_node;
+			float shortest_dist2 = 0;
+			for (int i = 0; i < size; ++i)
+			{
+				if ((node_ptr + i)->active == 0)
+					continue;
+				if ((node_ptr + i) == NULL)
+					continue;
+				if ((node_ptr + i) == shortest_node) // ignore the shortest that i am running 2 
+					continue;
+				if ((node_ptr + i)->pos.y < enemy->go.pos.y)
+					continue;
+				
+				float player_2_currentNode_distance = fabsf(CP_Vector_Distance(player->go.pos, (node_ptr + i)->pos));
+				float player_2_prevNode_distance = fabsf(CP_Vector_Distance(player->go.pos, shortest_node2jump->pos));
+				float enemy_2_node_distance = fabsf(CP_Vector_Distance((node_ptr + i)->pos, enemy->go.pos));
+				if (trigger2 == 0)
+				{
+					// set first occurence
+					shortest_node2jump = node_ptr + i;
+					shortest_dist2 = enemy_2_node_distance;
+					trigger2 = 1;
+				}
+				else
+				{
+					// if so happen the platform i am going to jump to have the same Y value.
+					if ((node_ptr + i)->pos.y == shortest_node2jump->pos.y)
+					{
+						// check which platform the player is closest 2
+						if (player_2_prevNode_distance > player_2_currentNode_distance)
+						{
+							shortest_dist2 = enemy_2_node_distance;
+							shortest_node2jump = node_ptr + i;
+						}
+					}
+					else
+					{
+						// else just find the closest platform 2 jump 2
+						if (shortest_dist2 > enemy_2_node_distance)
+						{
+							shortest_dist2 = enemy_2_node_distance;
+							shortest_node2jump = node_ptr + i;
+						}
+					}
+				}
 			
+			}		
+			enemy->go.dir.x = shortest_node2jump->pos.x > enemy->go.pos.x ? 1 : -1;
+
 		}
 	}
 	else if (prevfloor == enemy->myfloor) // if same floor move towards player
