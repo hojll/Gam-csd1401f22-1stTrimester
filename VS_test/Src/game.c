@@ -247,7 +247,12 @@ void game_update(void)
         enemy.tracking = 1;
         g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
     }
-
+    if (CP_Input_KeyTriggered(KEY_0)) {
+        SpawnEnemyMessage enemy;
+        enemy.position = CP_Vector_Set(200, 150);
+        enemy.tracking = 1;
+        g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
+    }
 
 
     // Collision Loops
