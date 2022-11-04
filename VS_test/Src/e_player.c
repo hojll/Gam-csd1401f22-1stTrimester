@@ -8,8 +8,6 @@ Messenger g_messenger;
 #define PLAYER_SPEED 250.f
 #define ROLL_SPEED PLAYER_SPEED*3.f
 #define ROLL_DURATION 0.5f
-#define GRAVITY 60.f
-#define MAX_GRAV_VEL 500.f
 #define JUMP_VEL -1000.f
 // DEFINITIONS FOR ANIMATIONS
 #define FRAME_DIM_WIDTH 32

@@ -31,6 +31,7 @@ E_Bullet InitializeBullet()
 	bullet.go.pos = CP_Vector_Zero();
 	bullet.go.vel = CP_Vector_Zero();
 	bullet.bullet_type = BULLET_DEFAULT;
+	bullet.lifetime = -1;
 	return bullet;
 }
 

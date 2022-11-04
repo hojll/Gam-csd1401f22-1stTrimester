@@ -11,12 +11,16 @@
 #include "e_basicenemy_1.h"
 #include "spriteData.h"
 #include "e_bullet.h"
+#include "e_weaponBox.h"
 
 #define MAX_BULLETS 100
 #define MAX_ENEMIES 100
 #define MAX_PLAYERS 2
 #define MAX_WALLS 10
 #define MAX_TEXT_POPUP 20
+#define MAX_WEAPON_BOX 3
+
+#define WEAPON_BOX_SPAWN_TIME 5
 
 #define DEFAULT_FONT_SIZE 100.0f
 #define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
@@ -52,6 +56,8 @@ GameObject *playerPrevPlatform;
 int total_bullet_count; // For UI by Joel
 TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
 
+E_WeaponBox weapon_boxes[MAX_WEAPON_BOX];
+float spawnWeaponBoxTimer;
 
 
 #pragma region MESSAGES
@@ -200,6 +206,14 @@ void game_init(void)
     {
         set_popup(&popUp[i], 0.0f, 0.0f, DEFAULT_FONT_COLOR, (int)DEFAULT_FONT_SIZE, 0, "initializing");
     }
+
+    //Weapon Boxes
+    for (int i = 0; i < MAX_WEAPON_BOX; i++)
+    {
+        weapon_boxes[i] = InitializeWeaponBox();
+    }
+    // So the first box spawns faster
+    spawnWeaponBoxTimer = 2;
 }
 
 void game_update(void)
@@ -222,6 +236,42 @@ void game_update(void)
         if (bullets[i].go.active)
             bullets[i].Update(&bullets[i]);
     }
+    // Update weapon box and spawning
+    for (int i = 0; i < MAX_WEAPON_BOX; ++i) {
+        if (weapon_boxes[i].go.active)
+            weapon_boxes[i].Update(&weapon_boxes[i]);
+    }
+    // Spawn weapon box
+    spawnWeaponBoxTimer -= g_scaledDt;
+    if (spawnWeaponBoxTimer <= 0)
+    {
+        spawnWeaponBoxTimer = WEAPON_BOX_SPAWN_TIME;
+
+        CP_BOOL lessThan3Box = 0;
+        // Check if there is alr 3 boxes
+        for (int i = 0; i < MAX_WEAPON_BOX; ++i)
+        {
+            if (!weapon_boxes[i].go.active)
+                lessThan3Box = 1;
+        }
+
+        if (lessThan3Box)
+        {
+            for (int i = 0; i < MAX_WEAPON_BOX; ++i)
+            {
+                E_WeaponBox* curr = &weapon_boxes[i];
+                if (curr->go.active)
+                    continue;
+                curr->go.active = 1;
+                curr->lifetime = WEAPON_BOX_LIFETIME;
+                curr->color = WEAPON_BOX_COLOR;
+                curr->go.pos.x = CP_Random_RangeFloat(100.f, 800.f);
+                curr->go.pos.y = CP_Random_RangeFloat(100.f, 800.f);
+                break;
+            }
+        }
+    }
+
     
     UpdateEnemyList(enemies, MAX_ENEMIES);
 
@@ -339,6 +389,57 @@ void game_update(void)
         }
     }
 
+    //Weapon Box - x
+    for (int i = 0; i < MAX_WEAPON_BOX; ++i)
+    {
+        if (!weapon_boxes[i].go.active)
+            continue;
+        CP_BOOL weapon_box_grounded_flag = 0;
+
+        // Weapon Box - Wall
+        for (int j = 0; j < MAX_WALLS; ++j)
+        {
+            if (!walls[j].active)
+                continue;
+            if (AABB(weapon_boxes[i].go, walls[j]))
+            {
+                COLLISION_DIRECTION collision_dir = AABB_Direction(weapon_boxes[i].go, walls[j]);
+                if (collision_dir == COLLISION_TOP)
+                {
+                    weapon_boxes[i].go.pos.y = walls[j].pos.y - walls[j].height / 2.f - weapon_boxes[i].go.height / 2.f;
+                    weapon_boxes->grounded = 1;
+                    weapon_boxes->go.vel.y = 0;
+                }
+                else if (collision_dir == COLLISION_BOTTOM)
+                {
+                    weapon_boxes[i].go.pos.y = walls[j].pos.y + walls[j].height / 2.f + weapon_boxes[i].go.height / 2.f;
+                    weapon_boxes->go.vel.y = 0;
+                }
+                else if (collision_dir == COLLISION_LEFT)
+                {
+                    weapon_boxes[i].go.pos.x = walls[j].pos.x - walls[j].width / 2.f - weapon_boxes[i].go.width / 2.f;
+                }
+                else
+                {
+                    weapon_boxes[i].go.pos.x = walls[j].pos.x + walls[j].width / 2.f + weapon_boxes[i].go.width / 2.f;
+                }
+            }
+
+            // Grounded check (Walking off platforms)
+            if (!weapon_boxes[i].grounded)
+                continue;
+            // This creates a point right below the player and check if there is a wall there
+            if (Point_AABB(CP_Vector_Set(weapon_boxes[i].go.pos.x + weapon_boxes[i].go.width / 2.f, weapon_boxes[i].go.pos.y + weapon_boxes[i].go.height / 2.f + 0.1f), walls[j]) ||
+                Point_AABB(CP_Vector_Set(weapon_boxes[i].go.pos.x - weapon_boxes[i].go.width / 2.f, weapon_boxes[i].go.pos.y + weapon_boxes[i].go.height / 2.f + 0.1f), walls[j]))
+                weapon_box_grounded_flag = 1;
+        }
+
+
+
+        if (!weapon_box_grounded_flag)
+            weapon_boxes[i].grounded = 0;
+    }
+
     // Enemies 
     for (int j = 0; j < MAX_ENEMIES; ++j)
     {
@@ -422,6 +523,17 @@ void game_update(void)
     for (int i = 0; i < MAX_WALLS; ++i) {
         if (walls[i].active)
             CP_Graphics_DrawRect(walls[i].pos.x, walls[i].pos.y, walls[i].width, walls[i].height);
+    }
+
+    // Weapon Boxes
+    for (int i = 0; i < MAX_WEAPON_BOX; ++i) {
+        if (weapon_boxes[i].go.active)
+        {
+            CP_Settings_Fill(weapon_boxes[i].color);
+            CP_Settings_StrokeWeight(0.f);
+            CP_Graphics_DrawRect(weapon_boxes[i].go.pos.x, weapon_boxes[i].go.pos.y, weapon_boxes[i].go.width, weapon_boxes[i].go.height);
+            CP_Settings_StrokeWeight(3.f);
+        }
     }
 
     // Render AI Pathfinding nodes
