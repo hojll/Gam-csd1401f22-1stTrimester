@@ -367,7 +367,7 @@ void game_update(void)
             CP_Settings_Fill(playerColor);
             // Drawing image instead
             RenderSpriteAnim(&player[i].currAnim, sprites[SPRITE_PLAYER], player[i].go.pos.x, 
-                player[i].go.pos.y, player[i].go.height, player[i].go.height);
+                player[i].go.pos.y, player[i].go.height, player[i].go.height, 255);
              
             //CP_Image_DrawSubImage(sprites[0], player[i].go.pos.x, player[i].go.pos.y, player[i].go.height, player[i].go.height,
             //    0, 0, 32, 32, 255);
@@ -380,8 +380,11 @@ void game_update(void)
                     if (!CP_Vector_Equal(player->rollPrevPos[j], CP_Vector_Zero()))
                     {
                         CP_Settings_StrokeWeight(0.f);
-                        CP_Settings_Fill(CP_Color_Create(100, 0, 0, (int)player[i].rollAlpha[j]));
-                        CP_Graphics_DrawCircle(player[i].rollPrevPos[j].x, player[i].rollPrevPos[j].y, player[i].go.height);
+                        
+                        //CP_Settings_Fill(CP_Color_Create(100, 0, 0, (int)player[i].rollAlpha[j]));
+                        RenderSpriteAnimOffset(&player[i].currAnim, sprites[SPRITE_PLAYER], player[i].rollPrevPos[j].x,
+                            player[i].rollPrevPos[j].y, player[i].go.height, player[i].go.height, (int)player[i].rollAlpha[j], j/2);
+                        //CP_Graphics_DrawCircle(player[i].rollPrevPos[j].x, player[i].rollPrevPos[j].y, player[i].go.height);
                         CP_Settings_StrokeWeight(3.f);
                     }
             }

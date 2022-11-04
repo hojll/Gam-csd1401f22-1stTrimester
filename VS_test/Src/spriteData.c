@@ -29,18 +29,29 @@ SpriteAnimInstance SetSpriteAnim(SpriteAnimData const* animData, float frameDura
 	retVal.frameDuration = frameDuration;
 	retVal.state = 0;
 	retVal.animData = animData;
+	retVal.flip = 0;
 	return retVal;
 }
 
-void RenderSpriteAnim(SpriteAnimInstance* anim, CP_Image image, float x, float y, float width, float height)
+void RenderSpriteAnim(SpriteAnimInstance* anim, CP_Image image, float x, float y, float width, float height, int alpha)
 {
 	//CP_Image_DrawSubImage(image, x, y, width, height, anim->animData->imageStart[0], anim->animData->imageStart[1],
-	
+	float u0 = (float)anim->animData->imageStart[0] + anim->currFrame * anim->animData->frameDim[0];
+	float v0 = (float)anim->animData->imageStart[1];
+	float u1 = (float)(anim->currFrame + 1) * 32;
+	float v1 = (float)anim->animData->frameDim[1];
 	CP_Image_DrawSubImage(image, x, y, width, height,
-		(float)anim->animData->imageStart[0] + anim->currFrame * anim->animData->frameDim[0],
-		(float)anim->animData->imageStart[1],
-		(float)(anim->currFrame + 1) * 32,
-		(float)anim->animData->frameDim[1], 255);
+		!anim->flip * u0 + anim->flip * u1,// u0
+		v0,// v0
+		!anim->flip * u1 + anim->flip * u0,// u1
+		v1, alpha);// v1
 	/*	anim->animData->imageStart[0] + anim->currFrame * anim->animData->imageDim[0],
 		anim->animData->imageStart[1] + anim->currFrame * anim->animData->imageDim[1], 255);*/
+}
+
+void RenderSpriteAnimOffset(SpriteAnimInstance* anim, CP_Image image, float x, float y, float width, float height, int alpha, int offset)
+{
+	SpriteAnimInstance offsetAnim = *anim;
+	anim->currFrame = (anim->currFrame + offset) % anim->animData->numFrames;
+	RenderSpriteAnim(&offsetAnim, image, x, y, width, height, alpha);
 }

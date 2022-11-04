@@ -35,6 +35,7 @@ void Player_ActiveUpdate(E_Player* player) {
 	player->go.vel.x = (float)newLookDir * PLAYER_SPEED;
 
 	// ANIMATIONS
+	player->currAnim.flip = player->go.faceDir < 0;
 	UpdateSpriteAnim(&player->currAnim, g_scaledDt);
 
 	// Gravity
