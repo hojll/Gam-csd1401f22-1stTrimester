@@ -15,6 +15,7 @@ Messenger g_messenger;
 #define IMAGE_DIM_WIDTH 160
 #define IMAGE_DIM_HEIGHT 32
 #define DEFAULT_ATTACK_SPEED 0.3f;
+#define NUM_ROLL_FRAMES 5
 ////////////////////////////////////////////////////////////////////////
 /*--------*/
 // PLAYER //
@@ -33,6 +34,7 @@ void Player_ActiveUpdate(E_Player* player) {
 	player->go.vel.x = (float)newLookDir * PLAYER_SPEED;
 
 	// ANIMATIONS
+	player->currAnim.flip = player->go.faceDir < 0;
 	UpdateSpriteAnim(&player->currAnim, g_scaledDt);
 
 	// Gravity
@@ -86,6 +88,7 @@ void Player_ActiveUpdate(E_Player* player) {
 	// Rolling
 	if (CP_Input_KeyTriggered(KEY_LEFT_SHIFT)) {
 		player->state = STATE_PLAYER_ROLLING;
+		SetSpriteAnim(&player->animations[ANIM_PLAYER_ROLLING], 0.1f);// Change animation too
 		player->go.timer = 0.f;
 		player->go.vel.y = 0.f;
 		for (int i = 0; i < PLAYER_ROLL_AFTERIMAGE; i++)
@@ -99,8 +102,9 @@ void Player_ActiveUpdate(E_Player* player) {
 /// <param name="player">pointer to player</param>
 void Player_RollUpdate(E_Player* player) {
 	// Can be changed any time. Const values until then
-	player->go.timer += g_scaledDt;
-	if (player->go.timer > ROLL_DURATION) {
+	UpdateSpriteAnim(&player->currAnim, g_scaledDt);
+	//player->go.timer += g_scaledDt;
+	if (player->currAnim.state) {
 		player->state = STATE_PLAYER_ACTIVE;
 		return;
 	}
@@ -146,7 +150,7 @@ void InitializePlayer(E_Player *player) {
 		activeAnim.imageDim[0] = IMAGE_DIM_WIDTH;
 		activeAnim.imageDim[1] = IMAGE_DIM_HEIGHT;
 
-		activeAnim.numFrames = 5;
+		activeAnim.numFrames = 1;
 		activeAnim.imageStart[0] = 0;
 		activeAnim.imageStart[1] = 0;
 		activeAnim.loop = 1;

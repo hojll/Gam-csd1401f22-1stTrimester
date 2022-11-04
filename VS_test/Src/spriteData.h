@@ -27,10 +27,12 @@ typedef struct SpriteAnimInstance {
 	float elapsedTime;
 	int currFrame;
 	short state;	// 1 is complete, 0 is incomplete
+	short flip;		// 0 is default, 1 is flip image across y
 }SpriteAnimInstance;
 
 SpriteAnimInstance SetSpriteAnim(SpriteAnimData const* animData, float frameDuration);
 void UpdateSpriteAnim(SpriteAnimInstance *anim, float dt);
-void RenderSpriteAnim(SpriteAnimInstance* anim, CP_Image image, float x, float y, float width, float height);
+void RenderSpriteAnim(SpriteAnimInstance* anim, CP_Image image, float x, float y, float width, float height, int alpha);
+void RenderSpriteAnimOffset(SpriteAnimInstance* anim, CP_Image image, float x, float y, float width, float height, int alpha, int offset);
 
 #endif
