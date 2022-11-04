@@ -1,5 +1,21 @@
 #include "e_text_popup.h"
 
+/*TO CREATE A POPUP TEXT
+//////////////////////////////////////////
+for (int i = 0; i < MAX_TEXT_POPUP; ++i)
+{
+    if (!(popUp[i].go.active))
+    {
+        set_popup(	&popUp[i],
+					Position of X, Position of Y (Subtract your offset),
+					CP_Color_Create(255, 0, 0, 255), // COLOR OF THE TEXT
+					(int)DEFAULT_FONT_SIZE, // THE FONT SIZE 
+					3.0f, // THE DURATION OF THE POPUP
+					"Pickup/Damage"); // THE TEXT YOU WANT TO RENDER
+        break;
+    }
+}
+//////////////////////////////////////////*/
 void set_popup(TextPopUp *text, float x, float y, CP_Color color, int font_size, float duration, char *string)
 {
 	text->go.active = 1;
