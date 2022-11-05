@@ -8,9 +8,9 @@ Messenger g_messenger;
 #define PLAYER_SPEED 250.f
 #define ROLL_SPEED PLAYER_SPEED*3.f
 #define ROLL_DURATION 0.5f
-#define GRAVITY 60.f
-#define MAX_GRAV_VEL 500.f
-#define JUMP_VEL -1000.f
+#define GRAVITY 800.f
+#define MAX_GRAV_VEL 1500.f
+#define JUMP_VEL -600.f
 // DEFINITIONS FOR ANIMATIONS
 #define FRAME_DIM_WIDTH 32
 #define FRAME_DIM_HEIGHT 32
@@ -41,7 +41,7 @@ void Player_ActiveUpdate(E_Player* player) {
 
 	// Gravity
 	if (!player->grounded && player->go.vel.y < MAX_GRAV_VEL)
-		player->go.vel.y += GRAVITY;
+		player->go.vel.y += GRAVITY * g_scaledDt;
 
 	// Jump
 	if (player->grounded && (CP_Input_KeyDown(KEY_W) || CP_Input_KeyDown(KEY_UP)))
@@ -90,7 +90,9 @@ void Player_ActiveUpdate(E_Player* player) {
 	// Rolling
 	if (CP_Input_KeyTriggered(KEY_LEFT_SHIFT)) {
 		player->state = STATE_PLAYER_ROLLING;
-		SetSpriteAnim(&player->animations[ANIM_PLAYER_ROLLING], 0.1f);// Change animation too
+		player->animState = ANIM_PLAYER_ROLLING;
+		player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ROLLING], ROLL_DURATION / NUM_ROLL_FRAMES);// Change animation too
+		player->currAnim.flip = player->go.faceDir == -1;
 		player->go.timer = 0.f;
 		player->go.vel.y = 0.f;
 		for (int i = 0; i < PLAYER_ROLL_AFTERIMAGE; i++)
@@ -105,9 +107,13 @@ void Player_ActiveUpdate(E_Player* player) {
 void Player_RollUpdate(E_Player* player) {
 	// Can be changed any time. Const values until then
 	UpdateSpriteAnim(&player->currAnim, g_scaledDt);
-	//player->go.timer += g_scaledDt;
+	player->go.timer += g_scaledDt;
 	if (player->currAnim.state) {
+		printf("anything: %f, state: %d\n", player->go.timer, player->currAnim.state);
+
 		player->state = STATE_PLAYER_ACTIVE;
+		player->animState = ANIM_PLAYER_ACTIVE;
+		player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE], 0.1f);// Change animation too
 		return;
 	}
 

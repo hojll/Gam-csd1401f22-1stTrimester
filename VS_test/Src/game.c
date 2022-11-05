@@ -108,6 +108,7 @@ void game_init(void)
     // Initialization of spriteData should be done within entity Initialize
     // within their respective file
     sprites[SPRITE_PLAYER] = CP_Image_Load("./Assets/player.png");
+    CP_System_SetFrameRate(60.f);
     printf("Image dims: %d, %d\n", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
     /////////////////////////
     CP_System_SetWindowSize(900, 900);
@@ -286,11 +287,15 @@ void game_update(void)
                 else if (collision_dir == COLLISION_LEFT)
                 {
                     player[i].go.pos.x = walls[j].pos.x - walls[j].width / 2.f - player[i].go.width / 2.f;
+                    printf("WALL INTERRUPED ROLL\n");
+                    player[i].currAnim = SetSpriteAnim(&player[i].animations[ANIM_PLAYER_ACTIVE], PLAYER_ACTIVE_ANIM_SPEED);
                     player[i].state = STATE_PLAYER_ACTIVE;
                 }
                 else
                 {
                     player[i].go.pos.x = walls[j].pos.x + walls[j].width / 2.f + player[i].go.width / 2.f;
+                    printf("WALL INTERRUPED ROLL\n");
+                    player[i].currAnim = SetSpriteAnim(&player[i].animations[ANIM_PLAYER_ACTIVE], PLAYER_ACTIVE_ANIM_SPEED);
                     player[i].state = STATE_PLAYER_ACTIVE;
                 }
             }
@@ -383,7 +388,7 @@ void game_update(void)
                         
                         //CP_Settings_Fill(CP_Color_Create(100, 0, 0, (int)player[i].rollAlpha[j]));
                         RenderSpriteAnimOffset(&player[i].currAnim, sprites[SPRITE_PLAYER], player[i].rollPrevPos[j].x,
-                            player[i].rollPrevPos[j].y, player[i].go.height, player[i].go.height, (int)player[i].rollAlpha[j], j/2);
+                            player[i].rollPrevPos[j].y, player[i].go.height, player[i].go.height, (int)player[i].rollAlpha[j], j);
                         //CP_Graphics_DrawCircle(player[i].rollPrevPos[j].x, player[i].rollPrevPos[j].y, player[i].go.height);
                         CP_Settings_StrokeWeight(3.f);
                     }
