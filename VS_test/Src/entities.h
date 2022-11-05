@@ -9,6 +9,11 @@
 //	int maxFrame;
 //	float elapsedTime;
 //};
+#define GRAVITY 60.f
+#define MAX_GRAV_VEL 500.f
+#define MAX_TRIGO 360
+#define FADE_TIME 1
+
 typedef enum LOOK_DIR {
 	LEFT = -1,
 	NONE = 0,
