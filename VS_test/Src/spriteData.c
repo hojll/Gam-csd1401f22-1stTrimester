@@ -17,7 +17,7 @@ void UpdateSpriteAnim(SpriteAnimInstance* anim, float dt) {
 		return;
 	}
 	// This is not for looping animations
-	anim->currFrame = anim->animData->numFrames;
+	anim->currFrame = (anim->animData->numFrames - 1);	// To read from left to right
 	anim->state = 1;
 }
 // Function for Initializing a sprite animation
@@ -35,11 +35,19 @@ SpriteAnimInstance SetSpriteAnim(SpriteAnimData const* animData, float frameDura
 
 void RenderSpriteAnim(SpriteAnimInstance* anim, CP_Image image, float x, float y, float width, float height, int alpha)
 {
-	//CP_Image_DrawSubImage(image, x, y, width, height, anim->animData->imageStart[0], anim->animData->imageStart[1],
-	float u0 = (float)anim->animData->imageStart[0] + anim->currFrame * anim->animData->frameDim[0];
+	//CP_Image_DrawSubImage(image, x, y, width, height, anim->animData->frameDim[0], 0.f, anim->animData->frameDim[0] * 2,
+	//	anim->animData->frameDim[1], 255);
+	//return; //FOR DEBUGGING
+	// LEFT
+	float u0 = (float)anim->animData->imageStart[0] + (anim->currFrame) * anim->animData->frameDim[0];
+	// TOP 
 	float v0 = (float)anim->animData->imageStart[1];
-	float u1 = (float)(anim->currFrame + 1) * 32;
-	float v1 = (float)anim->animData->frameDim[1];
+	// RIGHT
+	float u1 = u0 + anim->animData->frameDim[0];
+	// BOTTOM
+	float v1 = (float)anim->animData->imageStart[1] + anim->animData->frameDim[1];
+	//printf("ORIGINAL:\nLEFT: %f | TOP: %f | RIGHT: %f | BOTTOM: %f\n=========\n", (float)anim->animData->frameDim[0], 0.f, (float)anim->animData->frameDim[0] * 2,
+	//	(float)anim->animData->frameDim[1]);
 	CP_Image_DrawSubImage(image, x, y, width, height,
 		!anim->flip * u0 + anim->flip * u1,// u0
 		v0,// v0

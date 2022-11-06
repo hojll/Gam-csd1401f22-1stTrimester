@@ -113,7 +113,7 @@ void game_init(void)
     /*---------------------*/
     // Initialization of spriteData should be done within entity Initialize
     // within their respective file
-    sprites[SPRITE_PLAYER] = CP_Image_Load("./Assets/player.png");
+    sprites[SPRITE_PLAYER] = CP_Image_Load("./Assets/SPRITESHEET.png");
     CP_System_SetFrameRate(60.f);
     printf("Image dims: %d, %d\n", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
     /////////////////////////

@@ -12,12 +12,13 @@ Messenger g_messenger;
 #define MAX_GRAV_VEL 1500.f
 #define JUMP_VEL -600.f
 // DEFINITIONS FOR ANIMATIONS
-#define FRAME_DIM_WIDTH 32
-#define FRAME_DIM_HEIGHT 32
-#define IMAGE_DIM_WIDTH 160
-#define IMAGE_DIM_HEIGHT 32
+#define FRAME_DIM_WIDTH 320
+#define FRAME_DIM_HEIGHT 480
+#define IMAGE_DIM_WIDTH 960
+#define IMAGE_DIM_HEIGHT 960
 #define DEFAULT_ATTACK_SPEED 0.3f;
 #define NUM_ROLL_FRAMES 5
+#define ACTIVE_ANIM_SPEED 0.1f
 ////////////////////////////////////////////////////////////////////////
 /*--------*/
 // PLAYER //
@@ -109,11 +110,10 @@ void Player_RollUpdate(E_Player* player) {
 	UpdateSpriteAnim(&player->currAnim, g_scaledDt);
 	player->go.timer += g_scaledDt;
 	if (player->currAnim.state) {
-		printf("anything: %f, state: %d\n", player->go.timer, player->currAnim.state);
 
 		player->state = STATE_PLAYER_ACTIVE;
 		player->animState = ANIM_PLAYER_ACTIVE;
-		player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE], 0.1f);// Change animation too
+		player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE], ACTIVE_ANIM_SPEED);// Change animation too
 		return;
 	}
 
@@ -158,9 +158,10 @@ void InitializePlayer(E_Player *player) {
 		activeAnim.imageDim[0] = IMAGE_DIM_WIDTH;
 		activeAnim.imageDim[1] = IMAGE_DIM_HEIGHT;
 
-		activeAnim.numFrames = 1;
+		activeAnim.numFrames = 2;
 		activeAnim.imageStart[0] = 0;
 		activeAnim.imageStart[1] = 0;
+		
 		activeAnim.loop = 1;
 		player->animations[ANIM_PLAYER_ACTIVE] = activeAnim;
 	}
@@ -174,16 +175,18 @@ void InitializePlayer(E_Player *player) {
 	// ROLLING ANIMATION
 	{
 		SpriteAnimData rollingAnim = { 0 };
+		rollingAnim.imageDim[0] = IMAGE_DIM_WIDTH;
+		rollingAnim.imageDim[1] = IMAGE_DIM_HEIGHT;
 		rollingAnim.frameDim[0] = FRAME_DIM_WIDTH;
 		rollingAnim.frameDim[1] = FRAME_DIM_HEIGHT;
-		rollingAnim.numFrames = 5;
+		rollingAnim.numFrames = 3;
 		rollingAnim.imageStart[0] = 0;
-		rollingAnim.imageStart[1] = 0;
+		rollingAnim.imageStart[1] = FRAME_DIM_HEIGHT;
 		rollingAnim.loop = 0;
 		player->animations[ANIM_PLAYER_ROLLING] = rollingAnim;
 	}
 	player->animState = ANIM_PLAYER_ACTIVE;
-	player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE], 0.1f);
+	player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE], ACTIVE_ANIM_SPEED);
 	///////////////////////////////////////////////////////////
 	player->go.pos = CP_Vector_Zero();
 	player->go.vel = CP_Vector_Zero();
