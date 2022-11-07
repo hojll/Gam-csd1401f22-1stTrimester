@@ -31,13 +31,7 @@
 //o z n o l a
 #define BASE_SPAWN_FREQUENCY 2.5f
 #define COMBO_TIME_DEDUCTION 1.0f
-#define COMBO_TIME 1.8f
-
-#define OZNOLA_TIER1 6
-#define OZNOLA_TIER2 12
-#define OZNOLA_TIER3 24
-
-
+#define COMBO_TIME 2.f
 
 /*
 In �Configuration Properties->Debugging- Working Directory�
@@ -71,7 +65,7 @@ CP_BOOL shownodes = 1;
 GameObject *playerPrevPlatform;
 // Oznola Game Loop stuff
 int oznola_meter = 0;
-int wavetiers[3];
+int oznola_difficulty[5];
 double spawntimer = 0;
 double combocounter = 0;
 double combocounter_timer = 0;
@@ -83,9 +77,6 @@ TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
 
 E_WeaponBox weapon_boxes[MAX_WEAPON_BOX];
 float spawnWeaponBoxTimer;
-
-
-
 
 
 #pragma region MESSAGES
@@ -105,7 +96,6 @@ void MessageSpawnBullet(void* messageInfo) {
     }
 }
 
-// Idk why ur pragma region no rike me 
 void MessageSpawnEnemy(void* messageInfo) {
     SpawnEnemyMessage* enemyMsg = (SpawnEnemyMessage*)messageInfo;
     // Spawn enemy here
@@ -123,9 +113,12 @@ void MessageSpawnEnemy(void* messageInfo) {
 }
 #pragma endregion
 
-
-
-
+// call this function everytime you kill an enemy
+void killconfirmed()
+{
+    ++combocounter;
+    addcombotime(&combocounter_timer, COMBO_TIME);
+}
 
 void game_init(void)
 {
@@ -158,9 +151,11 @@ void game_init(void)
     e2_spawnPos[2] = CP_Vector_Set(200, 200);
     e2_spawnPos[3] = CP_Vector_Set(700, 200);
     
-    wavetiers[0] = OZNOLA_TIER1;
-    wavetiers[1] = OZNOLA_TIER2;
-    wavetiers[2] = OZNOLA_TIER3;
+    oznola_difficulty[0] = 2;
+    oznola_difficulty[1] = 4;
+    oznola_difficulty[2] = 8;
+    oznola_difficulty[3] = 16;
+    oznola_difficulty[4] = 32;
 
     
     ai_nodes[5].pos = CP_Vector_Set(200, 250); // top left
@@ -255,6 +250,8 @@ void game_update(void)
     CP_Graphics_ClearBackground(CP_Color_Create(150, 150, 150, 255));
     // Update scaled dt
     g_scaledDt = CP_System_GetDt();
+
+
 
     //printf("play pos %.2f,%.2f\n", player->go.pos.x, player->go.pos.y);
 
@@ -611,15 +608,24 @@ void game_update(void)
     if (CP_Input_KeyTriggered(KEY_F11)) // debug
     {
         // lowkey got lazy u want add time just call this func ea time the mob die
-        addcombotime(&combocounter_timer, COMBO_TIME);
+        killconfirmed();
     }
-    
+    updateOznometer(&combocounter, &combocounter_timer);
+    float oznoalpha = updateOznometerFade(255, &combocounter_timer, COMBO_TIME);
     updateComboCounterTimer(&combocounter_timer, COMBO_TIME_DEDUCTION, COMBO_TIME);
-    printComboCounter(CP_Vector_Set(129.8f, 40), 52, 0, 0, 0, 255);
-    printComboCounter(CP_Vector_Set(130, 40), 50, 194, 46, 19, 255);
+
+    printComboCounter(CP_Vector_Set(129.8f, 40), 52, 0, 0, 0, oznoalpha);
+    printComboCounter(CP_Vector_Set(130, 40), 50, 194, 46, 19, oznoalpha);
+    
+    CP_Vector barpos = CP_Vector_Set(CP_System_GetWindowWidth() * 0.20F, 
+        CP_System_GetWindowHeight() * 0.015F);
     printComboCountdownTimer(CP_Vector_Set(35, 64), 
-        CP_Vector_Set((float)(combocounter_timer / COMBO_TIME) * 155.0f
-        , 12), 194, 46, 19, 255);
+        CP_Vector_Set((float)(combocounter_timer / COMBO_TIME) * barpos.x
+        , barpos.y), 194, 46, 19, oznoalpha);
+    char combocountertxt[5];
+
+    sprintf_s(combocountertxt, sizeof((int)combocounter), "%d", (int)combocounter);
+    CP_Font_DrawText(combocountertxt, barpos.x + 75, barpos.y + 25);
 
 
     if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))

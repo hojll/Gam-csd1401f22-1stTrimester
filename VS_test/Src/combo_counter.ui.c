@@ -34,3 +34,22 @@ void updateComboCounterTimer(double *timer, double deduct, double combotime)
 		*timer -= deduct * CP_System_GetDt();
 	}
 }
+
+float updateOznometerFade(float alpha, double* timer, double combotime)
+{
+	float ratio = 0;
+	if (*timer > 0)
+	{	
+		ratio = (float)(*timer / combotime);
+		return alpha * ratio;
+	}
+	return 0;
+}
+
+void updateOznometer(double* timer, int* combocounter)
+{
+	if (timer <= 0)
+	{
+		combocounter = 0;
+	}
+}

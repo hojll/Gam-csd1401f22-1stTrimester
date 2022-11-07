@@ -59,4 +59,5 @@ void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject nodes[], E_Player* player, 
 
 void SpawnEnemy(int type, CP_Vector pos);
 
+void ResetEnemy(E_Basic_Enemy_1* enemy);
 #endif

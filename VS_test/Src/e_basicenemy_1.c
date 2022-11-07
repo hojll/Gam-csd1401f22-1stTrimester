@@ -31,6 +31,8 @@ void Enemy_ActiveUpdate(E_Basic_Enemy_1 *enemy)
 			enemy->go.vel.y += GRAVITY;
 		}
 	}
+	
+	
 }
 
 
@@ -67,6 +69,21 @@ E_Basic_Enemy_1 InitializeEnemy()
 		retval.go.dir.x = -1;
 	}
 	return retval;
+}
+
+void ResetEnemy(E_Basic_Enemy_1* enemy)
+{
+	
+	enemy->state = STATE_ENEMY_ACTIVE;
+	enemy->HP = 0;
+	enemy->go.active = 0;
+	enemy->go.height = 50.f;
+	enemy->go.width = 50.f;
+	enemy->grounded = 0;
+	enemy->go.dir.y = 0;
+	enemy->go.vel.y = 0;
+	enemy->tracking = 0;
+	enemy->myfloor = NULL;
 }
 
 // Helper function
@@ -378,3 +395,5 @@ void SpawnEnemy(int type, CP_Vector pos)
 
 	g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
 }
+
+
