@@ -25,6 +25,10 @@
 #define DEFAULT_FONT_SIZE 100.0f
 #define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
 
+#define OZNOLA_METER_MAX 6
+//o z n o l a
+#define BASE_SPAWN_FREQUENCY 6.0f
+
 /*
 In �Configuration Properties->Debugging- Working Directory�
 $(SolutionDir)bin\$(Configuration)-$(Platform)\
@@ -47,17 +51,29 @@ int playerCount;
 E_Bullet bullets[MAX_BULLETS];
 GameObject walls[MAX_WALLS];
 
+// Enemy stuff by Ryan
 E_Basic_Enemy_1 enemies[MAX_ENEMIES];
-CP_Vector e_spawnPos1, e_spawnPos2; // Enemy spawn locations
+CP_Vector e_spawnPos1, e_spawnPos2; // Basic Enemy spawn locations
+CP_Vector e2_spawnPos[4];
+
 GameObject ai_nodes[MAX_PATHFINDING_NODES];
 CP_BOOL shownodes = 1;
 GameObject *playerPrevPlatform;
+// Oznola Game Loop stuff
+int oznola_meter = 0;
+double spawntimer = 0;
+int wavetier = 1;
+
+
 
 int total_bullet_count; // For UI by Joel
 TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
 
 E_WeaponBox weapon_boxes[MAX_WEAPON_BOX];
 float spawnWeaponBoxTimer;
+
+
+
 
 
 #pragma region MESSAGES
@@ -89,21 +105,12 @@ void MessageSpawnEnemy(void* messageInfo) {
         curr->go.active = 1;
         curr->go.pos = enemyMsg->position;
         curr->tracking = enemyMsg->tracking;
-        
-        /*if (curr->tracking)
-        {            
-            curr->go.dir.x = 0;
-            for (int i = 0; i < MAX_PATHFINDING_NODES; ++i)
-            {
-                GameObject* pointer = curr->nodes + i;
-                printf("wall pos %f:%f\n", pointer->pos.y, pointer->pos.y);
-            }
-        }*/
-
+        curr->enemytype = enemyMsg->type;
         break;
     }
 }
 #pragma endregion
+
 
 
 void game_init(void)
@@ -128,10 +135,17 @@ void game_init(void)
         bullets[i] = InitializeBullet();
     }
 
-    // AI
+    // AI / ENEMY
     InitEnemyList(enemies, (int)MAX_ENEMIES, ai_nodes);
     e_spawnPos1 = CP_Vector_Set(250, 110);
     e_spawnPos2 = CP_Vector_Set(650, 110);
+    e2_spawnPos[0] = CP_Vector_Set(230, 790);
+    e2_spawnPos[1] = CP_Vector_Set(680, 790);
+    e2_spawnPos[2] = CP_Vector_Set(230, 150);
+    e2_spawnPos[3] = CP_Vector_Set(680, 150);
+
+
+
     
     ai_nodes[5].pos = CP_Vector_Set(200, 250); // top left
     ai_nodes[4].pos = CP_Vector_Set(700, 250); // top right
@@ -190,6 +204,8 @@ void game_init(void)
     walls[8].height = 20.f;
     walls[8].width = 200.f;
     walls[8].active = 1;
+
+
 
     g_scaledDt = 0.f;
     
@@ -293,16 +309,26 @@ void game_update(void)
     }
 
     if (CP_Input_KeyTriggered(KEY_MINUS)) {
-        SpawnEnemyMessage enemy;
-        enemy.position = CP_Vector_Set(100, 790);
-        enemy.tracking = 1;
-        g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
+        SpawnEnemy(1, e2_spawnPos[0]);
     }
     if (CP_Input_KeyTriggered(KEY_0)) {
-        SpawnEnemyMessage enemy;
-        enemy.position = CP_Vector_Set(200, 150);
-        enemy.tracking = 1;
-        g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
+        SpawnEnemy(1, e2_spawnPos[1]);
+    }
+    if (CP_Input_KeyTriggered(KEY_9)) {
+        SpawnEnemy(1, e2_spawnPos[2]);
+    }
+    if (CP_Input_KeyTriggered(KEY_8)) {
+        SpawnEnemy(1, e2_spawnPos[3]);
+    }
+
+
+     // spawning frequency
+    spawntimer += 1.0f * CP_System_GetDt();
+    if (spawntimer > BASE_SPAWN_FREQUENCY)
+    {
+        spawntimer = 0.0f; // spawn
+
+        
     }
 
 
@@ -579,8 +605,6 @@ void game_update(void)
         draw_popup(&popUp[i]);
     }
 }
-
-
 
 void game_exit(void)
 {

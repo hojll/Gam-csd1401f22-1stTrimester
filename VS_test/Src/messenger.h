@@ -19,6 +19,7 @@ typedef struct SpawnBulletMessage {
 typedef struct SpawnEnemyMessage {
 	CP_Vector position;
 	CP_BOOL tracking;
+	int type;
 }SpawnEnemyMessage;
 
 typedef struct Messenger {

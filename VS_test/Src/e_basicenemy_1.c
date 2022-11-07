@@ -8,10 +8,10 @@
 
 
 Messenger g_messenger;
-#define E_SPEED 150
+#define E_SPEED 200
 #define GRAVITY 70.f
 #define MAX_GRAV_VEL 600.f
-#define JUMP_VEL -980
+#define JUMP_VEL -1500
 #define JUMP_RANGE 10
 
 /*----------------------------------------------------*/
@@ -28,7 +28,7 @@ void Enemy_ActiveUpdate(E_Basic_Enemy_1 *enemy)
 		enemy->go.pos.y += enemy->go.vel.y * g_scaledDt;
 		if (!enemy->grounded && enemy->go.vel.y < MAX_GRAV_VEL)
 		{
-			enemy->go.vel.y += GRAVITY;				
+			enemy->go.vel.y += GRAVITY;
 		}
 	}
 }
@@ -353,4 +353,15 @@ void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject nodes[], E_Player* player, 
 		float dir = player->go.pos.x > enemy->go.pos.x ? 1 : -1;
 		enemy->go.dir.x = dir;
 	}
+}
+
+
+void SpawnEnemy(int type, CP_Vector pos)
+{
+	SpawnEnemyMessage enemy;
+	enemy.position = pos;
+	enemy.type = type;
+	if (enemy.type == 1)
+		enemy.tracking = 1;
+	g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
 }

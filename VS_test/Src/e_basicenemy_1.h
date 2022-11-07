@@ -34,6 +34,8 @@ typedef struct E_Basic_Enemy_1 {
 	int pathcount;
 	// Stats
 	double HP;
+	int enemytype;
+
 
 	void (*Update[STATE_ENEMY_NUM_STATES])(E_BASIC_ENEMY_STATES_1*);
 } E_Basic_Enemy_1;
@@ -53,5 +55,7 @@ void UpdateEnemyList(E_Basic_Enemy_1 arr[], int size);
 void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[]);
 
 void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size);
+
+void SpawnEnemy(int type, CP_Vector pos);
 
 #endif
