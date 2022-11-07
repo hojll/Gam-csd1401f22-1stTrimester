@@ -101,6 +101,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\collision.c" />
+    <ClCompile Include="..\Src\combo_counter.ui.c" />
     <ClCompile Include="..\Src\e_basicenemy_1.c" />
     <ClCompile Include="..\Src\e_bullet.c" />
     <ClCompile Include="..\Src\e_player.c" />
@@ -115,6 +116,8 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Src\collision.h" />
+    <ClInclude Include="..\Src\combo_counter_ui.h" />
+    <ClInclude Include="..\Src\easing.h" />
     <ClInclude Include="..\Src\entities.h" />
     <ClInclude Include="..\Src\e_basicenemy_1.h" />
     <ClInclude Include="..\Src\e_bullet.h" />

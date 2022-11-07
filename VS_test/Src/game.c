@@ -12,6 +12,7 @@
 #include "spriteData.h"
 #include "e_bullet.h"
 #include "e_weaponBox.h"
+#include "combo_counter_ui.h"
 
 #define MAX_BULLETS 100
 #define MAX_ENEMIES 100
@@ -26,8 +27,17 @@
 #define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
 
 #define OZNOLA_METER_MAX 6
+#define OZNOLA_BASE_DIFFICULTY_MAX 3;
 //o z n o l a
-#define BASE_SPAWN_FREQUENCY 6.0f
+#define BASE_SPAWN_FREQUENCY 2.5f
+#define COMBO_TIME_DEDUCTION 1.0f
+#define COMBO_TIME 1.8f
+
+#define OZNOLA_TIER1 6
+#define OZNOLA_TIER2 12
+#define OZNOLA_TIER3 24
+
+
 
 /*
 In �Configuration Properties->Debugging- Working Directory�
@@ -61,9 +71,11 @@ CP_BOOL shownodes = 1;
 GameObject *playerPrevPlatform;
 // Oznola Game Loop stuff
 int oznola_meter = 0;
+int wavetiers[3];
 double spawntimer = 0;
-int wavetier = 1;
-
+double combocounter = 0;
+double combocounter_timer = 0;
+double show_oznometer_fade = 0;
 
 
 int total_bullet_count; // For UI by Joel
@@ -105,11 +117,13 @@ void MessageSpawnEnemy(void* messageInfo) {
         curr->go.active = 1;
         curr->go.pos = enemyMsg->position;
         curr->tracking = enemyMsg->tracking;
-        curr->enemytype = enemyMsg->type;
+        curr->enemytype = enemyMsg->type;        
         break;
     }
 }
 #pragma endregion
+
+
 
 
 
@@ -139,12 +153,14 @@ void game_init(void)
     InitEnemyList(enemies, (int)MAX_ENEMIES, ai_nodes);
     e_spawnPos1 = CP_Vector_Set(250, 110);
     e_spawnPos2 = CP_Vector_Set(650, 110);
-    e2_spawnPos[0] = CP_Vector_Set(230, 790);
-    e2_spawnPos[1] = CP_Vector_Set(680, 790);
-    e2_spawnPos[2] = CP_Vector_Set(230, 150);
-    e2_spawnPos[3] = CP_Vector_Set(680, 150);
-
-
+    e2_spawnPos[0] = CP_Vector_Set(200, 800);
+    e2_spawnPos[1] = CP_Vector_Set(700, 800);
+    e2_spawnPos[2] = CP_Vector_Set(200, 200);
+    e2_spawnPos[3] = CP_Vector_Set(700, 200);
+    
+    wavetiers[0] = OZNOLA_TIER1;
+    wavetiers[1] = OZNOLA_TIER2;
+    wavetiers[2] = OZNOLA_TIER3;
 
     
     ai_nodes[5].pos = CP_Vector_Set(200, 250); // top left
@@ -327,8 +343,12 @@ void game_update(void)
     if (spawntimer > BASE_SPAWN_FREQUENCY)
     {
         spawntimer = 0.0f; // spawn
+        int random_pos = returnRange(1, 50);
+        if (random_pos <= 25)
+            SpawnEnemy(0, e_spawnPos1);
+        else
+            SpawnEnemy(0, e_spawnPos2);
 
-        
     }
 
 
@@ -585,6 +605,22 @@ void game_update(void)
     CP_Settings_TextSize(DEFAULT_FONT_SIZE);
     CP_Settings_Fill(DEFAULT_FONT_COLOR);
     update_timer();
+
+
+    // OZNOLA METER
+    if (CP_Input_KeyTriggered(KEY_F11)) // debug
+    {
+        // lowkey got lazy u want add time just call this func ea time the mob die
+        addcombotime(&combocounter_timer, COMBO_TIME);
+    }
+    
+    updateComboCounterTimer(&combocounter_timer, COMBO_TIME_DEDUCTION, COMBO_TIME);
+    printComboCounter(CP_Vector_Set(129.8f, 40), 52, 0, 0, 0, 255);
+    printComboCounter(CP_Vector_Set(130, 40), 50, 194, 46, 19, 255);
+    printComboCountdownTimer(CP_Vector_Set(35, 64), 
+        CP_Vector_Set((float)(combocounter_timer / COMBO_TIME) * 155.0f
+        , 12), 194, 46, 19, 255);
+
 
     if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
     {

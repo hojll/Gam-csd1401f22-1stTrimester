@@ -361,7 +361,20 @@ void SpawnEnemy(int type, CP_Vector pos)
 	SpawnEnemyMessage enemy;
 	enemy.position = pos;
 	enemy.type = type;
-	if (enemy.type == 1)
+	enemy.tracking = 0;
+	enemy.score = 0;
+	switch (type)
+	{
+	case 0:
+		enemy.score = 100;
+		break;
+	case 1:
 		enemy.tracking = 1;
+		enemy.score = 200;
+		break;
+	case 2:
+		break;
+	}
+
 	g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
 }

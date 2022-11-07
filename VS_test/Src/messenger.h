@@ -20,6 +20,7 @@ typedef struct SpawnEnemyMessage {
 	CP_Vector position;
 	CP_BOOL tracking;
 	int type;
+	int score;
 }SpawnEnemyMessage;
 
 typedef struct Messenger {
