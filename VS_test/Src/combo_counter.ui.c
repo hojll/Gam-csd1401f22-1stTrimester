@@ -20,18 +20,24 @@ void printComboCountdownTimer(CP_Vector pos, CP_Vector wh, int r, int g, int b, 
 
 void addcombotime(double* timer, double addedtime)
 {
-	*timer += addedtime;
+	*timer = addedtime;
 	if (*timer >= addedtime)
 	{
 		*timer = addedtime;
 	}
 }
 
-void updateComboCounterTimer(double *timer, double deduct, double combotime)
+void updateComboCounterTimer(double* count, double *timer, double deduct, double combotime)
 {
+	//printf("timer %lf \n", *timer);
+
 	if (*timer > 0)
 	{
 		*timer -= deduct * CP_System_GetDt();
+		if (*timer <= 0)
+		{
+			*count = 0;
+		}
 	}
 }
 
@@ -44,12 +50,4 @@ float updateOznometerFade(float alpha, double* timer, double combotime)
 		return alpha * ratio;
 	}
 	return 0;
-}
-
-void updateOznometer(double* timer, int* combocounter)
-{
-	if (timer <= 0)
-	{
-		combocounter = 0;
-	}
 }

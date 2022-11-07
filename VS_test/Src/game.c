@@ -67,7 +67,7 @@ GameObject *playerPrevPlatform;
 int oznola_meter = 0;
 int oznola_difficulty[5];
 double spawntimer = 0;
-double combocounter = 0;
+int combocounter = 0;
 double combocounter_timer = 0;
 double show_oznometer_fade = 0;
 
@@ -604,15 +604,10 @@ void game_update(void)
     update_timer();
 
 
-    // OZNOLA METER
-    if (CP_Input_KeyTriggered(KEY_F11)) // debug
-    {
-        // lowkey got lazy u want add time just call this func ea time the mob die
-        killconfirmed();
-    }
-    updateOznometer(&combocounter, &combocounter_timer);
+ 
+
     float oznoalpha = updateOznometerFade(255, &combocounter_timer, COMBO_TIME);
-    updateComboCounterTimer(&combocounter_timer, COMBO_TIME_DEDUCTION, COMBO_TIME);
+    updateComboCounterTimer(&combocounter,&combocounter_timer, COMBO_TIME_DEDUCTION, COMBO_TIME);
 
     printComboCounter(CP_Vector_Set(129.8f, 40), 52, 0, 0, 0, oznoalpha);
     printComboCounter(CP_Vector_Set(130, 40), 50, 194, 46, 19, oznoalpha);
@@ -623,9 +618,15 @@ void game_update(void)
         CP_Vector_Set((float)(combocounter_timer / COMBO_TIME) * barpos.x
         , barpos.y), 194, 46, 19, oznoalpha);
     char combocountertxt[5];
+    sprintf_s(combocountertxt, sizeof((int)combocounter), "%d", combocounter);
+    CP_Font_DrawText(combocountertxt, barpos.x + 78, barpos.y + 35);
 
-    sprintf_s(combocountertxt, sizeof((int)combocounter), "%d", (int)combocounter);
-    CP_Font_DrawText(combocountertxt, barpos.x + 75, barpos.y + 25);
+    // OZNOLA METER
+    if (CP_Input_KeyTriggered(KEY_F11)) // debug
+    {
+        // lowkey got lazy u want add time just call this func ea time the mob die
+        killconfirmed();
+    }
 
 
     if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
