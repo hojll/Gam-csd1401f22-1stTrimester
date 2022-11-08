@@ -13,25 +13,28 @@
 #include "e_bullet.h"
 #include "e_weaponBox.h"
 #include "combo_counter_ui.h"
+enum {
+    MAX_BULLETS = 100,
+    MAX_ENEMIES = 100,
+    MAX_PLAYERS = 2,
+    MAX_WALLS = 10,
+    MAX_TEXT_POPUP = 20,
+    MAX_WEAPON_BOX = 3,
+};
 
-#define MAX_BULLETS 100
-#define MAX_ENEMIES 100
-#define MAX_PLAYERS 2
-#define MAX_WALLS 10
-#define MAX_TEXT_POPUP 20
-#define MAX_WEAPON_BOX 3
+static const float WEAPON_BOX_SPAWN_TIME = 5;
 
-#define WEAPON_BOX_SPAWN_TIME 5
-
-#define DEFAULT_FONT_SIZE 100.0f
+static const float DEFAULT_FONT_SIZE = 100.0f;
 #define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
 
-#define OZNOLA_METER_MAX 6
-#define OZNOLA_BASE_DIFFICULTY_MAX 3;
-//o z n o l a
-#define BASE_SPAWN_FREQUENCY 2.5f
-#define COMBO_TIME_DEDUCTION 1.0f
-#define COMBO_TIME 2.f
+enum {
+    OZNOLA_METER_MAX = 6,
+    OZNOLA_BASE_DIFFICULTY_MAX = 3
+};
+    //o z n o l a
+static const float BASE_SPAWN_FREQUENCY = 2.5f;
+static const float COMBO_TIME_DEDUCTION = 1.0f;
+static const float COMBO_TIME = 2.f;
 
 /*
 In �Configuration Properties->Debugging- Working Directory�
@@ -170,59 +173,62 @@ void game_init(void)
 
     // Walls
     // Bottom
-    walls[0].pos = CP_Vector_Set(450, 850);
-    walls[0].height = 30.f;
-    walls[0].width = 800.f;
-    walls[0].active = 1;
-    // Top
-    walls[1].pos = CP_Vector_Set(450, 50);
-    walls[1].height = 30.f;
-    walls[1].width = 800.f;
-    walls[1].active = 1;
-    // Left
-    walls[2].pos = CP_Vector_Set(50, 450);
-    walls[2].height = 830.f;
-    walls[2].width = 30.f;
-    walls[2].active = 1;
-    // Right
-    walls[3].pos = CP_Vector_Set(850, 450);
-    walls[3].height = 830.f;
-    walls[3].width = 30.f;
-    walls[3].active = 1;
+    {
+        walls[0].pos = CP_Vector_Set(450, 850);
+        walls[0].height = 30.f;
+        walls[0].width = 800.f;
+        walls[0].active = 1;
+        // Top
+        walls[1].pos = CP_Vector_Set(450, 50);
+        walls[1].height = 30.f;
+        walls[1].width = 800.f;
+        walls[1].active = 1;
+        // Left
+        walls[2].pos = CP_Vector_Set(50, 450);
+        walls[2].height = 830.f;
+        walls[2].width = 30.f;
+        walls[2].active = 1;
+        // Right
+        walls[3].pos = CP_Vector_Set(850, 450);
+        walls[3].height = 830.f;
+        walls[3].width = 30.f;
+        walls[3].active = 1;
 
-    // Walls in the level
-    walls[4].pos = CP_Vector_Set(250, 650);
-    walls[4].height = 20.f;
-    walls[4].width = 200.f;
-    walls[4].active = 1;
+        // Walls in the level
+        walls[4].pos = CP_Vector_Set(250, 650);
+        walls[4].height = 20.f;
+        walls[4].width = 200.f;
+        walls[4].active = 1;
 
-    walls[5].pos = CP_Vector_Set(650, 650);
-    walls[5].height = 20.f;
-    walls[5].width = 200.f;
-    walls[5].active = 1;
+        walls[5].pos = CP_Vector_Set(650, 650);
+        walls[5].height = 20.f;
+        walls[5].width = 200.f;
+        walls[5].active = 1;
 
-    walls[6].pos = CP_Vector_Set(450, 450);
-    walls[6].height = 20.f;
-    walls[6].width = 300.f;
-    walls[6].active = 1;
+        walls[6].pos = CP_Vector_Set(450, 450);
+        walls[6].height = 20.f;
+        walls[6].width = 300.f;
+        walls[6].active = 1;
 
-    walls[7].pos = CP_Vector_Set(250, 250);
-    walls[7].height = 20.f;
-    walls[7].width = 200.f;
-    walls[7].active = 1;
+        walls[7].pos = CP_Vector_Set(250, 250);
+        walls[7].height = 20.f;
+        walls[7].width = 200.f;
+        walls[7].active = 1;
 
-    walls[8].pos = CP_Vector_Set(650, 250);
-    walls[8].height = 20.f;
-    walls[8].width = 200.f;
-    walls[8].active = 1;
-
+        walls[8].pos = CP_Vector_Set(650, 250);
+        walls[8].height = 20.f;
+        walls[8].width = 200.f;
+        walls[8].active = 1;
+    }
 
 
     g_scaledDt = 0.f;
     
-    g_messenger.messages[MSG_SPAWN_BULLET] = MessageSpawnBullet;
-    g_messenger.messages[MSG_SPAWN_ENEMY] = MessageSpawnEnemy;
-
+    // MESSAGE FUNC POINTER INIT
+    {
+        g_messenger.messages[MSG_SPAWN_BULLET] = MessageSpawnBullet;
+        g_messenger.messages[MSG_SPAWN_ENEMY1] = MessageSpawnEnemy;
+    }
 
     playerCount = 1;
     CP_Settings_TextSize(50.0f);
@@ -318,7 +324,7 @@ void game_update(void)
             enemy.position = e_spawnPos2;
 
         enemy.tracking = 0;
-        g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
+        g_messenger.messages[MSG_SPAWN_ENEMY1](&enemy);
     }
 
     if (CP_Input_KeyTriggered(KEY_MINUS)) {

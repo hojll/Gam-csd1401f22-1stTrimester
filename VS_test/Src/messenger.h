@@ -4,7 +4,8 @@
 #include "e_bullet.h"
 typedef enum MessageType {
 	MSG_SPAWN_BULLET,
-	MSG_SPAWN_ENEMY,
+	MSG_SPAWN_ENEMY1,
+	MSG_SPAWN_ENEMY2,
 	MSG_GAME_OVER,
 	MSG_NUM_MESSAGE_TYPE
 }MessageType;

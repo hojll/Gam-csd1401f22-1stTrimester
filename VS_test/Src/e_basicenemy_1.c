@@ -393,7 +393,7 @@ void SpawnEnemy(int type, CP_Vector pos)
 		break;
 	}
 
-	g_messenger.messages[MSG_SPAWN_ENEMY](&enemy);
+	g_messenger.messages[MSG_SPAWN_ENEMY1](&enemy);
 }
 
 
