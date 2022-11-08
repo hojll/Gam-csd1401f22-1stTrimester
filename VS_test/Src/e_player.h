@@ -4,7 +4,9 @@
 #include "spriteData.h"
 #include "e_bullet.h"
 
-#define PLAYER_ROLL_AFTERIMAGE 10
+enum {
+	PLAYER_ROLL_AFTERIMAGE = 10
+};
 #define PLAYER_ACTIVE_ANIM_SPEED 0.1f
 typedef struct E_Player E_Player;
 typedef enum PLAYER_STATES {

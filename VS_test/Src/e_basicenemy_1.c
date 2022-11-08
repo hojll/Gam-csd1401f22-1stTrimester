@@ -8,11 +8,11 @@
 
 
 Messenger g_messenger;
-#define E_SPEED 200
-#define GRAVITY 70.f
-#define MAX_GRAV_VEL 600.f
-#define JUMP_VEL -1500
-#define JUMP_RANGE 10
+static const float E_SPEED = 200.f;
+static const float GRAVITY = 70.f;
+static const float MAX_GRAV_VEL = 600.f;
+static const float JUMP_VEL = -1500.f;
+static const float JUMP_RANGE = 10.f;
 
 /*----------------------------------------------------*/
 // ENEMI
