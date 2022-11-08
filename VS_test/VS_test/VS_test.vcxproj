@@ -103,6 +103,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClCompile Include="..\Src\collision.c" />
     <ClCompile Include="..\Src\combo_counter.ui.c" />
     <ClCompile Include="..\Src\e_basicenemy_1.c" />
+    <ClCompile Include="..\Src\e_basicenemy_2.c" />
     <ClCompile Include="..\Src\e_bullet.c" />
     <ClCompile Include="..\Src\e_player.c" />
     <ClCompile Include="..\Src\e_text_popup.c" />
@@ -120,6 +121,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClInclude Include="..\Src\easing.h" />
     <ClInclude Include="..\Src\entities.h" />
     <ClInclude Include="..\Src\e_basicenemy_1.h" />
+    <ClInclude Include="..\Src\e_basicenemy_2.h" />
     <ClInclude Include="..\Src\e_bullet.h" />
     <ClInclude Include="..\Src\e_text_popup.h" />
     <ClInclude Include="..\Src\e_weaponBox.h" />

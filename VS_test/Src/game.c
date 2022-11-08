@@ -33,14 +33,14 @@ enum {
     OZNOLA_BASE_DIFFICULTY_MAX = 3
 };
     //o z n o l a
-static const float BASE_SPAWN_FREQUENCY = 2.5f;
+static const float BASE_SPAWN_FREQUENCY = 1.0f;
 static const float COMBO_TIME_DEDUCTION = 1.0f;
 static const float COMBO_TIME = 2.f;
 
 /*
 In �Configuration Properties->Debugging- Working Directory�
 $(SolutionDir)bin\$(Configuration)-$(Platform)\
-Use this in release mode settings if no work.
+Use this in  release mode settings if no work.
 */
 
 Messenger g_messenger;
@@ -76,8 +76,6 @@ int combocounter = 0;
 double combocounter_timer = 0;
 double show_oznometer_fade = 0;
 
-
-int total_bullet_count; // For UI by Joel
 TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
 
 E_WeaponBox weapon_boxes[MAX_WEAPON_BOX];
@@ -237,7 +235,6 @@ void game_init(void)
     CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
 
     //Bullet count for UI stuff
-    total_bullet_count = player[0].currAmmo;
     for (int i = 0; i < MAX_TEXT_POPUP; ++i)
     {
         set_popup(&popUp[i], 0.0f, 0.0f, DEFAULT_FONT_COLOR, (int)DEFAULT_FONT_SIZE, 0, "initializing");
@@ -413,10 +410,34 @@ void game_update(void)
                 player_grounded_flag = 1;
         }
 
-
-
         if (!player_grounded_flag)
             player[i].grounded = 0;
+
+        // Player - Weapon Box
+        for (int j = 0; j < MAX_WEAPON_BOX; j++)
+        {
+            if (!weapon_boxes[j].go.active)
+                continue;
+            if (AABB(player[i].go, weapon_boxes[j].go))
+            {
+                weapon_boxes[j].go.active = 0;
+                
+                for (int p = 0; p < MAX_TEXT_POPUP; ++p)
+                {
+                    if (!(popUp[i].go.active))
+                    {
+                        set_popup(&popUp[p], 
+                            player->go.pos.x,
+                            player->go.pos.y - player->go.height / 2.f - 10.f,
+                            CP_Color_Create(255, 0, 0, 255),
+                            (int)DEFAULT_FONT_SIZE,
+                            3.0f,
+                            Player_RandomWeapon(&player[i]));
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     // Bullet - x
@@ -446,6 +467,57 @@ void game_update(void)
                 bullets->Destroy(&bullets[i]);
             }
         }
+
+        // Bullet - Enemy1
+        for (int j = 0; j < MAX_ENEMIES; j++)
+        {
+            if (!enemies[j].go.active)
+                continue;
+            if (AABB(bullets[i].go, enemies[j].go))
+            {
+                bullets[i].collide_pos = bullets[i].go.pos;
+                COLLISION_DIRECTION collision_dir = AABB_Direction(bullets[i].go, enemies[j].go);
+                if (collision_dir == COLLISION_TOP)
+                    bullets[i].collide_pos.y = enemies[j].go.pos.y - enemies[j].go.height / 2.f - bullets[i].go.height / 2.f;
+                else if (collision_dir == COLLISION_BOTTOM)
+                    bullets[i].collide_pos.y = enemies[j].go.pos.y + enemies[j].go.height / 2.f + bullets[i].go.height / 2.f;
+                else if (collision_dir == COLLISION_LEFT)
+                    bullets[i].collide_pos.x = enemies[j].go.pos.x - enemies[j].go.width / 2.f - bullets[i].go.width / 2.f;
+                else
+                    bullets[i].collide_pos.x = enemies[j].go.pos.x + enemies[j].go.width / 2.f + bullets[i].go.width / 2.f;
+
+                bullets->Destroy(&bullets[i]);
+
+                enemies[j].go.active = 0;
+                killconfirmed();
+            }
+        }
+
+        // Bullet - Enemy2
+        for (int j = 0; j < MAX_ENEMIES; j++)
+        {
+            if (!enemies2[j].go.active)
+                continue;
+            if (AABB(bullets[i].go, enemies2[j].go))
+            {
+                bullets[i].collide_pos = bullets[i].go.pos;
+                COLLISION_DIRECTION collision_dir = AABB_Direction(bullets[i].go, enemies2[j].go);
+                if (collision_dir == COLLISION_TOP)
+                    bullets[i].collide_pos.y = enemies2[j].go.pos.y - enemies2[j].go.height / 2.f - bullets[i].go.height / 2.f;
+                else if (collision_dir == COLLISION_BOTTOM)
+                    bullets[i].collide_pos.y = enemies2[j].go.pos.y + enemies2[j].go.height / 2.f + bullets[i].go.height / 2.f;
+                else if (collision_dir == COLLISION_LEFT)
+                    bullets[i].collide_pos.x = enemies2[j].go.pos.x - enemies2[j].go.width / 2.f - bullets[i].go.width / 2.f;
+                else
+                    bullets[i].collide_pos.x = enemies2[j].go.pos.x + enemies2[j].go.width / 2.f + bullets[i].go.width / 2.f;
+
+                bullets->Destroy(&bullets[i]);
+
+                enemies2[j].go.active = 0;
+                killconfirmed();
+            }
+        }
+
     }
 
     //Weapon Box - x
@@ -670,7 +742,7 @@ void game_update(void)
         }
     }
 
-    update_bullet_bar(player[0].currAmmo, total_bullet_count);
+    update_bullet_bar(player[0].currAmmo, player[0].maxAmmo);
     for (int i = 0; i < MAX_TEXT_POPUP; ++i)
     {
         update_popup(&popUp[i]);

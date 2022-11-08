@@ -7,6 +7,7 @@ typedef enum BULLET_TYPE
 {
 	BULLET_DEFAULT,
 	BULLET_SCATTER,
+	BULLET_SMG,
 	BULLET_TOTAL
 }BULLET_TYPE;
 typedef struct E_Bullet {
@@ -22,5 +23,5 @@ typedef struct E_Bullet {
 }E_Bullet;
 E_Bullet InitializeBullet();
 void DestroyBullet(E_Bullet* bullet);
-
+void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type);
 #endif

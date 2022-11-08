@@ -1,9 +1,11 @@
 #include "e_bullet.h"
 #include "messenger.h"
 
+#define BULLET_SPEED 350.f
+
 #define SCATTER_AMOUNT 10
 #define SCATTER_LIFETIME -100.f
-#define SCATTER_SPEED 300.f
+#define SCATTER_SPEED 400.f
 
 void Bullet_ActiveUpdate(E_Bullet* bullet)
 {
@@ -59,4 +61,36 @@ void DestroyBullet(E_Bullet* bullet)
 	default:
 		break;
 	}
+}
+
+void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type)
+{
+	SpawnBulletMessage bullet;
+	GameObject go;
+
+	go.pos = position;
+	go.vel.x = BULLET_SPEED * facedir;
+	go.vel.y = 0.f;
+	go.width = 20.f;
+	go.height = 20.f;
+	bullet.lifetime = -100.f;
+	bullet.color = CP_Color_Create(0, 100, 0, 255);
+
+	switch (type)
+	{
+	case BULLET_SCATTER:
+		bullet.color = CP_Color_Create(200, 200, 200, 255);
+		break;
+	case BULLET_SMG:
+		go.width = 10.f;
+		go.height = 10.f;
+		go.vel.x = BULLET_SPEED * facedir * 1.5f;
+		break;
+	default:
+		break;
+	}
+	
+	bullet.go = go;
+	bullet.type = type;
+	g_messenger.messages[MSG_SPAWN_BULLET](&bullet);
 }

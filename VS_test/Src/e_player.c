@@ -8,15 +8,15 @@ Messenger g_messenger;
 #define PLAYER_SPEED 250.f
 #define ROLL_SPEED PLAYER_SPEED*3.f
 #define ROLL_DURATION 0.5f
-#define GRAVITY 800.f
-#define MAX_GRAV_VEL 1500.f
-#define JUMP_VEL -600.f
+#define GRAVITY 2000.f
+#define MAX_GRAV_VEL 800.f
+#define JUMP_VEL -1000.f
+#define DEFAULT_ATTACK_SPEED 0.3f
 // DEFINITIONS FOR ANIMATIONS
 #define FRAME_DIM_WIDTH 320
 #define FRAME_DIM_HEIGHT 480
 #define IMAGE_DIM_WIDTH 960
 #define IMAGE_DIM_HEIGHT 960
-#define DEFAULT_ATTACK_SPEED 0.3f;
 #define NUM_ROLL_FRAMES 5
 #define ACTIVE_ANIM_SPEED 0.1f
 ////////////////////////////////////////////////////////////////////////
@@ -24,6 +24,29 @@ Messenger g_messenger;
 // PLAYER //
 /*--------*/
 // The functions for player
+
+// Player Gun Inits
+void PlayerWeapon_Init(E_Player* player, BULLET_TYPE bulletType)
+{
+	player->currBullet = bulletType;
+	switch (bulletType)
+	{
+	case BULLET_DEFAULT:
+		player->attackSpeed = DEFAULT_ATTACK_SPEED;
+		player->currAmmo = -1;
+		break;
+	case BULLET_SCATTER:
+		player->attackSpeed = DEFAULT_ATTACK_SPEED;
+		player->currAmmo = 10;
+		break;
+	case BULLET_SMG:
+		player->attackSpeed = DEFAULT_ATTACK_SPEED / 5.f;
+		player->currAmmo = 50;
+		break;
+	}
+	player->maxAmmo = player->currAmmo;
+}
+
 void Player_ActiveUpdate(E_Player* player) {
 	// INPUT LOGIC HERE
 	// If 2 players, maybe add var, playerNumber into struct?
@@ -64,29 +87,11 @@ void Player_ActiveUpdate(E_Player* player) {
 		player->attackSpeedTimer = 0.f;
 
 		if (player->currAmmo <= 0)
-			player->currBullet = BULLET_DEFAULT;
+			PlayerWeapon_Init(player, BULLET_DEFAULT);
 		else
 			player->currAmmo--;
 
-		SpawnBulletMessage bullet;
-		GameObject go;
-		go.pos = player->go.pos;
-		go.vel.x = PLAYER_SPEED * 1.5f * player->go.faceDir;
-		go.vel.y = 0.f;
-		go.width = 20.f;
-		go.height = 20.f;
-		bullet.go = go;
-		bullet.type = player->currBullet;
-		bullet.lifetime = -100.f;
-		switch (player->currBullet)
-		{
-		case BULLET_SCATTER:
-			bullet.color = CP_Color_Create(200, 200, 200, 255);
-			break;
-		default:
-			bullet.color = CP_Color_Create(0, 100, 0, 255);
-		}
-		g_messenger.messages[MSG_SPAWN_BULLET](&bullet);
+		CreateBullet(player->go.pos, player->go.faceDir, player->currBullet);
 	}
 	// Rolling
 	if (CP_Input_KeyTriggered(KEY_LEFT_SHIFT)) {
@@ -195,8 +200,22 @@ void InitializePlayer(E_Player *player) {
 	player->go.width = 50.f;
 	player->go.height = 50.f;
 	player->grounded = 0;
-	player->currAmmo = 10;
+	player->currAmmo = -1;
+	player->maxAmmo = -1;
 	player->attackSpeed = DEFAULT_ATTACK_SPEED;
 	player->attackSpeedTimer = 0.f;
-	player->currBullet = BULLET_SCATTER;
+	player->currBullet = BULLET_DEFAULT;
+}
+
+char* Player_RandomWeapon(E_Player* player)
+{
+	PlayerWeapon_Init(player, CP_Random_RangeInt(1, BULLET_TOTAL - 1));
+	switch (player->currBullet)
+	{
+	case BULLET_SCATTER:
+		return "Scatter Shot";
+	case BULLET_SMG:
+		return "SMG";
+	}
+	return "";
 }

@@ -33,11 +33,14 @@ typedef struct E_Player {
 	float rollAlpha[PLAYER_ROLL_AFTERIMAGE];
 	BULLET_TYPE currBullet;
 	int currAmmo;
+	int maxAmmo;
 	float attackSpeed;
 	float attackSpeedTimer;
 	void (*Update[STATE_PLAYER_NUM_STATES])(E_Player*);
 } E_Player;
+
 // FUNCTIONS
 void InitializePlayer(E_Player*);
+char* Player_RandomWeapon(E_Player*);
 
 #endif // !EPLAYER_H
