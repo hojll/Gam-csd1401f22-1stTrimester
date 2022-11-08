@@ -48,6 +48,7 @@ float g_scaledDt;
 /*-------*/
 // MEDIA //
 /*-------*/
+CP_Image backgroundSprite;
 CP_Image sprites[NUM_SPRITES];
 CP_Image spriteData[NUM_SPRITES];
 /*----------------------*/
@@ -131,8 +132,10 @@ void game_init(void)
     // Initialization of spriteData should be done within entity Initialize
     // within their respective file
     sprites[SPRITE_PLAYER] = CP_Image_Load("./Assets/SPRITESHEET.png");
+    backgroundSprite = CP_Image_Load("./Assets/background.png");
     CP_System_SetFrameRate(60.f);
-    printf("Image dims: %d, %d\n", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
+    printf("Image: %-15s|  dims: %d, %d\n","player", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
+    printf("Image: %-15s| dims: %d, %d\n", "background", CP_Image_GetWidth(backgroundSprite), CP_Image_GetHeight(backgroundSprite));
     /////////////////////////
     CP_System_SetWindowSize(900, 900);
     CP_Settings_RectMode(CP_POSITION_CENTER);
@@ -594,6 +597,8 @@ void game_update(void)
     // Render stuff here
     //----------------------------------------------------------------------------------------------------------------------
 #pragma region RENDER
+    // Background
+    CP_Image_Draw(backgroundSprite, 0.f, 0.f, 1920, 1800, 255);
     // Player 
     const CP_Color playerColor = CP_Color_Create(100, 0, 0, 255);
     for (int i = 0; i < playerCount; ++i) {
