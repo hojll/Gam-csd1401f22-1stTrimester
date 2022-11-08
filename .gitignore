@@ -397,3 +397,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 VS_test/tmp/Debug-x64/vc143.idb
+*.idb
