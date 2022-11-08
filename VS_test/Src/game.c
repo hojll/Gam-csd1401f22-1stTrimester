@@ -499,7 +499,8 @@ void game_update(void)
             weapon_boxes[i].grounded = 0;
     }
 
-    // Enemies 
+    // Enemies
+    // ENEMY 1
     for (int j = 0; j < MAX_ENEMIES; ++j)
     {
         if (!enemies[j].go.active)
@@ -513,6 +514,8 @@ void game_update(void)
         }
 
     }
+    // ENEMY 2
+
 #pragma endregion
 
     //----------------------------------------------------------------------------------------------------------------------
@@ -584,7 +587,14 @@ void game_update(void)
     }
     // Enemy_2
     {
-
+        const CP_Color enemyColor[] = { CP_Color_Create(125, 181, 130, 255) , CP_Color_Create(20, 227, 199, 255) };
+        for (int i = 0; i < MAX_ENEMIES; ++i)
+        {
+            if (!enemies2[i].go.active)
+                continue;
+            CP_Settings_Fill(enemyColor[enemies2[i].tracking]);
+            CP_Graphics_DrawCircle(enemies2[i].go.pos.x, enemies2[i].go.pos.y, enemies2[i].go.height);
+        }
     }
 
     // Walls

@@ -14,18 +14,18 @@
 /*-----------------------------------------------------------------*/
 typedef struct E_Basic_Enemy_1 E_Basic_Enemy_1;
 typedef enum E_BASIC_ENEMY_STATES_1 {
-	STATE_ENEMY_DEAD,
-	STATE_ENEMY_ACTIVE,
-	STATE_ENEMY_MOVING,
-	STATE_ENEMY_JUMPING,
-	STATE_ENEMY_NUM_STATES,
+	STATE_ENEMY1_DEAD,
+	STATE_ENEMY1_ACTIVE,
+	STATE_ENEMY1_MOVING,
+	STATE_ENEMY1_JUMPING,
+	STATE_ENEMY1_NUM_STATES,
 }E_BASIC_ENEMY_STATES_1;
 typedef struct E_Basic_Enemy_1 {
 	GameObject go;
 	E_BASIC_ENEMY_STATES_1 state;
 	
-	CP_BOOL grounded;
-	CP_BOOL tracking;
+	short grounded;
+	short tracking;
 
 	GameObject *nodes;
 	GameObject *myfloor;
