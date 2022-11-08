@@ -9,6 +9,7 @@
 #include "ui.h"
 #include "e_text_popup.h"
 #include "e_basicenemy_1.h"
+#include "e_basicenemy_2.h"
 #include "spriteData.h"
 #include "e_bullet.h"
 #include "e_weaponBox.h"
@@ -60,6 +61,7 @@ GameObject walls[MAX_WALLS];
 
 // Enemy stuff by Ryan
 E_Basic_Enemy_1 enemies[MAX_ENEMIES];
+E_Basic_Enemy_2 enemies2[MAX_ENEMIES];
 CP_Vector e_spawnPos1, e_spawnPos2; // Basic Enemy spawn locations
 CP_Vector e2_spawnPos[4];
 
@@ -260,7 +262,7 @@ void game_update(void)
 
 
     //printf("play pos %.2f,%.2f\n", player->go.pos.x, player->go.pos.y);
-
+#pragma region UPDATE
     // Update players
     for (int i = 0; i < playerCount; ++i) {
         if(player[i].go.active)
@@ -273,6 +275,7 @@ void game_update(void)
             bullets[i].Update(&bullets[i]);
     }
     // Update weapon box and spawning
+    {
     for (int i = 0; i < MAX_WEAPON_BOX; ++i) {
         if (weapon_boxes[i].go.active)
             weapon_boxes[i].Update(&weapon_boxes[i]);
@@ -307,9 +310,11 @@ void game_update(void)
             }
         }
     }
+    }
 
-    
+    // Update Enemy Lists
     UpdateEnemyList(enemies, MAX_ENEMIES);
+    UpdateEnemyList2(enemies, MAX_ENEMIES);
 
     if (CP_Input_KeyTriggered(KEY_Q))
         CP_Engine_Terminate();
@@ -353,8 +358,8 @@ void game_update(void)
             SpawnEnemy(0, e_spawnPos2);
 
     }
-
-
+#pragma endregion
+#pragma region COLLISION LOOPS
     // Collision Loops
     // Player - x
     for (int i = 0; i < playerCount; ++i)
@@ -508,12 +513,12 @@ void game_update(void)
         }
 
     }
-    
+#pragma endregion
 
     //----------------------------------------------------------------------------------------------------------------------
     // Render stuff here
     //----------------------------------------------------------------------------------------------------------------------
-
+#pragma region RENDER
     // Player 
     const CP_Color playerColor = CP_Color_Create(100, 0, 0, 255);
     for (int i = 0; i < playerCount; ++i) {
@@ -554,24 +559,32 @@ void game_update(void)
             CP_Graphics_DrawCircle(bullets[i].go.pos.x, bullets[i].go.pos.y, bullets[i].go.height);
         }
     }
-
-    // Enemies 
-    const CP_Color enemyColor = CP_Color_Create(125, 181, 130, 255);
-    const CP_Color enemyColor2 = CP_Color_Create(20, 227, 199, 255);
-    for (int i = 0; i < MAX_ENEMIES; ++i)
+    /*---------*/
+    // Enemies //
+    /*---------*/
+    // Enemy_1
     {
-        if (!enemies[i].go.active)
-            continue;
-        if (enemies[i].tracking)
+        const CP_Color enemyColor = CP_Color_Create(125, 181, 130, 255);
+        const CP_Color enemyColor2 = CP_Color_Create(20, 227, 199, 255);
+        for (int i = 0; i < MAX_ENEMIES; ++i)
         {
-            CP_Settings_Fill(enemyColor2);
-        }
-        else
-        {
-            CP_Settings_Fill(enemyColor);
-        }
-        CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
+            if (!enemies[i].go.active)
+                continue;
+            if (enemies[i].tracking)
+            {
+                CP_Settings_Fill(enemyColor2);
+            }
+            else
+            {
+                CP_Settings_Fill(enemyColor);
+            }
+            CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
         
+        }
+    }
+    // Enemy_2
+    {
+
     }
 
     // Walls
@@ -653,6 +666,7 @@ void game_update(void)
         update_popup(&popUp[i]);
         draw_popup(&popUp[i]);
     }
+#pragma endregion
 }
 
 void game_exit(void)
