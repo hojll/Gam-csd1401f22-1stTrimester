@@ -1,5 +1,12 @@
 #include "e_weaponBox.h"
 
+const float GRAVITY = 60.f;
+const float  MAX_GRAV_VEL = 500.f;
+enum {
+	MAX_TRIGO = 360,
+	FADE_TIME = 1
+};
+
 void WeaponBox_ActiveUpdate(E_WeaponBox* weaponBox)
 {
 	weaponBox->go.pos = CP_Vector_Add(weaponBox->go.pos, CP_Vector_Scale(weaponBox->go.vel, g_scaledDt));
