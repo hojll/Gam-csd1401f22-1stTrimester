@@ -64,14 +64,14 @@ void EnemytoWallCollision2(E_Basic_Enemy_2* enemy, GameObject wallreference[], i
 				}
 				else if (collision_dir == COLLISION_LEFT)
 				{
-					enemy->state = STATE_ENEMY_ACTIVE;
+					enemy->state = STATE_ENEMY2_ACTIVE;
 					enemy->go.pos.x = wallreference[j].pos.x - wallreference[j].width / 2.f - enemy->go.width / 2.f;
 					enemy->go.dir.x = -1;
 
 				}
 				else
 				{
-					enemy->state = STATE_ENEMY_ACTIVE;
+					enemy->state = STATE_ENEMY2_ACTIVE;
 					enemy->go.pos.x = wallreference[j].pos.x + wallreference[j].width / 2.f + enemy->go.width / 2.f;
 					enemy->go.dir.x = 1;
 
@@ -316,7 +316,7 @@ void SpawnEnemy2(int type, CP_Vector pos)
 
 void ResetEnemy2(E_Basic_Enemy_2* enemy)
 {
-	enemy->state = STATE_ENEMY_ACTIVE;
+	enemy->state = STATE_ENEMY2_ACTIVE;
 	enemy->HP = 0;
 	enemy->go.active = 0;
 	enemy->go.height = 50.f;

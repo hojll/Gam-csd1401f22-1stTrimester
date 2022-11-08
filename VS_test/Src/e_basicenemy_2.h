@@ -35,7 +35,7 @@ typedef struct E_Basic_Enemy_2 {
 	int enemyscore;
 
 
-	void (*Update[STATE_ENEMY_NUM_STATES])(E_BASIC_ENEMY_STATES_2*);
+	void (*Update[STATE_ENEMY2_NUM_STATES])(E_BASIC_ENEMY_STATES_2*);
 } E_Basic_Enemy_2;
 
 /*-----------------------------------------------------------------*/
