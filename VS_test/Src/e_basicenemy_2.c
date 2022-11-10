@@ -3,11 +3,11 @@
 #include "collision.h"
 
 Messenger g_messenger;
-static const float E_SPEED = 200.f;
-static const float GRAVITY = 70.f;
-static const float MAX_GRAV_VEL = 600.f;
-static const float JUMP_VEL = -1500.f;
-static const float JUMP_RANGE = 10.f;
+static const float E_SPEED = 700.f;
+static const float GRAVITY = 200.f;
+static const float MAX_GRAV_VEL = 1500.f;
+static const float JUMP_VEL = -2500.f;
+static const float JUMP_RANGE = 20.f;
 E_Basic_Enemy_2*InitializeEnemy2(E_Basic_Enemy_2 *enemy)
 {
 	return enemy;

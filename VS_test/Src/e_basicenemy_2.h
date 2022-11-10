@@ -4,7 +4,7 @@
 #include "entities.h"
 #include "e_player.h"
 
-#define MAX_PATHFINDING_NODES 6
+#define MAX_PATHFINDING_NODES 10
 /*-----------------------------------------------------------------*/
 // E_BASICENEMY ENTITY 2
 /*-----------------------------------------------------------------*/

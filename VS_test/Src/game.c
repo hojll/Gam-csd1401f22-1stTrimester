@@ -14,11 +14,13 @@
 #include "e_bullet.h"
 #include "e_weaponBox.h"
 #include "combo_counter_ui.h"
+#include "game_over.h"
+
 enum {
     MAX_BULLETS = 100,
     MAX_ENEMIES = 100,
     MAX_PLAYERS = 2,
-    MAX_WALLS = 10,
+    MAX_WALLS = 12,
     MAX_TEXT_POPUP = 20,
     MAX_WEAPON_BOX = 3,
 };
@@ -27,6 +29,8 @@ static const float WEAPON_BOX_SPAWN_TIME = 5;
 
 static const float DEFAULT_FONT_SIZE = 100.0f;
 #define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
+
+char GAMEOVER = 0;
 
 enum {
     OZNOLA_METER_MAX = 6,
@@ -137,7 +141,7 @@ void game_init(void)
     printf("Image: %-15s|  dims: %d, %d\n","player", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
     printf("Image: %-15s| dims: %d, %d\n", "background", CP_Image_GetWidth(backgroundSprite), CP_Image_GetHeight(backgroundSprite));
     /////////////////////////
-    CP_System_SetWindowSize(900, 900);
+    CP_System_SetWindowSize(1920, 1080);
     CP_Settings_RectMode(CP_POSITION_CENTER);
     //Assets/DigiPen_Singapore_WEB_RED.png
     for (int i = 0; i < MAX_PLAYERS; ++i) {
@@ -150,8 +154,8 @@ void game_init(void)
 
     // AI / ENEMY
     InitEnemyList(enemies, (int)MAX_ENEMIES, ai_nodes);
-    e_spawnPos1 = CP_Vector_Set(250, 110);
-    e_spawnPos2 = CP_Vector_Set(650, 110);
+    e_spawnPos1 = CP_Vector_Set(960, 110);
+    e_spawnPos2 = CP_Vector_Set(960, 110);
     e2_spawnPos[0] = CP_Vector_Set(200, 800);
     e2_spawnPos[1] = CP_Vector_Set(700, 800);
     e2_spawnPos[2] = CP_Vector_Set(200, 200);
@@ -163,13 +167,20 @@ void game_init(void)
     oznola_difficulty[3] = 16;
     oznola_difficulty[4] = 32;
 
+    //RIGHT SIDE
+    ai_nodes[9].pos = CP_Vector_Set(1410, 1004);    // Bottom Bottom
+    ai_nodes[8].pos = CP_Vector_Set(1600, 955);     // Bottom
+    ai_nodes[7].pos = CP_Vector_Set(1410, 725);     // Middle
+    ai_nodes[6].pos = CP_Vector_Set(1600, 525);     // Top
+    ai_nodes[5].pos = CP_Vector_Set(1410, 320);     // Top Top
     
-    ai_nodes[5].pos = CP_Vector_Set(200, 250); // top left
-    ai_nodes[4].pos = CP_Vector_Set(700, 250); // top right
-    ai_nodes[3].pos = CP_Vector_Set(450, 450); // middle
-    ai_nodes[2].pos = CP_Vector_Set(200, 650); // left
-    ai_nodes[1].pos = CP_Vector_Set(700, 650); // right
-    ai_nodes[0].pos = CP_Vector_Set(450, 850); // btm
+    //LEFT SIDE
+    ai_nodes[4].pos = CP_Vector_Set(510, 320);      // Top Top
+    ai_nodes[3].pos = CP_Vector_Set(280, 525);      // Top
+    ai_nodes[2].pos = CP_Vector_Set(510, 725);      // Middle
+    ai_nodes[1].pos = CP_Vector_Set(325, 955);      // Bottom
+    ai_nodes[0].pos = CP_Vector_Set(510, 1004);     // Bottom Bottom
+    
 
     for (int i = 0; i < MAX_PATHFINDING_NODES; i++)
         ai_nodes[i].active = 1; 
@@ -177,51 +188,69 @@ void game_init(void)
     // Walls
     // Bottom
     {
-        walls[0].pos = CP_Vector_Set(450, 850);
-        walls[0].height = 30.f;
+        walls[0].pos = CP_Vector_Set(475, 1005);
+        walls[0].height = 50.f;
         walls[0].width = 800.f;
         walls[0].active = 1;
-        // Top
-        walls[1].pos = CP_Vector_Set(450, 50);
-        walls[1].height = 30.f;
+        // Bottom 2
+        walls[1].pos = CP_Vector_Set(1445, 1005);
+        walls[1].height = 50.f;
         walls[1].width = 800.f;
         walls[1].active = 1;
-        // Left
-        walls[2].pos = CP_Vector_Set(50, 450);
-        walls[2].height = 830.f;
-        walls[2].width = 30.f;
+        // Top
+        walls[2].pos = CP_Vector_Set(475, 75);
+        walls[2].height = 50.f;
+        walls[2].width = 800.f;
         walls[2].active = 1;
-        // Right
-        walls[3].pos = CP_Vector_Set(850, 450);
-        walls[3].height = 830.f;
-        walls[3].width = 30.f;
+        // Top2
+        walls[3].pos = CP_Vector_Set(1445, 75);
+        walls[3].height = 50.f;
+        walls[3].width = 800.f;
         walls[3].active = 1;
-
-        // Walls in the level
-        walls[4].pos = CP_Vector_Set(250, 650);
-        walls[4].height = 20.f;
-        walls[4].width = 200.f;
+        // Left
+        walls[4].pos = CP_Vector_Set(75, 540);
+        walls[4].height = 980.f;
+        walls[4].width = 50.f;
         walls[4].active = 1;
-
-        walls[5].pos = CP_Vector_Set(650, 650);
-        walls[5].height = 20.f;
-        walls[5].width = 200.f;
+        // Right
+        walls[5].pos = CP_Vector_Set(1845, 540);
+        walls[5].height = 980.f;
+        walls[5].width = 50.f;
         walls[5].active = 1;
 
-        walls[6].pos = CP_Vector_Set(450, 450);
-        walls[6].height = 20.f;
-        walls[6].width = 300.f;
+        // Walls in the level
+        
+
+        walls[6].pos = CP_Vector_Set(225, 530);
+        walls[6].height = 50.f;
+        walls[6].width = 250.f;
         walls[6].active = 1;
 
-        walls[7].pos = CP_Vector_Set(250, 250);
-        walls[7].height = 20.f;
-        walls[7].width = 200.f;
+        walls[7].pos = CP_Vector_Set(1695, 525);
+        walls[7].height = 50.f;
+        walls[7].width = 250.f;
         walls[7].active = 1;
 
-        walls[8].pos = CP_Vector_Set(650, 250);
-        walls[8].height = 20.f;
-        walls[8].width = 200.f;
+        walls[8].pos = CP_Vector_Set(960, 725);
+        walls[8].height = 50.f;
+        walls[8].width = 1000.f;
         walls[8].active = 1;
+
+        walls[9].pos = CP_Vector_Set(275, 955);
+        walls[9].height = 50.f;
+        walls[9].width = 350.f;
+        walls[9].active = 1;
+
+        walls[10].pos = CP_Vector_Set(1645, 955);
+        walls[10].height = 50.f;
+        walls[10].width = 350.f;
+        walls[10].active = 1;
+
+        walls[11].pos = CP_Vector_Set(960, 325);
+        walls[11].height = 50.f;
+        walls[11].width = 1000.f;
+        walls[11].active = 1;
+        
     }
 
 
@@ -250,6 +279,8 @@ void game_init(void)
     }
     // So the first box spawns faster
     spawnWeaponBoxTimer = 2;
+    GAMEOVER = 0;
+    reset_timer(100.0f); // reset timer
 }
 
 void game_update(void)
@@ -314,7 +345,7 @@ void game_update(void)
 
     // Update Enemy Lists
     UpdateEnemyList(enemies, MAX_ENEMIES);
-    UpdateEnemyList2(enemies, MAX_ENEMIES);
+    UpdateEnemyList2(enemies2, MAX_ENEMIES);
 
     if (CP_Input_KeyTriggered(KEY_Q))
         CP_Engine_Terminate();
@@ -367,6 +398,12 @@ void game_update(void)
         if (!player[i].go.active)
             continue;
         CP_BOOL player_grounded_flag = 0;
+
+        if (player[i].go.pos.x > CP_System_GetWindowWidth() || player[i].go.pos.x < 0 || player[i].go.pos.y > CP_System_GetWindowHeight() || player[i].go.pos.y < 50)
+        {
+            player[i].go.active = 0;
+            GAMEOVER = 1;
+        }
 
         // Player - Wall
         for (int j = 0; j < MAX_WALLS; ++j)
@@ -436,6 +473,34 @@ void game_update(void)
                             (int)DEFAULT_FONT_SIZE,
                             3.0f,
                             Player_RandomWeapon(&player[i]));
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Player - Enemy
+        for (int j = 0; j < MAX_ENEMIES; j++)
+        {
+            if (!enemies[j].go.active)
+                continue;
+            if (AABB(player[i].go, enemies[j].go))
+            {
+                enemies[j].go.active = 0;
+                player[i].go.active = 0;
+                GAMEOVER = 1;
+
+                for (int p = 0; p < MAX_TEXT_POPUP; ++p)
+                {
+                    if (!(popUp[p].go.active))
+                    {
+                        set_popup(&popUp[p],
+                        player->go.pos.x,
+                        player->go.pos.y - player->go.height / 2.f - 10.f,
+                        CP_Color_Create(255, 0, 0, 255),
+                        (int)DEFAULT_FONT_SIZE,
+                        3.0f,
+                        "DIED");
                         break;
                     }
                 }
@@ -597,6 +662,7 @@ void game_update(void)
     // Render stuff here
     //----------------------------------------------------------------------------------------------------------------------
 #pragma region RENDER
+    CP_Settings_Stroke(CP_Color_Create(0, 0, 0, 255));
     // Background
     CP_Image_Draw(backgroundSprite, 0.f, 0.f, 1920, 1800, 255);
     // Player 
@@ -705,6 +771,7 @@ void game_update(void)
     }
 
     // UI ELEMENTS
+    
     CP_Settings_TextSize(DEFAULT_FONT_SIZE);
     CP_Settings_Fill(DEFAULT_FONT_COLOR);
     update_timer();
@@ -752,6 +819,12 @@ void game_update(void)
     {
         update_popup(&popUp[i]);
         draw_popup(&popUp[i]);
+    }
+
+    //GAME OVER
+    if (GAMEOVER)
+    {
+        game_over_popup();
     }
 #pragma endregion
 }

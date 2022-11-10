@@ -109,8 +109,10 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClCompile Include="..\Src\e_text_popup.c" />
     <ClCompile Include="..\Src\e_weaponBox.c" />
     <ClCompile Include="..\Src\game.c" />
+    <ClCompile Include="..\Src\game_over.c" />
     <ClCompile Include="..\Src\main.c" />
     <ClCompile Include="..\Src\main_menu.c" />
+    <ClCompile Include="..\Src\restart.c" />
     <ClCompile Include="..\Src\spriteData.c" />
     <ClCompile Include="..\Src\ui.c" />
     <ClCompile Include="..\Src\utilities.c" />
@@ -126,9 +128,11 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClInclude Include="..\Src\e_text_popup.h" />
     <ClInclude Include="..\Src\e_weaponBox.h" />
     <ClInclude Include="..\Src\game.h" />
+    <ClInclude Include="..\Src\game_over.h" />
     <ClInclude Include="..\Src\main_menu.h" />
     <ClInclude Include="..\Src\messenger.h" />
     <ClInclude Include="..\Src\e_player.h" />
+    <ClInclude Include="..\Src\restart.h" />
     <ClInclude Include="..\Src\spriteData.h" />
     <ClInclude Include="..\Src\ui.h" />
     <ClInclude Include="..\Src\utilities.h" />

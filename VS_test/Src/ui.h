@@ -1,6 +1,8 @@
 #ifndef UI_H
 #define UI_H
 
+void reset_timer(float time);
+
 void set_timer(float time_in_seconds);
 
 void update_timer(void);

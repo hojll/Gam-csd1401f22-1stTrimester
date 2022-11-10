@@ -5,12 +5,12 @@
 #include "utilities.h"
 
 Messenger g_messenger;
-#define PLAYER_SPEED 250.f
-#define ROLL_SPEED PLAYER_SPEED*3.f
+#define PLAYER_SPEED 1000.f
+#define ROLL_SPEED PLAYER_SPEED*2.f
 #define ROLL_DURATION 0.5f
-#define GRAVITY 2000.f
-#define MAX_GRAV_VEL 800.f
-#define JUMP_VEL -1000.f
+#define GRAVITY 8000.f
+#define MAX_GRAV_VEL 4000.f
+#define JUMP_VEL -1900.f
 #define DEFAULT_ATTACK_SPEED 0.3f
 // DEFINITIONS FOR ANIMATIONS
 #define FRAME_DIM_WIDTH 320
@@ -195,10 +195,10 @@ void InitializePlayer(E_Player *player) {
 	///////////////////////////////////////////////////////////
 	player->go.pos = CP_Vector_Zero();
 	player->go.vel = CP_Vector_Zero();
-	player->go.pos.y = 200.f;
-	player->go.pos.x = 450.f;
-	player->go.width = 50.f;
-	player->go.height = 50.f;
+	player->go.pos.y = 460.f;
+	player->go.pos.x = 960.f;
+	player->go.width = 75.f;
+	player->go.height = 75.f;
 	player->grounded = 0;
 	player->currAmmo = -1;
 	player->maxAmmo = -1;

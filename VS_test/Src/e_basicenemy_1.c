@@ -8,11 +8,11 @@
 
 
 Messenger g_messenger;
-static const float E_SPEED = 200.f;
-static const float GRAVITY = 70.f;
-static const float MAX_GRAV_VEL = 600.f;
-static const float JUMP_VEL = -1500.f;
-static const float JUMP_RANGE = 10.f;
+static const float E_SPEED = 700.f;
+static const float GRAVITY = 200.f;
+static const float MAX_GRAV_VEL = 1500.f;
+static const float JUMP_VEL = -2500.f;
+static const float JUMP_RANGE = 20.f;
 
 /*----------------------------------------------------*/
 // ENEMI
@@ -122,7 +122,7 @@ void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[])
 		CP_BOOL enemyGroundedFlag = 0;
 		
 		// Player - Wall
-		for (int j = 0; j < 10; ++j)
+		for (int j = 0; j < 12; ++j)
 		{
 			if (!wallreference[j].active)
 				continue;

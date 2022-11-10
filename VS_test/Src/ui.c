@@ -4,8 +4,14 @@
 #define DEFAULT_FONT_SIZE 100.0f
 #define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
 
-float time = 100.0f;
-char timer_text[5];
+static float time = 100.0f;
+static char timer_text[5];
+extern char GAMEOVER;
+
+void reset_timer(float timer)
+{
+    time = timer;
+}
 
 void set_timer(float time_in_seconds)
 {
@@ -16,7 +22,10 @@ void update_timer(void)
 {
     sprintf_s(timer_text, sizeof(timer_text), "%d", (int)time);
     CP_Font_DrawText(timer_text, CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.1f);
-    time -= CP_System_GetDt();
+    if (time >= 0 && !GAMEOVER)
+    {
+        time -= CP_System_GetDt();
+    }
 }
 
 void bar_system(float x, float y, float width, float height, int value, int total_value)

@@ -1,11 +1,11 @@
 #include "e_bullet.h"
 #include "messenger.h"
 
-#define BULLET_SPEED 350.f
+#define BULLET_SPEED 1500.f
 
 #define SCATTER_AMOUNT 10
 #define SCATTER_LIFETIME -100.f
-#define SCATTER_SPEED 400.f
+#define SCATTER_SPEED 1000.f
 
 void Bullet_ActiveUpdate(E_Bullet* bullet)
 {
