@@ -65,8 +65,7 @@ E_Bullet bullets[MAX_BULLETS];
 GameObject walls[MAX_WALLS];
 
 // Enemy stuff by Ryan
-E_Basic_Enemy_1 enemies[MAX_ENEMIES];
-E_Basic_Enemy_2 enemies2[MAX_ENEMIES];
+E_Basic_Enemy enemies[MAX_ENEMIES];
 CP_Vector e_spawnPos1, e_spawnPos2; // Basic Enemy spawn locations
 CP_Vector e2_spawnPos[4];
 
@@ -109,7 +108,7 @@ void MessageSpawnEnemy(void* messageInfo) {
     // Spawn enemy here
     for (int j = 0; j < MAX_ENEMIES; ++j)
     {
-        E_Basic_Enemy_1* curr = &enemies[j];
+        E_Basic_Enemy* curr = &enemies[j];
         if (curr->go.active)
             continue;
         curr->go.active = 1;
@@ -345,7 +344,6 @@ void game_update(void)
 
     // Update Enemy Lists
     UpdateEnemyList(enemies, MAX_ENEMIES);
-    UpdateEnemyList2(enemies2, MAX_ENEMIES);
 
     if (CP_Input_KeyTriggered(KEY_Q))
         CP_Engine_Terminate();
@@ -560,32 +558,6 @@ void game_update(void)
                 killconfirmed();
             }
         }
-
-        // Bullet - Enemy2
-        for (int j = 0; j < MAX_ENEMIES; j++)
-        {
-            if (!enemies2[j].go.active)
-                continue;
-            if (AABB(bullets[i].go, enemies2[j].go))
-            {
-                bullets[i].collide_pos = bullets[i].go.pos;
-                COLLISION_DIRECTION collision_dir = AABB_Direction(bullets[i].go, enemies2[j].go);
-                if (collision_dir == COLLISION_TOP)
-                    bullets[i].collide_pos.y = enemies2[j].go.pos.y - enemies2[j].go.height / 2.f - bullets[i].go.height / 2.f;
-                else if (collision_dir == COLLISION_BOTTOM)
-                    bullets[i].collide_pos.y = enemies2[j].go.pos.y + enemies2[j].go.height / 2.f + bullets[i].go.height / 2.f;
-                else if (collision_dir == COLLISION_LEFT)
-                    bullets[i].collide_pos.x = enemies2[j].go.pos.x - enemies2[j].go.width / 2.f - bullets[i].go.width / 2.f;
-                else
-                    bullets[i].collide_pos.x = enemies2[j].go.pos.x + enemies2[j].go.width / 2.f + bullets[i].go.width / 2.f;
-
-                bullets->Destroy(&bullets[i]);
-
-                enemies2[j].go.active = 0;
-                killconfirmed();
-            }
-        }
-
     }
 
     //Weapon Box - x
@@ -654,7 +626,7 @@ void game_update(void)
         }
 
     }
-    // ENEMY 2
+    
 
 #pragma endregion
 
@@ -726,17 +698,6 @@ void game_update(void)
             }
             CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
         
-        }
-    }
-    // Enemy_2
-    {
-        const CP_Color enemyColor[] = { CP_Color_Create(125, 181, 130, 255) , CP_Color_Create(20, 227, 199, 255) };
-        for (int i = 0; i < MAX_ENEMIES; ++i)
-        {
-            if (!enemies2[i].go.active)
-                continue;
-            CP_Settings_Fill(enemyColor[enemies2[i].tracking]);
-            CP_Graphics_DrawCircle(enemies2[i].go.pos.x, enemies2[i].go.pos.y, enemies2[i].go.height);
         }
     }
 

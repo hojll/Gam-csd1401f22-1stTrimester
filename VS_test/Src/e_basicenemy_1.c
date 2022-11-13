@@ -18,7 +18,7 @@ static const float JUMP_RANGE = 20.f;
 // ENEMI
 /*----------------------------------------------------*/
 
-void Enemy_ActiveUpdate(E_Basic_Enemy_1 *enemy)
+void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)
 {
 	if (enemy->go.active)
 	{
@@ -37,18 +37,18 @@ void Enemy_ActiveUpdate(E_Basic_Enemy_1 *enemy)
 
 
 
-void Enemy_DeadUpdate(E_Basic_Enemy_1* enemy)
+void Enemy_DeadUpdate(E_Basic_Enemy* enemy)
 {
 
 }
 
-E_Basic_Enemy_1 InitializeEnemy()
+E_Basic_Enemy InitializeEnemy_1()
 {
-	E_Basic_Enemy_1 retval;
-	retval.Update[STATE_ENEMY1_DEAD] = Enemy_DeadUpdate;
-	retval.Update[STATE_ENEMY1_ACTIVE] = Enemy_ActiveUpdate;
+	E_Basic_Enemy retval;
+	retval.Update[STATE_ENEMY_DEAD] = Enemy_DeadUpdate;
+	retval.Update[STATE_ENEMY_ACTIVE] = Enemy_ActiveUpdate;
 
-	retval.state = STATE_ENEMY1_ACTIVE;
+	retval.state = STATE_ENEMY_ACTIVE;
 	retval.HP = 0;
 	retval.go.active = 0;
 	retval.go.height = 50.f;
@@ -71,10 +71,10 @@ E_Basic_Enemy_1 InitializeEnemy()
 	return retval;
 }
 
-void ResetEnemy(E_Basic_Enemy_1* enemy)
+void ResetEnemy(E_Basic_Enemy* enemy)
 {
 	
-	enemy->state = STATE_ENEMY1_ACTIVE;
+	enemy->state = STATE_ENEMY_ACTIVE;
 	enemy->HP = 0;
 	enemy->go.active = 0;
 	enemy->go.height = 50.f;
@@ -87,17 +87,17 @@ void ResetEnemy(E_Basic_Enemy_1* enemy)
 }
 
 // Helper function
-void InitEnemyList(E_Basic_Enemy_1 arr[], int size, GameObject nodes[])
+void InitEnemyList(E_Basic_Enemy arr[], int size, GameObject nodes[])
 {
 	srand(123);	
 	for (int i = 0; i < size; ++i)
 	{
-		arr[i] = InitializeEnemy();
+		arr[i] = InitializeEnemy_1();
 		arr[i].nodes = nodes;
 	}
 }
 
-void UpdateEnemyList(E_Basic_Enemy_1 arr[], int size)
+void UpdateEnemyList(E_Basic_Enemy arr[], int size)
 {
 	for (int i = 0; i < size; ++i)
 	{
@@ -112,7 +112,7 @@ void UpdateEnemyList(E_Basic_Enemy_1 arr[], int size)
 }
 
 
-void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[])
+void EnemytoWallCollision(E_Basic_Enemy *enemy, GameObject wallreference[])
 {
 	//hard code for now
 	for (int i = 0; i < 10; ++i)
@@ -144,14 +144,14 @@ void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[])
 				}
 				else if (collision_dir == COLLISION_LEFT)
 				{
-					enemy->state = STATE_ENEMY1_ACTIVE;
+					enemy->state = STATE_ENEMY_ACTIVE;
 					enemy->go.pos.x = wallreference[j].pos.x - wallreference[j].width / 2.f - enemy->go.width / 2.f;
 					enemy->go.dir.x = -1;
 
 				}
 				else
 				{
-					enemy->state = STATE_ENEMY1_ACTIVE;
+					enemy->state = STATE_ENEMY_ACTIVE;
 					enemy->go.pos.x = wallreference[j].pos.x + wallreference[j].width / 2.f + enemy->go.width / 2.f;					
 					enemy->go.dir.x = 1;
 
@@ -176,7 +176,7 @@ void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[])
 }
 
 
-void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size)
+void EnemyPathing(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size)
 {
 	if (!enemy->tracking)
 		return;

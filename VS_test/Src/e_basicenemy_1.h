@@ -12,17 +12,19 @@
 /*-----------------------------------------------------------------*/
 // E_BASICENEMY ENTITY 1
 /*-----------------------------------------------------------------*/
-typedef struct E_Basic_Enemy_1 E_Basic_Enemy_1;
+typedef struct E_Basic_Enemy E_Basic_Enemy;
 typedef enum E_BASIC_ENEMY_STATES_1 {
-	STATE_ENEMY1_DEAD,
-	STATE_ENEMY1_ACTIVE,
-	STATE_ENEMY1_MOVING,
-	STATE_ENEMY1_JUMPING,
-	STATE_ENEMY1_NUM_STATES,
+	STATE_ENEMY_DEAD,
+	STATE_ENEMY_ACTIVE,
+	STATE_ENEMY_MOVING,
+	STATE_ENEMY_JUMPING,
+	STATE_ENEMY_NUM_STATES,
 }E_BASIC_ENEMY_STATES_1;
-typedef struct E_Basic_Enemy_1 {
+typedef struct E_Basic_Enemy {
+	// TODO: MIGRATE ENEMY DETERMINED STATS HERE
+	// THAT MEANS CONSTANT VALUES IN .c SHOULD BE REPRESENTED HERE
 	GameObject go;
-	E_BASIC_ENEMY_STATES_1 state;
+	int state;
 	
 	short grounded;
 	short tracking;
@@ -38,8 +40,8 @@ typedef struct E_Basic_Enemy_1 {
 	int enemyscore;
 
 
-	void (*Update[STATE_ENEMY1_NUM_STATES])(E_BASIC_ENEMY_STATES_1*);
-} E_Basic_Enemy_1;
+	void (*Update[STATE_ENEMY_NUM_STATES])(E_BASIC_ENEMY_STATES_1*);
+} E_Basic_Enemy;
 /*-----------------------------------------------------------------*/
 // Other references
 /*-----------------------------------------------------------------*/
@@ -47,17 +49,22 @@ typedef struct E_Basic_Enemy_1 {
 /*-----------------------------------------------------------------*/
 // Functions 
 /*-----------------------------------------------------------------*/
-E_Basic_Enemy_1 InitializeEnemy();
+E_Basic_Enemy InitializeEnemy_1();
 
-void InitEnemyList(E_Basic_Enemy_1 arr[], int size, GameObject nodes[]);
+void InitEnemyList(E_Basic_Enemy arr[], int size, GameObject nodes[]);
 
-void UpdateEnemyList(E_Basic_Enemy_1 arr[], int size);
+void UpdateEnemyList(E_Basic_Enemy arr[], int size);
 
-void EnemytoWallCollision(E_Basic_Enemy_1 *enemy, GameObject wallreference[]);
+void EnemytoWallCollision(E_Basic_Enemy *enemy, GameObject wallreference[]);
 
-void EnemyPathing(E_Basic_Enemy_1* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size);
+void EnemyPathing(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size);
 
 void SpawnEnemy(int type, CP_Vector pos);
 
-void ResetEnemy(E_Basic_Enemy_1* enemy);
+void ResetEnemy(E_Basic_Enemy* enemy);
+
+/*-----------------------------------------------------------------*/
+// Declarations for enemy state functions (for reuses)
+/*-----------------------------------------------------------------*/
+void Enemy_ActiveUpdate(E_Basic_Enemy* enemy);
 #endif
