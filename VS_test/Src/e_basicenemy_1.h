@@ -4,10 +4,7 @@
 #include "entities.h"
 #include "e_player.h"
 
-#define MAX_PATHFINDING_NODES 6
-
-
-
+#define MAX_PATHFINDING_NODES 12
 
 /*-----------------------------------------------------------------*/
 // E_BASICENEMY ENTITY 1
@@ -31,9 +28,8 @@ typedef struct E_Basic_Enemy {
 
 	GameObject *nodes;
 	GameObject *myfloor;
+	GameObject* debugshortestnode;
 
-	GameObject e_path[MAX_PATHFINDING_NODES];
-	int pathcount;
 	// Stats
 	double HP;
 	int enemytype;
@@ -58,6 +54,8 @@ void UpdateEnemyList(E_Basic_Enemy arr[], int size);
 void EnemytoWallCollision(E_Basic_Enemy *enemy, GameObject wallreference[]);
 
 void EnemyPathing(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size);
+
+void EnemyPathing3(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size, GameObject walls[]);
 
 void SpawnEnemy(int type, CP_Vector pos);
 
