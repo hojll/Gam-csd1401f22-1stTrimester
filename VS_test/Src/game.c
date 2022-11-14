@@ -37,9 +37,10 @@ enum {
     OZNOLA_BASE_DIFFICULTY_MAX = 3
 };
     //o z n o l a
-static const float BASE_SPAWN_FREQUENCY = 1.0f;
-static const float COMBO_TIME_DEDUCTION = 1.0f;
-static const float COMBO_TIME = 2.f;
+static const float BASE_SPAWN_FREQUENCY = 1.0f; 
+static const float COMBO_TIME_DEDUCTION = 1.0f; // speed where the combo end
+static const float COMBO_TIME = 2.f; // time given before combo counter end
+static const float DIFFICULT_INCREMENT = 10.f; // difficulty increment
 
 /*
 In �Configuration Properties->Debugging- Working Directory�
@@ -73,15 +74,15 @@ GameObject ai_nodes[MAX_PATHFINDING_NODES];
 CP_BOOL shownodes = 1;
 GameObject *playerPrevPlatform;
 // Oznola Game Loop stuff
-int oznola_meter = 0;
-int oznola_difficulty[5];
-double spawntimer = 0;
+int level = 0;
+double difficulty_timer = 0;
+float spawntimer[3];
 int combocounter = 0;
 double combocounter_timer = 0;
 double show_oznometer_fade = 0;
+int gamestart = 0;
 
 TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
-
 E_WeaponBox weapon_boxes[MAX_WEAPON_BOX];
 float spawnWeaponBoxTimer;
 
@@ -164,16 +165,19 @@ void game_init(void)
     InitEnemyList(enemies, (int)MAX_ENEMIES, ai_nodes);
     e_spawnPos1 = CP_Vector_Set(960, 110);
     e_spawnPos2 = CP_Vector_Set(960, 110);
-    e2_spawnPos[0] = CP_Vector_Set(200, 800);
-    e2_spawnPos[1] = CP_Vector_Set(700, 800);
-    e2_spawnPos[2] = CP_Vector_Set(200, 200);
-    e2_spawnPos[3] = CP_Vector_Set(700, 200);
+
+    e2_spawnPos[0] = CP_Vector_Set(150, 150);
+    e2_spawnPos[1] = CP_Vector_Set(1750, 150);
+    e2_spawnPos[2] = CP_Vector_Set(150, 800);
+    e2_spawnPos[3] = CP_Vector_Set(1750, 800);
+
+    for (int k = 0; k < 3; k++)
+    {
+        spawntimer[k] = BASE_SPAWN_FREQUENCY;
+    }
     
-    oznola_difficulty[0] = 2;
-    oznola_difficulty[1] = 4;
-    oznola_difficulty[2] = 8;
-    oznola_difficulty[3] = 16;
-    oznola_difficulty[4] = 32;
+
+    gamestart = 0;
 
     // AI NODES
     {
@@ -193,8 +197,8 @@ void game_init(void)
         ai_nodes[8].pos = CP_Vector_Set(1360, 325);
         ai_nodes[9].pos = CP_Vector_Set(560, 325);
 
-        ai_nodes[10].pos = CP_Vector_Set(840, 1005);
-        ai_nodes[11].pos = CP_Vector_Set(1080, 1005);
+        ai_nodes[10].pos = CP_Vector_Set(860, 1005);
+        ai_nodes[11].pos = CP_Vector_Set(1060, 1005);
 
         for (int i = 0; i < MAX_PATHFINDING_NODES; i++)
         {
@@ -271,7 +275,7 @@ void game_init(void)
         
     }
 
-
+    player->go.faceDir = 1;
     g_scaledDt = 0.f;
     
     // MESSAGE FUNC POINTER INIT
@@ -298,7 +302,7 @@ void game_init(void)
     // So the first box spawns faster
     spawnWeaponBoxTimer = 2;
     GAMEOVER = 0;
-    reset_timer(100.0f); // reset timer
+    reset_timer(60.0f); // reset timer
 }
 
 void game_update(void)
@@ -367,45 +371,102 @@ void game_update(void)
     if (CP_Input_KeyTriggered(KEY_Q))
         CP_Engine_Terminate();
 
-    // Debug Spawn Enemy
-    if (CP_Input_KeyTriggered(KEY_EQUAL)) {
-        SpawnEnemyMessage enemy;
-        int random_pos = returnRange(1, 50);
-        if (random_pos <= 25)
-            enemy.position = e_spawnPos1;
-        else
-            enemy.position = e_spawnPos2;
-
-        enemy.tracking = 0;
-        g_messenger.messages[MSG_SPAWN_ENEMY1](&enemy);
-    }
-
-    if (CP_Input_KeyTriggered(KEY_MINUS)) {
-        SpawnEnemy(1, e2_spawnPos[0]);
-    }
-    if (CP_Input_KeyTriggered(KEY_0)) {
-        SpawnEnemy(1, e2_spawnPos[1]);
-    }
-    if (CP_Input_KeyTriggered(KEY_9)) {
-        SpawnEnemy(1, e2_spawnPos[2]);
-    }
-    if (CP_Input_KeyTriggered(KEY_8)) {
-        SpawnEnemy(1, e2_spawnPos[3]);
-    }
-
-
-     // spawning frequency
-   // spawntimer += 1.0f * CP_System_GetDt();
-    if (spawntimer > BASE_SPAWN_FREQUENCY)
+    
+#pragma region ENEMY_SPAWN_STUFF
+     // GameLoop stuff
+    if (gamestart == 1)
     {
-        spawntimer = 0.0f; // spawn
-        int random_pos = returnRange(1, 50);
-        if (random_pos <= 25)
-            SpawnEnemy(0, e_spawnPos1);
-        else
-            SpawnEnemy(0, e_spawnPos2);
+        /*if (time < 0)
+        {
 
+        }*/
+        difficulty_timer += 1.0f * CP_System_GetDt();
+        if (difficulty_timer >= DIFFICULT_INCREMENT){
+            difficulty_timer = 0.0f;
+            ++level;
+        }
+        // Basic Dumb enemy spawning
+        spawntimer[0] += 1.0f * CP_System_GetDt();
+        if (spawntimer[0] > BASE_SPAWN_FREQUENCY) {
+            spawntimer[0] = 0.0f; // spawn
+            int random_pos = returnRange(1, 50);
+            if (random_pos <= 25)
+                SpawnEnemy(0, e_spawnPos1);
+            else
+                SpawnEnemy(0, e_spawnPos2);
+        }
+        if (level > 0)
+        {
+            spawntimer[1] += 1.0f * CP_System_GetDt();
+            if(spawntimer[1] > BASE_SPAWN_FREQUENCY + 3){
+                spawntimer[1] = 0.0f;
+                int random_pos = returnRange(1, 100);
+                if (random_pos <= 25)
+                    SpawnEnemy(1, e2_spawnPos[0]);
+                else if (random_pos <= 50)
+                    SpawnEnemy(1, e2_spawnPos[1]);
+                else if (random_pos <= 75)
+                    SpawnEnemy(1, e2_spawnPos[2]);
+                else if (random_pos <= 100)
+                    SpawnEnemy(1, e2_spawnPos[3]);
+
+            }
+        }
     }
+    else
+    {
+        if (gamestart == 0){
+            if (CP_Input_KeyTriggered(KEY_SPACE)){
+                gamestart = 1;
+                for (int i = 0; i < MAX_TEXT_POPUP; ++i){
+                    if (!(popUp[i].go.active)){
+                        set_popup(&popUp[i], CP_System_GetDisplayWidth() / 2,
+                            CP_System_GetDisplayHeight() / 2,
+                            CP_Color_Create(255, 0, 0, 255), 
+                            250, 2.0f, "START");
+                        break;
+                    }
+                }
+
+            }
+        }
+    }
+#pragma endregion
+
+    // Debug Spawn Enemy
+    {
+        // Debug Spawn Enemy
+        if (CP_Input_KeyTriggered(KEY_EQUAL)) {
+            SpawnEnemyMessage enemy;
+            int random_pos = returnRange(1, 50);
+            if (random_pos <= 25)
+                enemy.position = e_spawnPos1;
+            else
+                enemy.position = e_spawnPos2;
+
+            enemy.tracking = 0;
+            g_messenger.messages[MSG_SPAWN_ENEMY1](&enemy);
+        }
+
+        if (CP_Input_KeyTriggered(KEY_MINUS)) {
+            SpawnEnemy(1, e2_spawnPos[0]);
+        }
+        if (CP_Input_KeyTriggered(KEY_0)) {
+            SpawnEnemy(1, e2_spawnPos[1]);
+        }
+        if (CP_Input_KeyTriggered(KEY_9)) {
+            SpawnEnemy(1, e2_spawnPos[2]);
+        }
+        if (CP_Input_KeyTriggered(KEY_8)) {
+            SpawnEnemy(1, e2_spawnPos[3]);
+        }
+
+        if (CP_Input_MouseTriggered(MOUSE_BUTTON_RIGHT))
+        {
+            SpawnEnemy(1, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
+        }
+    }
+    
 #pragma endregion
 #pragma region COLLISION LOOPS
     // Collision Loops
@@ -647,10 +708,6 @@ void game_update(void)
 
     }
     
-    if (CP_Input_MouseTriggered(MOUSE_BUTTON_RIGHT))
-    {
-        SpawnEnemy(1, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
-    }
 
 #pragma endregion
 
@@ -734,7 +791,6 @@ void game_update(void)
             }
             CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
             CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y + enemies[i].go.height + 20, 5);
-
             CP_Settings_Stroke(CP_Color_Create(255, 0, 0, 255));
             if (enemies[i].debugshortestnode)
                 CP_Graphics_DrawLine(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].debugshortestnode->pos.x, enemies[i].debugshortestnode->pos.y);
@@ -756,6 +812,7 @@ void game_update(void)
     }
 
     // Render AI Pathfinding nodes
+    // Render enemy spawn location
     if (shownodes)
     {
         const CP_Color nodeColor = CP_Color_Create(118, 78, 191, 255);
@@ -764,7 +821,16 @@ void game_update(void)
         {
             CP_Graphics_DrawRect(ai_nodes[i].pos.x, ai_nodes[i].pos.y, 20, 20);
         }
+    
+        const CP_Color spawnloc = CP_Color_Create(33, 255, 185, 255);
+        CP_Settings_Fill(spawnloc);
+        for (int i = 0; i < 4; ++i)
+        {
+            CP_Graphics_DrawRect(e2_spawnPos[i].x,
+                e2_spawnPos[i].y, 20, 20);
+        }
     }
+    
 
     // UI ELEMENTS
     

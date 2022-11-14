@@ -37,11 +37,11 @@ void PlayerWeapon_Init(E_Player* player, BULLET_TYPE bulletType)
 		break;
 	case BULLET_SCATTER:
 		player->attackSpeed = DEFAULT_ATTACK_SPEED;
-		player->currAmmo = 10;
+		player->currAmmo = 5;
 		break;
 	case BULLET_SMG:
 		player->attackSpeed = DEFAULT_ATTACK_SPEED / 5.f;
-		player->currAmmo = 50;
+		player->currAmmo = 25;
 		break;
 	}
 	player->maxAmmo = player->currAmmo;

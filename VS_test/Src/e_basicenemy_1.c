@@ -8,7 +8,8 @@
 
 
 Messenger g_messenger;
-static const float E_SPEED = 700.f;
+static const float E_SPEED = 550.f;
+static const float E_SPEED2 = 690.f;
 static const float GRAVITY = 200.f;
 static const float MAX_GRAV_VEL = 1500.f;
 static const float JUMP_VEL1 = -2500.f;
@@ -25,7 +26,11 @@ void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)
 {
 	if (enemy->go.active)
 	{
-		enemy->go.vel.x = enemy->go.dir.x * E_SPEED;
+		if(enemy->tracking == 0)
+			enemy->go.vel.x = enemy->go.dir.x * E_SPEED;
+		else
+			enemy->go.vel.x = enemy->go.dir.x * E_SPEED2;
+
 		enemy->go.pos.x +=  enemy->go.vel.x * g_scaledDt;
 		enemy->go.pos.y += enemy->go.vel.y * g_scaledDt;
 		if (!enemy->grounded && enemy->go.vel.y < MAX_GRAV_VEL)
