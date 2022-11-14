@@ -118,6 +118,12 @@ void MessageSpawnEnemy(void* messageInfo) {
         break;
     }
 }
+
+void MessageToPlayerDir(void* messageInfo) {
+    ToPlayerDirMessage* msg = (ToPlayerDirMessage*)messageInfo;
+    if (msg->entityPos.y > player[0].go.pos.y - player[0].go.height / 2.f)
+        msg->direction = player[0].go.pos.x - msg->entityPos.x;
+}
 #pragma endregion
 
 // call this function everytime you kill an enemy

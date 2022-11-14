@@ -13,7 +13,7 @@ Messenger g_messenger;
 void Enemy_2_ActiveUpdate(E_Basic_Enemy* enemy) {
 	Enemy_ActiveUpdate(enemy);	// Base check for velocity etc
 	// For ranged attacks here:
-
+	g_messenger.messages[]
 }
 
 void Enemy_2_DeadUpdate() {

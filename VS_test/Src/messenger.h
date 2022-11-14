@@ -17,12 +17,34 @@ typedef struct SpawnBulletMessage {
 	float lifetime;
 }SpawnBulletMessage;
 
+/// <summary>
+/// Spawn an enemy of specific type
+/// </summary>
 typedef struct SpawnEnemyMessage {
 	CP_Vector position;
 	CP_BOOL tracking;
 	int type;
 	int score;
 }SpawnEnemyMessage;
+
+/// <summary>
+/// Message to query which direction player is
+/// Will give 0 if player's y axis different
+/// </summary>
+typedef struct ToPlayerDirMessage {
+	// Input value:
+	CP_Vector entityPos;
+	// Output value:
+	int direction;
+} ToPlayerDirMessage;
+
+/// <summary>
+/// Shoots enemy bullet from position in 1 direction x axis
+/// </summary>
+typedef struct SpawnEnemyBulletMessage {
+	CP_Vector startPos;
+	float vel;
+}SpawnEnemyBulletMessage;
 
 typedef struct Messenger {
 	void (*messages[MSG_NUM_MESSAGE_TYPE])(void*);
