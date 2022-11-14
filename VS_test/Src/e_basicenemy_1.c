@@ -12,8 +12,8 @@ static const float E_SPEED = 700.f;
 static const float GRAVITY = 200.f;
 static const float MAX_GRAV_VEL = 1500.f;
 static const float JUMP_VEL1 = -2500.f;
-static const float JUMP_VEL2 = -1050.f;
-static const float JUMP_VEL3 = -1100.f;
+static const float JUMP_VEL2 = -1150.f;
+static const float JUMP_VEL3 = -1200.f;
 
 static const float JUMP_RANGE = 20.f;
 
@@ -131,7 +131,6 @@ void EnemytoWallCollision(E_Basic_Enemy *enemy, GameObject wallreference[])
 				continue;
 			if (AABB(enemy->go, wallreference[j]))
 			{
-
 				COLLISION_DIRECTION collision_dir = AABB_Direction(enemy->go, wallreference[j]);
 				if (collision_dir == COLLISION_TOP)
 				{
@@ -142,7 +141,7 @@ void EnemytoWallCollision(E_Basic_Enemy *enemy, GameObject wallreference[])
 				}
 				else if (collision_dir == COLLISION_BOTTOM)
 				{
-					enemy->go.pos.y = wallreference[j].pos.y + wallreference[j].height / 2.f + enemy->go.height / 2.f;				
+					enemy->go.pos.y = wallreference[j].pos.y + wallreference[j].height / 2.f + enemy->go.height / 2.f + 5;				
 					enemy->go.vel.y = 0;
 				}
 				else if (collision_dir == COLLISION_LEFT)
@@ -507,7 +506,7 @@ void EnemyPathing3(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, G
 			float y_axis_check = GameObjectDistance(player->go, enemy->go, -1);
 			float x_axis_check = GameObjectDistance(player->go, enemy->go, 1);
 			//printf("\n yaxis %.1f   xaxis %.1f\n", y_axis_check, x_axis_check);
-			if (y_axis_check < 220.f)
+			if (y_axis_check < 230.f)
 				enemy->debugshortestnode = Xaxis_check(enemy->debugshortestnode, nodes, player, size, walls);
 
 
