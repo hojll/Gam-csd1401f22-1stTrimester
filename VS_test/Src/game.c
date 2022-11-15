@@ -22,10 +22,10 @@ enum {
     MAX_PLAYERS = 2,
     MAX_WALLS = 12,
     MAX_TEXT_POPUP = 20,
-    MAX_WEAPON_BOX = 3,
+    MAX_WEAPON_BOX = 5,
 };
 
-static const float WEAPON_BOX_SPAWN_TIME = 5;
+static const float WEAPON_BOX_SPAWN_TIME = 3;
 
 static const float DEFAULT_FONT_SIZE = 100.0f;
 #define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
@@ -664,7 +664,6 @@ void game_update(void)
                 else if (collision_dir == COLLISION_BOTTOM)
                 {
                     weapon_boxes[i].go.pos.y = walls[j].pos.y + walls[j].height / 2.f + weapon_boxes[i].go.height / 2.f;
-                    weapon_boxes->go.vel.y = 0;
                 }
                 else if (collision_dir == COLLISION_LEFT)
                 {
@@ -721,7 +720,7 @@ void game_update(void)
 
     CP_Settings_Stroke(CP_Color_Create(0, 0, 0, 255));
     // Background
-    CP_Image_Draw(backgroundSprite, 0.f, 0.f, 1920, 1800, 255);
+    //CP_Image_Draw(backgroundSprite, 0.f, 0.f, 1920, 1800, 255);
     // Player 
     const CP_Color playerColor = CP_Color_Create(100, 0, 0, 255);
     for (int i = 0; i < playerCount; ++i) {
@@ -805,9 +804,7 @@ void game_update(void)
         if (weapon_boxes[i].go.active)
         {
             CP_Settings_Fill(weapon_boxes[i].color);
-            CP_Settings_StrokeWeight(0.f);
             CP_Graphics_DrawRect(weapon_boxes[i].go.pos.x, weapon_boxes[i].go.pos.y, weapon_boxes[i].go.width, weapon_boxes[i].go.height);
-            CP_Settings_StrokeWeight(3.f);
         }
     }
 

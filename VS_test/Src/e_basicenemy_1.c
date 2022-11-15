@@ -8,8 +8,8 @@
 
 
 Messenger g_messenger;
-static const float E_SPEED = 550.f;
-static const float E_SPEED2 = 690.f;
+static const float E_SPEED = 350.f;
+static const float E_SPEED2 = 450.f;
 static const float GRAVITY = 200.f;
 static const float MAX_GRAV_VEL = 1500.f;
 static const float JUMP_VEL1 = -2500.f;
