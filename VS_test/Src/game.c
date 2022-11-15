@@ -27,7 +27,7 @@ enum {
 
 static const float WEAPON_BOX_SPAWN_TIME = 3;
 
-static const float DEFAULT_FONT_SIZE = 100.0f;
+static const float DEFAULT_FONT_SIZE = 150.0f;
 #define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
 
 char GAMEOVER = 0;
@@ -339,15 +339,15 @@ void game_update(void)
     {
         spawnWeaponBoxTimer = WEAPON_BOX_SPAWN_TIME;
 
-        CP_BOOL lessThan3Box = 0;
+        CP_BOOL lessThanMaxBox = 0;
         // Check if there is alr 3 boxes
         for (int i = 0; i < MAX_WEAPON_BOX; ++i)
         {
             if (!weapon_boxes[i].go.active)
-                lessThan3Box = 1;
+                lessThanMaxBox = 1;
         }
 
-        if (lessThan3Box)
+        if (lessThanMaxBox)
         {
             for (int i = 0; i < MAX_WEAPON_BOX; ++i)
             {
@@ -359,6 +359,7 @@ void game_update(void)
                 curr->color = WEAPON_BOX_COLOR;
                 curr->go.pos.x = CP_Random_RangeFloat(100.f, 800.f);
                 curr->go.pos.y = CP_Random_RangeFloat(100.f, 800.f);
+                curr->grounded = 0;
                 break;
             }
         }
@@ -506,14 +507,14 @@ void game_update(void)
                 else if (collision_dir == COLLISION_LEFT)
                 {
                     player[i].go.pos.x = walls[j].pos.x - walls[j].width / 2.f - player[i].go.width / 2.f;
-                    printf("WALL INTERRUPED ROLL\n");
+                    //printf("WALL INTERRUPED ROLL\n");
                     player[i].currAnim = SetSpriteAnim(&player[i].animations[ANIM_PLAYER_ACTIVE], PLAYER_ACTIVE_ANIM_SPEED);
                     player[i].state = STATE_PLAYER_ACTIVE;
                 }
                 else
                 {
                     player[i].go.pos.x = walls[j].pos.x + walls[j].width / 2.f + player[i].go.width / 2.f;
-                    printf("WALL INTERRUPED ROLL\n");
+                    //printf("WALL INTERRUPED ROLL\n");
                     player[i].currAnim = SetSpriteAnim(&player[i].animations[ANIM_PLAYER_ACTIVE], PLAYER_ACTIVE_ANIM_SPEED);
                     player[i].state = STATE_PLAYER_ACTIVE;
                 }
@@ -539,7 +540,8 @@ void game_update(void)
             if (AABB(player[i].go, weapon_boxes[j].go))
             {
                 weapon_boxes[j].go.active = 0;
-                
+                char* weapon_text = Player_RandomWeapon(&player[i]);
+
                 for (int p = 0; p < MAX_TEXT_POPUP; ++p)
                 {
                     if (!(popUp[i].go.active))
@@ -550,7 +552,7 @@ void game_update(void)
                             CP_Color_Create(255, 0, 0, 255),
                             (int)DEFAULT_FONT_SIZE,
                             3.0f,
-                            Player_RandomWeapon(&player[i]));
+                            weapon_text);
                         break;
                     }
                 }

@@ -43,6 +43,10 @@ void PlayerWeapon_Init(E_Player* player, BULLET_TYPE bulletType)
 		player->attackSpeed = DEFAULT_ATTACK_SPEED / 5.f;
 		player->currAmmo = 25;
 		break;
+	case BULLET_SHOTGUN:
+		player->attackSpeed = DEFAULT_ATTACK_SPEED * 1.5f;
+		player->currAmmo = 5;
+		break;
 	}
 	player->maxAmmo = player->currAmmo;
 }
@@ -209,13 +213,15 @@ void InitializePlayer(E_Player *player) {
 
 char* Player_RandomWeapon(E_Player* player)
 {
-	PlayerWeapon_Init(player, CP_Random_RangeInt(1, BULLET_TOTAL - 1));
+	PlayerWeapon_Init(player, (BULLET_TYPE)CP_Random_RangeInt(1, BULLET_TOTAL - 1));
 	switch (player->currBullet)
 	{
 	case BULLET_SCATTER:
-		return "Scatter Shot";
+		return "SCATTER SHOT";
 	case BULLET_SMG:
 		return "SMG";
+	case BULLET_SHOTGUN:
+		return "SHOTGUN";
 	}
 	return "";
 }

@@ -1,11 +1,15 @@
 #include "e_bullet.h"
 #include "messenger.h"
 
-#define BULLET_SPEED 1500.f
+#define BULLET_SPEED 1200.f
 
 #define SCATTER_AMOUNT 10
 #define SCATTER_LIFETIME -100.f
-#define SCATTER_SPEED 1000.f
+#define SCATTER_SPEED 800.f
+
+#define SHOTGUN_LIFETIME 0.4f
+#define SHOTGUN_SPEED CP_Random_RangeFloat(700.f, 1000.f)
+#define SHOTGUN_Y_DIR CP_Random_RangeFloat(-0.3f, 0.3f)
 
 void Bullet_ActiveUpdate(E_Bullet* bullet)
 {
@@ -13,7 +17,7 @@ void Bullet_ActiveUpdate(E_Bullet* bullet)
 	bullet->lifetime -= g_scaledDt;
 	// Set lifetime to below -50.f for infinite lifetime
 	if (bullet->lifetime <= 0 && bullet->lifetime >= -50.f)
-		bullet->go.active = 0;
+		DestroyBullet(bullet);
 	switch (bullet->bullet_type)
 	{
 	default:
@@ -48,6 +52,7 @@ void DestroyBullet(E_Bullet* bullet)
  		for (int i = 0; i < SCATTER_AMOUNT; i++)
 		{
 			temp_go.pos = bullet->collide_pos;
+			temp_go.faceDir = bullet->go.faceDir;
 			temp_go.vel = CP_Vector_Scale(CP_Vector_Normalize(CP_Vector_Set(CP_Random_RangeFloat(-1, 1), CP_Random_RangeFloat(-1, 1))), SCATTER_SPEED);
 			temp_go.width = 10.f;
 			temp_go.height = 10.f;
@@ -58,6 +63,20 @@ void DestroyBullet(E_Bullet* bullet)
 			g_messenger.messages[MSG_SPAWN_BULLET](&bullet_msg);
 		}
 		break;
+	case BULLET_SHOTGUN:
+		for (int i = 0; i < CP_Random_RangeInt(7, 10); i++)
+		{
+			temp_go.pos = bullet->go.pos;
+			temp_go.faceDir = bullet->go.faceDir;
+			temp_go.vel = CP_Vector_Scale(CP_Vector_Normalize(CP_Vector_Set(bullet->go.faceDir, SHOTGUN_Y_DIR)), SHOTGUN_SPEED);
+			temp_go.width = CP_Random_RangeFloat(10.f, 20.f);
+			temp_go.height = temp_go.width;
+			bullet_msg.type = BULLET_DEFAULT;
+			bullet_msg.lifetime = SHOTGUN_LIFETIME;
+			bullet_msg.go = temp_go;
+			bullet_msg.color = CP_Color_Create(255, 255, 255, 255);
+			g_messenger.messages[MSG_SPAWN_BULLET](&bullet_msg);
+		}
 	default:
 		break;
 	}
@@ -70,6 +89,7 @@ void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type)
 
 	go.pos = position;
 	go.vel.x = BULLET_SPEED * facedir;
+	go.faceDir = facedir;
 	go.vel.y = 0.f;
 	go.width = 20.f;
 	go.height = 20.f;
@@ -86,6 +106,8 @@ void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type)
 		go.height = 10.f;
 		go.vel.x = BULLET_SPEED * facedir * 1.5f;
 		break;
+	case BULLET_SHOTGUN:
+		bullet.lifetime = 0.0f;
 	default:
 		break;
 	}

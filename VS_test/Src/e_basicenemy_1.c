@@ -499,7 +499,7 @@ void EnemyPathing3(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, G
 	float shortestdist;
 	int ycheck = 0;
 	ycheck = player->go.pos.y < enemy->go.pos.y ? 1 : -1;
-	printf("\nYcheck %d\n", ycheck);
+	//printf("\nYcheck %d\n", ycheck);
 	//printf("ycheck %d\n", ycheck);
 
 
@@ -540,7 +540,7 @@ void EnemyPathing3(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, G
 			enemy->debugshortestnode = GetShortestNode(enemy, nodes, player, size);
 			float y_axis_check = GameObjectDistance(player->go, enemy->go, -1);
 			float x_axis_check = GameObjectDistance(player->go, enemy->go, 1);
-			printf("\n yaxis %.1f   xaxis %.1f\n", y_axis_check, x_axis_check);
+			//printf("\n yaxis %.1f   xaxis %.1f\n", y_axis_check, x_axis_check);
 			if (y_axis_check > 220.f)
 				enemy->debugshortestnode = Xaxis_check(enemy->debugshortestnode, nodes, player, size, walls);
 			
