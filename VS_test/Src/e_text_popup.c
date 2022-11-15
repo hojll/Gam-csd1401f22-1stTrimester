@@ -57,7 +57,7 @@ void update_popup(TextPopUp *text)
 void draw_popup(TextPopUp* text)
 {
 	CP_Settings_Fill(text->color);
-	CP_Settings_TextSize(35.0f);
+	CP_Settings_TextSize(text->font_size);
 	if (text->go.active)
 	{
 		CP_Font_DrawText(text->text, text->go.pos.x, text->go.pos.y);

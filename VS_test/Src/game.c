@@ -23,6 +23,7 @@ enum {
     MAX_WALLS = 12,
     MAX_TEXT_POPUP = 20,
     MAX_WEAPON_BOX = 5,
+    MAX_GAMESTART_TEXT = 9,
 };
 
 static const float WEAPON_BOX_SPAWN_TIME = 3;
@@ -81,6 +82,11 @@ int combocounter = 0;
 double combocounter_timer = 0;
 double show_oznometer_fade = 0;
 int gamestart = 0;
+static float gamestart_timer = 1.0f;
+static char* gamestart_text[] = {   "Press Spacebar to START!", "Come on already press Spacebar", "Hurry up and press Spacebar!",
+                                    "Are you not gonna play?", "Bruh SPACEBAR!!", "I'm just gonna start the game for you!",
+                                    "I'm really gonna start the game!", "Why are you doing this to me?", "OK I give up..."};
+static int game_start_text_counter = 0;
 
 TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
 E_WeaponBox weapon_boxes[MAX_WEAPON_BOX];
@@ -335,7 +341,11 @@ void game_update(void)
             weapon_boxes[i].Update(&weapon_boxes[i]);
     }
     // Spawn weapon box
-    spawnWeaponBoxTimer -= g_scaledDt;
+    if (gamestart)
+    {
+        spawnWeaponBoxTimer -= g_scaledDt;
+    }
+
     if (spawnWeaponBoxTimer <= 0)
     {
         spawnWeaponBoxTimer = WEAPON_BOX_SPAWN_TIME;
@@ -425,7 +435,7 @@ void game_update(void)
                         set_popup(&popUp[i], CP_System_GetDisplayWidth() / 2,
                             CP_System_GetDisplayHeight() / 2,
                             CP_Color_Create(255, 0, 0, 255), 
-                            250, 2.0f, "START");
+                            35, 1.0f, "START");
                         break;
                     }
                 }
@@ -479,7 +489,8 @@ void game_update(void)
             continue;
         CP_BOOL player_grounded_flag = 0;
 
-        if (player[i].go.pos.x > CP_System_GetWindowWidth() || player[i].go.pos.x < 0 || player[i].go.pos.y > CP_System_GetWindowHeight() || player[i].go.pos.y < 50)
+        //player out of bounds
+        if (player[i].go.pos.x > CP_System_GetWindowWidth() || player[i].go.pos.x < 0 || player[i].go.pos.y > CP_System_GetWindowHeight() || player[i].go.pos.y < 20)
         {
             player[i].go.active = 0;
             GAMEOVER = 1;
@@ -545,13 +556,13 @@ void game_update(void)
 
                 for (int p = 0; p < MAX_TEXT_POPUP; ++p)
                 {
-                    if (!(popUp[i].go.active))
+                    if (!(popUp[p].go.active))
                     {
                         set_popup(&popUp[p], 
                             player->go.pos.x,
                             player->go.pos.y - player->go.height / 2.f - 10.f,
                             CP_Color_Create(255, 0, 0, 255),
-                            (int)DEFAULT_FONT_SIZE,
+                            35,
                             3.0f,
                             weapon_text);
                         break;
@@ -838,9 +849,10 @@ void game_update(void)
     
     CP_Settings_TextSize(DEFAULT_FONT_SIZE);
     CP_Settings_Fill(DEFAULT_FONT_COLOR);
-    update_timer();
-
-
+    if (gamestart)
+    {
+        update_timer();
+    }
  
 
     float oznoalpha = updateOznometerFade(255, &combocounter_timer, COMBO_TIME);
@@ -865,6 +877,46 @@ void game_update(void)
         killconfirmed();
     }
 
+    
+    if (!gamestart)
+    {
+        gamestart_timer -= CP_System_GetDt();
+        if (gamestart_timer <= 0.0f)
+        {
+            for (int q = 0; q < playerCount; ++q)
+            {
+                if (!player[q].go.active)
+                    continue;
+
+                for (int i = 0; i < MAX_TEXT_POPUP; ++i)
+                {
+                    if (!(popUp[i].go.active))
+                    {
+                        printf("%d", game_start_text_counter);
+                        set_popup(&popUp[i],
+                            player[q].go.pos.x,
+                            player[q].go.pos.y - 50.0f,
+                            CP_Color_Create(0, 0, 0, 200),
+                            35,
+                            3.0f,
+                            gamestart_text[game_start_text_counter]);
+                        ++game_start_text_counter;
+                        if (game_start_text_counter >= MAX_GAMESTART_TEXT)
+                        {
+                            for (int x = 0; x < MAX_GAMESTART_TEXT; ++x)
+                            {
+                                gamestart_text[x] = "Press Spacebar to START!";
+                            }
+                            game_start_text_counter = 0;
+                        }
+                        
+                        break;
+                    }
+                }
+            }
+            gamestart_timer = 4.0f;
+        }
+    }
 
     if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
     {
@@ -872,7 +924,7 @@ void game_update(void)
         {
             if (!(popUp[i].go.active))
             {
-                set_popup(&popUp[i], CP_Input_GetMouseX(), CP_Input_GetMouseY(), CP_Color_Create(255, 0, 0, 255), (int)DEFAULT_FONT_SIZE, 3.0f, "Pickup/Damage");
+                set_popup(&popUp[i], CP_Input_GetMouseX(), CP_Input_GetMouseY(), CP_Color_Create(255, 0, 0, 255), 50, 3.0f, "Why U Click?");
                 break;
             }
         }

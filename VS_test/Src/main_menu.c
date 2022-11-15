@@ -88,6 +88,9 @@ void main_menu_init(void)
 
 void main_menu_update(void)
 {
+	if (CP_Input_KeyTriggered(KEY_Q))
+		CP_Engine_Terminate();
+
 	if(!testing)
 	{
 		if (CP_Input_KeyTriggered(KEY_DOWN) || CP_Input_KeyTriggered(KEY_S))
