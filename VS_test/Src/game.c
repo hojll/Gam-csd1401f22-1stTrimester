@@ -100,6 +100,7 @@ void MessageSpawnBullet(void* messageInfo) {
         curr->bullet_type = bulletMSG->type;
         curr->lifetime = bulletMSG->lifetime;
         curr->color = bulletMSG->color;
+        curr->collide_pos = CP_Vector_Zero();
         break;
     }
 }
@@ -564,7 +565,7 @@ void game_update(void)
         {
             if (!enemies[j].go.active)
                 continue;
-            if (AABB(player[i].go, enemies[j].go))
+            if (AABB(player[i].go, enemies[j].go) && player[i].state != STATE_PLAYER_ROLLING)
             {
                 enemies[j].go.active = 0;
                 player[i].go.active = 0;
@@ -723,6 +724,16 @@ void game_update(void)
     CP_Settings_Stroke(CP_Color_Create(0, 0, 0, 255));
     // Background
     //CP_Image_Draw(backgroundSprite, 0.f, 0.f, 1920, 1800, 255);
+
+    // Bullets
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        if (bullets[i].go.active)
+        {
+            CP_Settings_Fill(bullets[i].color);
+            CP_Graphics_DrawCircle(bullets[i].go.pos.x, bullets[i].go.pos.y, bullets[i].go.height);
+        }
+    }
+
     // Player 
     const CP_Color playerColor = CP_Color_Create(100, 0, 0, 255);
     for (int i = 0; i < playerCount; ++i) {
@@ -763,14 +774,6 @@ void game_update(void)
             CP_Graphics_DrawRect(walls[i].pos.x, walls[i].pos.y, walls[i].width, walls[i].height);
     }
 
-    // Bullets
-    for (int i = 0; i < MAX_BULLETS; ++i) {
-        if (bullets[i].go.active)
-        {
-            CP_Settings_Fill(bullets[i].color);
-            CP_Graphics_DrawCircle(bullets[i].go.pos.x, bullets[i].go.pos.y, bullets[i].go.height);
-        }
-    }
     /*---------*/
     // Enemies //
     /*---------*/

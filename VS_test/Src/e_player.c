@@ -47,6 +47,14 @@ void PlayerWeapon_Init(E_Player* player, BULLET_TYPE bulletType)
 		player->attackSpeed = DEFAULT_ATTACK_SPEED * 1.5f;
 		player->currAmmo = 5;
 		break;
+	case BULLET_DUAL:
+		player->attackSpeed = DEFAULT_ATTACK_SPEED;
+		player->currAmmo = 15;
+		break;
+	case BULLET_BLACK_HOLE:
+		player->attackSpeed = DEFAULT_ATTACK_SPEED * 3.f;
+		player->currAmmo = 3;
+		break;
 	}
 	player->maxAmmo = player->currAmmo;
 }
@@ -222,6 +230,10 @@ char* Player_RandomWeapon(E_Player* player)
 		return "SMG";
 	case BULLET_SHOTGUN:
 		return "SHOTGUN";
+	case BULLET_DUAL:
+		return "DUAL BERETTAS";
+	case BULLET_BLACK_HOLE:
+		return "BLACK HOLE";
 	}
 	return "";
 }
