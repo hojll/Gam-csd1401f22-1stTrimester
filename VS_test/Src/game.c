@@ -191,24 +191,29 @@ void game_init(void)
 
     // AI NODES
     {
-        ai_nodes[0].pos = CP_Vector_Set(540, 1005);
-        ai_nodes[1].pos = CP_Vector_Set(1380, 1005);
+        // btm platform
+        //ai_nodes[0].pos = CP_Vector_Set(540, 1005);
+        //ai_nodes[1].pos = CP_Vector_Set(1380, 1005);
 
-        ai_nodes[2].pos = CP_Vector_Set(340, 955);
-        ai_nodes[3].pos = CP_Vector_Set(1580, 955);
+        // 2nd btm platform
+        //ai_nodes[2].pos = CP_Vector_Set(370, 955);
+        //ai_nodes[3].pos = CP_Vector_Set(1550, 955);
+        ai_nodes[0].pos = CP_Vector_Set(370, 955);
+        ai_nodes[1].pos = CP_Vector_Set(1550, 955);
 
         // middle
-        ai_nodes[4].pos = CP_Vector_Set(480, 725);
-        ai_nodes[5].pos = CP_Vector_Set(1440, 725);
+        ai_nodes[2].pos = CP_Vector_Set(480, 725);
+        ai_nodes[3].pos = CP_Vector_Set(1440, 725);
 
-        ai_nodes[6].pos = CP_Vector_Set(330, 525);
-        ai_nodes[7].pos = CP_Vector_Set(1590, 525);
+        ai_nodes[4].pos = CP_Vector_Set(330, 525);
+        ai_nodes[5].pos = CP_Vector_Set(1590, 525);
 
-        ai_nodes[8].pos = CP_Vector_Set(1360, 325);
-        ai_nodes[9].pos = CP_Vector_Set(560, 325);
+        ai_nodes[6].pos = CP_Vector_Set(480, 325);
+        ai_nodes[7].pos = CP_Vector_Set(1440, 325);
 
-        ai_nodes[10].pos = CP_Vector_Set(860, 1005);
-        ai_nodes[11].pos = CP_Vector_Set(1060, 1005);
+        // bottom 2
+        ai_nodes[8].pos = CP_Vector_Set(960, 1000);
+        //ai_nodes[9].pos = CP_Vector_Set(1060, 955);
 
         for (int i = 0; i < MAX_PATHFINDING_NODES; i++)
         {
@@ -220,12 +225,12 @@ void game_init(void)
     // Walls
     // Bottom
     {
-        walls[0].pos = CP_Vector_Set(475, 1005);
+        walls[0].pos = CP_Vector_Set(475, 955);
         walls[0].height = 50.f;
         walls[0].width = 800.f;
         walls[0].active = 1;
         // Bottom 2
-        walls[1].pos = CP_Vector_Set(1445, 1005);
+        walls[1].pos = CP_Vector_Set(1445, 955);
         walls[1].height = 50.f;
         walls[1].width = 800.f;
         walls[1].active = 1;
@@ -268,7 +273,7 @@ void game_init(void)
         walls[8].width = 1000.f;
         walls[8].active = 1;
 
-        walls[9].pos = CP_Vector_Set(275, 955);
+        /*walls[9].pos = CP_Vector_Set(275, 955);
         walls[9].height = 50.f;
         walls[9].width = 350.f;
         walls[9].active = 1;
@@ -276,7 +281,7 @@ void game_init(void)
         walls[10].pos = CP_Vector_Set(1645, 955);
         walls[10].height = 50.f;
         walls[10].width = 350.f;
-        walls[10].active = 1;
+        walls[10].active = 1;*/
 
         walls[11].pos = CP_Vector_Set(960, 325);
         walls[11].height = 50.f;
