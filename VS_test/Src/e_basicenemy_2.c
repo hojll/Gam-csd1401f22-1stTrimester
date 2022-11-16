@@ -20,7 +20,7 @@ void Enemy_2_DeadUpdate() {
 
 }
 
-E_Basic_Enemy*InitializeEnemy2(E_Basic_Enemy *enemy)
+E_Basic_Enemy*InitializeEnemy_2(E_Basic_Enemy *enemy)
 {
 	enemy->Update[STATE_ENEMY_DEAD] = Enemy_2_DeadUpdate;
 	enemy->Update[STATE_ENEMY_ACTIVE] = Enemy_2_ActiveUpdate;

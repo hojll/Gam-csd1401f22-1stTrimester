@@ -56,7 +56,7 @@ float g_scaledDt;
 /*-------*/
 CP_Image backgroundSprite;
 CP_Image sprites[NUM_SPRITES];
-CP_Image spriteData[NUM_SPRITES];
+CP_Image spriteData[NUM_SPRITES]; // TODO: REMOVE THIS SHIT IF NOT USING
 /*----------------------*/
 // All the entities here//
 /*----------------------*/
@@ -67,7 +67,7 @@ E_Bullet bullets[MAX_BULLETS];
 GameObject walls[MAX_WALLS];
 
 // Enemy stuff by Ryan
-E_Basic_Enemy enemies[MAX_ENEMIES];
+E_Basic_Enemy* enemies;
 CP_Vector e_spawnPos1, e_spawnPos2; // Basic Enemy spawn locations
 CP_Vector e2_spawnPos[4];
 
@@ -152,6 +152,7 @@ void game_init(void)
     // Initialization of spriteData should be done within entity Initialize
     // within their respective file
     sprites[SPRITE_PLAYER] = CP_Image_Load("./Assets/SPRITESHEET.png");
+    sprites[SPRITE_ENEMY_1] = CP_Image_Load("./Assets/ENEMY1_Spritesheet.png");
     backgroundSprite = CP_Image_Load("./Assets/background.png");
     CP_System_SetFrameRate(60.f);
     printf("Image: %-15s|  dims: %d, %d\n","player", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
@@ -169,7 +170,9 @@ void game_init(void)
     }
 
     // AI / ENEMY
-    InitEnemyList(enemies, (int)MAX_ENEMIES, ai_nodes);
+    InitAnimdata_E1();
+    enemies = (E_Basic_Enemy*)malloc(sizeof(E_Basic_Enemy) * MAX_ENEMIES);
+    InitEnemyList(enemies, MAX_ENEMIES, ai_nodes);
     e_spawnPos1 = CP_Vector_Set(960, 110);
     e_spawnPos2 = CP_Vector_Set(960, 110);
 
@@ -806,6 +809,8 @@ void game_update(void)
             }
             CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
             CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y + enemies[i].go.height + 20, 5);
+            RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_1 + enemies[i].type], enemies[i].go.pos.x,
+                enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
             CP_Settings_Stroke(CP_Color_Create(255, 0, 0, 255));
             if (enemies[i].debugshortestnode)
                 CP_Graphics_DrawLine(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].debugshortestnode->pos.x, enemies[i].debugshortestnode->pos.y);
@@ -947,4 +952,5 @@ void game_update(void)
 
 void game_exit(void)
 {
+    free(enemies);
 }

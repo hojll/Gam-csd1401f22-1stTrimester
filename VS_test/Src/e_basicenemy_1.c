@@ -8,6 +8,8 @@
 
 
 Messenger g_messenger;
+SpriteAnimData enemy1Animations[ANIM_ENEMY_1_NUM_ANIM];
+
 static const float E_SPEED = 350.f;
 static const float E_SPEED2 = 450.f;
 static const float GRAVITY = 200.f;
@@ -15,8 +17,14 @@ static const float MAX_GRAV_VEL = 1500.f;
 static const float JUMP_VEL1 = -2500.f;
 static const float JUMP_VEL2 = -1150.f;
 static const float JUMP_VEL3 = -1200.f;
-
 static const float JUMP_RANGE = 20.f;
+static const float ACTIVE_ANIM_SPEED = 0.1f;
+enum {
+	FRAME_DIM_WIDTH = 48,
+	FRAME_DIM_HEIGHT = 48,
+	IMAGE_DIM_WIDTH = 192,
+	IMAGE_DIM_HEIGHT = 48
+};
 
 /*----------------------------------------------------*/
 // ENEMI
@@ -24,8 +32,9 @@ static const float JUMP_RANGE = 20.f;
 
 void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)
 {
-	if (enemy->go.active)
+	if (enemy->go.active)	// TODO: Remove either this one or updateenemylist active check
 	{
+		UpdateSpriteAnim(&enemy->currAnim, g_scaledDt);
 		if(enemy->tracking == 0)
 			enemy->go.vel.x = enemy->go.dir.x * E_SPEED;
 		else
@@ -51,6 +60,25 @@ void Enemy_DeadUpdate(E_Basic_Enemy* enemy)
 
 }
 
+void InitAnimdata_E1()
+{
+	{
+		SpriteAnimData activeAnim = { 0 };
+		activeAnim.frameDim[0] = FRAME_DIM_WIDTH;
+		activeAnim.frameDim[1] = FRAME_DIM_HEIGHT;
+		activeAnim.imageDim[0] = IMAGE_DIM_WIDTH;
+		activeAnim.imageDim[1] = IMAGE_DIM_HEIGHT;
+
+		activeAnim.numFrames = 2;
+		activeAnim.imageStart[0] = 0;
+		activeAnim.imageStart[1] = 0;
+
+		activeAnim.loop = 1;
+		enemy1Animations[ANIM_ENEMY_1_ACTIVE_MOVING] = activeAnim;
+	}
+	printf("Initialized anim for enemy_1!\n");
+}
+
 E_Basic_Enemy InitializeEnemy_1()
 {
 	E_Basic_Enemy retval;
@@ -67,6 +95,8 @@ E_Basic_Enemy InitializeEnemy_1()
 	retval.go.vel.y = 0;
 	retval.tracking = 0;
 	retval.myfloor = NULL;
+	retval.currAnim = SetSpriteAnim(&enemy1Animations[ANIM_ENEMY_1_ACTIVE_MOVING], ACTIVE_ANIM_SPEED);
+	retval.type = 0;
 	// random direction
 	int randomdir = returnRange(1, 20);
 	if (randomdir >= 10)
