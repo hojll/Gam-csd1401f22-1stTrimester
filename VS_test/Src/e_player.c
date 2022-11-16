@@ -13,10 +13,10 @@ Messenger g_messenger;
 #define JUMP_VEL -2000.f
 #define DEFAULT_ATTACK_SPEED 0.3f
 // DEFINITIONS FOR ANIMATIONS
-#define FRAME_DIM_WIDTH 320
-#define FRAME_DIM_HEIGHT 480
-#define IMAGE_DIM_WIDTH 960
-#define IMAGE_DIM_HEIGHT 960
+#define FRAME_DIM_WIDTH 48
+#define FRAME_DIM_HEIGHT 48
+#define IMAGE_DIM_WIDTH 192
+#define IMAGE_DIM_HEIGHT 144
 #define NUM_ROLL_FRAMES 5
 #define ACTIVE_ANIM_SPEED 0.1f
 ////////////////////////////////////////////////////////////////////////
@@ -67,8 +67,19 @@ void Player_ActiveUpdate(E_Player* player) {
 	// Player Movement
 	int newLookDir = -((int)CP_Input_KeyDown(KEY_A) || (int)CP_Input_KeyDown(KEY_LEFT))
 		+ ((int)CP_Input_KeyDown(KEY_D) || (int)CP_Input_KeyDown(KEY_RIGHT));
-	if (newLookDir)
+	if (newLookDir) {
 		player->go.faceDir = newLookDir;
+		if (player->animState != ANIM_PLAYER_ACTIVE_MOVING) {
+			player->animState = ANIM_PLAYER_ACTIVE_MOVING;
+			player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE_MOVING], ACTIVE_ANIM_SPEED);// Change animation too
+		}
+	}
+	else {	// NOT MOVING, CHANGE ANIMATION IF NEED TO
+		if (player->animState != ANIM_PLAYER_ACTIVE_IDLE) {
+			player->animState = ANIM_PLAYER_ACTIVE_IDLE;
+			player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE_IDLE], ACTIVE_ANIM_SPEED);// Change animation too
+		}
+	}
 	player->go.vel.x = (float)newLookDir * PLAYER_SPEED;
 
 	// ANIMATIONS
@@ -129,8 +140,8 @@ void Player_RollUpdate(E_Player* player) {
 	if (player->currAnim.state) {
 
 		player->state = STATE_PLAYER_ACTIVE;
-		player->animState = ANIM_PLAYER_ACTIVE;
-		player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE], ACTIVE_ANIM_SPEED);// Change animation too
+		player->animState = ANIM_PLAYER_ACTIVE_IDLE;
+		player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE_IDLE], ACTIVE_ANIM_SPEED);// Change animation too
 		return;
 	}
 
@@ -180,7 +191,7 @@ void InitializePlayer(E_Player *player) {
 		activeAnim.imageStart[1] = 0;
 		
 		activeAnim.loop = 1;
-		player->animations[ANIM_PLAYER_ACTIVE] = activeAnim;
+		player->animations[ANIM_PLAYER_ACTIVE_IDLE] = activeAnim;
 	}
 	/*
 	SPRITE spriteID;
@@ -198,12 +209,25 @@ void InitializePlayer(E_Player *player) {
 		rollingAnim.frameDim[1] = FRAME_DIM_HEIGHT;
 		rollingAnim.numFrames = 3;
 		rollingAnim.imageStart[0] = 0;
-		rollingAnim.imageStart[1] = FRAME_DIM_HEIGHT;
+		rollingAnim.imageStart[1] = FRAME_DIM_HEIGHT * 2 + 1;	// +1 to exclude 1 row of pixels in anim above
 		rollingAnim.loop = 0;
 		player->animations[ANIM_PLAYER_ROLLING] = rollingAnim;
 	}
-	player->animState = ANIM_PLAYER_ACTIVE;
-	player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE], ACTIVE_ANIM_SPEED);
+
+	{
+		SpriteAnimData runningAnim = { 0 };
+		runningAnim.imageDim[0] = IMAGE_DIM_WIDTH;
+		runningAnim.imageDim[1] = IMAGE_DIM_HEIGHT;
+		runningAnim.frameDim[0] = FRAME_DIM_WIDTH;
+		runningAnim.frameDim[1] = FRAME_DIM_HEIGHT;
+		runningAnim.numFrames = 4;
+		runningAnim.imageStart[0] = 0;
+		runningAnim.imageStart[1] = FRAME_DIM_HEIGHT + 1;
+		runningAnim.loop = 1;
+		player->animations[ANIM_PLAYER_ACTIVE_MOVING] = runningAnim;
+	}
+	player->animState = ANIM_PLAYER_ACTIVE_IDLE;
+	player->currAnim = SetSpriteAnim(&player->animations[ANIM_PLAYER_ACTIVE_IDLE], ACTIVE_ANIM_SPEED);
 	///////////////////////////////////////////////////////////
 	player->go.pos = CP_Vector_Zero();
 	player->go.vel = CP_Vector_Zero();

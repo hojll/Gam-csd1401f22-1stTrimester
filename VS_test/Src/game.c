@@ -520,14 +520,14 @@ void game_update(void)
                 {
                     player[i].go.pos.x = walls[j].pos.x - walls[j].width / 2.f - player[i].go.width / 2.f;
                     //printf("WALL INTERRUPED ROLL\n");
-                    player[i].currAnim = SetSpriteAnim(&player[i].animations[ANIM_PLAYER_ACTIVE], PLAYER_ACTIVE_ANIM_SPEED);
+                    player[i].currAnim = SetSpriteAnim(&player[i].animations[ANIM_PLAYER_ACTIVE_IDLE], PLAYER_ACTIVE_ANIM_SPEED);
                     player[i].state = STATE_PLAYER_ACTIVE;
                 }
                 else
                 {
                     player[i].go.pos.x = walls[j].pos.x + walls[j].width / 2.f + player[i].go.width / 2.f;
                     //printf("WALL INTERRUPED ROLL\n");
-                    player[i].currAnim = SetSpriteAnim(&player[i].animations[ANIM_PLAYER_ACTIVE], PLAYER_ACTIVE_ANIM_SPEED);
+                    player[i].currAnim = SetSpriteAnim(&player[i].animations[ANIM_PLAYER_ACTIVE_IDLE], PLAYER_ACTIVE_ANIM_SPEED);
                     player[i].state = STATE_PLAYER_ACTIVE;
                 }
             }
@@ -753,7 +753,7 @@ void game_update(void)
             CP_Settings_Fill(playerColor);
             // Drawing image instead
             RenderSpriteAnim(&player[i].currAnim, sprites[SPRITE_PLAYER], player[i].go.pos.x, 
-                player[i].go.pos.y, player[i].go.height, player[i].go.height, 255);
+                player[i].go.pos.y, player[i].go.width, player[i].go.height, 255);
              
             //CP_Image_DrawSubImage(sprites[0], player[i].go.pos.x, player[i].go.pos.y, player[i].go.height, player[i].go.height,
             //    0, 0, 32, 32, 255);
