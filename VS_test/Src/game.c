@@ -69,7 +69,7 @@ GameObject walls[MAX_WALLS];
 // Enemy stuff by Ryan
 E_Basic_Enemy* enemies;
 CP_Vector e_spawnPos1, e_spawnPos2; // Basic Enemy spawn locations
-CP_Vector e2_spawnPos[4];
+GameObject e2_spawnPos[4];
 
 GameObject ai_nodes[MAX_PATHFINDING_NODES];
 CP_BOOL shownodes = 1;
@@ -169,6 +169,11 @@ void game_init(void)
         bullets[i] = InitializeBullet();
     }
 
+    e2_spawnPos[0].pos = CP_Vector_Set(150, 150);
+    e2_spawnPos[1].pos = CP_Vector_Set(1750, 150);
+    e2_spawnPos[2].pos = CP_Vector_Set(150, 800);
+    e2_spawnPos[3].pos = CP_Vector_Set(1750, 800);
+
     // AI / ENEMY
     InitAnimdata_E1();
     enemies = (E_Basic_Enemy*)malloc(sizeof(E_Basic_Enemy) * MAX_ENEMIES);
@@ -176,10 +181,7 @@ void game_init(void)
     e_spawnPos1 = CP_Vector_Set(960, 110);
     e_spawnPos2 = CP_Vector_Set(960, 110);
 
-    e2_spawnPos[0] = CP_Vector_Set(150, 150);
-    e2_spawnPos[1] = CP_Vector_Set(1750, 150);
-    e2_spawnPos[2] = CP_Vector_Set(150, 800);
-    e2_spawnPos[3] = CP_Vector_Set(1750, 800);
+    
 
     for (int k = 0; k < 3; k++)
     {
@@ -422,13 +424,13 @@ void game_update(void)
                 spawntimer[1] = 0.0f;
                 int random_pos = returnRange(1, 100);
                 if (random_pos <= 25)
-                    SpawnEnemy(1, e2_spawnPos[0]);
+                    SpawnEnemy(1, e2_spawnPos[0].pos);
                 else if (random_pos <= 50)
-                    SpawnEnemy(1, e2_spawnPos[1]);
+                    SpawnEnemy(1, e2_spawnPos[1].pos);
                 else if (random_pos <= 75)
-                    SpawnEnemy(1, e2_spawnPos[2]);
+                    SpawnEnemy(1, e2_spawnPos[2].pos);
                 else if (random_pos <= 100)
-                    SpawnEnemy(1, e2_spawnPos[3]);
+                    SpawnEnemy(1, e2_spawnPos[3].pos);
 
             }
         }
@@ -469,21 +471,25 @@ void game_update(void)
         }
 
         if (CP_Input_KeyTriggered(KEY_MINUS)) {
-            SpawnEnemy(1, e2_spawnPos[0]);
+            SpawnEnemy(1, e2_spawnPos[0].pos);
         }
         if (CP_Input_KeyTriggered(KEY_0)) {
-            SpawnEnemy(1, e2_spawnPos[1]);
+            SpawnEnemy(1, e2_spawnPos[1].pos);
         }
         if (CP_Input_KeyTriggered(KEY_9)) {
-            SpawnEnemy(1, e2_spawnPos[2]);
+            SpawnEnemy(1, e2_spawnPos[2].pos);
         }
         if (CP_Input_KeyTriggered(KEY_8)) {
-            SpawnEnemy(1, e2_spawnPos[3]);
+            SpawnEnemy(1, e2_spawnPos[3].pos);
         }
 
         if (CP_Input_MouseTriggered(MOUSE_BUTTON_RIGHT))
         {
             SpawnEnemy(1, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
+        }
+        if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
+        {
+            SpawnEnemy(2, e2_spawnPos[3].pos);
         }
     }
     
@@ -723,7 +729,7 @@ void game_update(void)
         {
             //EnemyPathing(&enemies[j], walls, &player, playerPrevPlatform, MAX_WALLS);
             //EnemyPathing(&enemies[j], ai_nodes, &player, playerPrevPlatform, MAX_PATHFINDING_NODES);
-            EnemyPathing3(&enemies[j], ai_nodes, &player, playerPrevPlatform, MAX_PATHFINDING_NODES, walls);
+            EnemyPathing3(&enemies[j], ai_nodes, &player, playerPrevPlatform, MAX_PATHFINDING_NODES, walls, e2_spawnPos);
 
         }
 
@@ -800,25 +806,43 @@ void game_update(void)
     {
         const CP_Color enemyColor = CP_Color_Create(125, 181, 130, 255);
         const CP_Color enemyColor2 = CP_Color_Create(20, 227, 199, 255);
+        const CP_Color enemyColor3 = CP_Color_Create(20, 105, 55, 255);
+
         for (int i = 0; i < MAX_ENEMIES; ++i)
         {
             if (!enemies[i].go.active)
                 continue;
-            if (enemies[i].tracking)
+            /*if (enemies[i].tracking)
             {
                 CP_Settings_Fill(enemyColor2);
             }
             else
             {
                 CP_Settings_Fill(enemyColor);
+            }*/
+            switch (enemies[i].enemytype)
+            {
+            case 0:
+                CP_Settings_Fill(enemyColor);
+                break;
+            case 1:
+                CP_Settings_Fill(enemyColor2);
+                break;
+            case 2:
+                CP_Settings_Fill(enemyColor3);
+                break;
+            default:
+                break;
             }
+
+
             CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
-            CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y + enemies[i].go.height + 20, 5);
+            //CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y + enemies[i].go.height + 20, 5);
             RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_1 + enemies[i].type], enemies[i].go.pos.x,
                 enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
-            CP_Settings_Stroke(CP_Color_Create(255, 0, 0, 255));
-            if (enemies[i].debugshortestnode)
-                CP_Graphics_DrawLine(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].debugshortestnode->pos.x, enemies[i].debugshortestnode->pos.y);
+            //CP_Settings_Stroke(CP_Color_Create(255, 0, 0, 255));
+            //if (enemies[i].debugshortestnode)
+                //CP_Graphics_DrawLine(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].debugshortestnode->pos.x, enemies[i].debugshortestnode->pos.y);
 
         }
     }
@@ -849,8 +873,8 @@ void game_update(void)
         CP_Settings_Fill(spawnloc);
         for (int i = 0; i < 4; ++i)
         {
-            CP_Graphics_DrawRect(e2_spawnPos[i].x,
-                e2_spawnPos[i].y, 20, 20);
+            CP_Graphics_DrawRect(e2_spawnPos[i].pos.x,
+                e2_spawnPos[i].pos.y, 20, 20);
         }
     }
     

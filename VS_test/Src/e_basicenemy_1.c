@@ -5,7 +5,7 @@
 #include "messenger.h"
 #include "collision.h"
 #include "utilities.h"
-
+#include "easing.h"
 
 Messenger g_messenger;
 SpriteAnimData enemy1Animations[ANIM_ENEMY_1_NUM_ANIM];
@@ -35,23 +35,61 @@ void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)
 	if (enemy->go.active)	// TODO: Remove either this one or updateenemylist active check
 	{
 		UpdateSpriteAnim(&enemy->currAnim, g_scaledDt);
-		if(enemy->tracking == 0)
+		//if(enemy->tracking == 0)
+		//	enemy->go.vel.x = enemy->go.dir.x * E_SPEED;
+		//else
+		//	enemy->go.vel.x = enemy->go.dir.x * E_SPEED2;
+
+		switch (enemy->enemytype)
+		{
+		case 0:
 			enemy->go.vel.x = enemy->go.dir.x * E_SPEED;
-		else
+			enemy->go.pos.x += enemy->go.vel.x * g_scaledDt;
+			enemy->go.pos.y += enemy->go.vel.y * g_scaledDt;
+
+			break;
+		case 1:
 			enemy->go.vel.x = enemy->go.dir.x * E_SPEED2;
+			enemy->go.pos.x += enemy->go.vel.x * g_scaledDt;
+			enemy->go.pos.y += enemy->go.vel.y * g_scaledDt;
 
-		enemy->go.pos.x +=  enemy->go.vel.x * g_scaledDt;
-		enemy->go.pos.y += enemy->go.vel.y * g_scaledDt;
-		if (!enemy->grounded && enemy->go.vel.y < MAX_GRAV_VEL)
-		{
-			enemy->go.vel.y += GRAVITY;
-		}
-		if (enemy->go.pos.y >= 2000.f)
-		{
-			enemy->go.pos.y = -10.f;
-			enemy->go.pos.x = 960.f;
+			break;
+		case 2:
+			/*enemy->go.vel.x = enemy->go.dir.x * E_SPEED2;
+			enemy->go.vel.y = enemy->go.dir.y * E_SPEED2;
 
+			enemy->go.pos.x += enemy->go.vel.x * g_scaledDt;
+			enemy->go.pos.y += enemy->go.vel.y * g_scaledDt;*/
+
+			if (enemy->debugshortestnode)
+			{
+				enemy->floatingtimer += 1 * CP_System_GetDt();
+				enemy->go.pos.x = EaseInOutQuint(enemy->go.pos.x, enemy->debugshortestnode->pos.x, enemy->floatingtimer / 10);
+				enemy->go.pos.y = EaseInOutQuint(enemy->go.pos.y, enemy->debugshortestnode->pos.y, enemy->floatingtimer / 10);
+			}
+			//printf("??? %.1f %.1f\n", enemy->debugshortestnode->pos.x, enemy->debugshortestnode->pos.y);
+			//printf("enemy dir, enemy speed %.1f %.1f   %.1f%.1f\n", enemy->go.dir.x, enemy->go.dir.y, enemy->go.vel.x, enemy->go.vel.y);
+			break;
+		default:
+			break;
 		}
+
+		
+
+		if (enemy->enemytype == 0 || enemy->enemytype == 1)
+		{
+			if (!enemy->grounded && enemy->go.vel.y < MAX_GRAV_VEL)
+			{
+				enemy->go.vel.y += GRAVITY;
+			}
+			if (enemy->go.pos.y >= 2000.f)
+			{
+				enemy->go.pos.y = -10.f;
+				enemy->go.pos.x = 960.f;
+
+			}
+		}
+		
 	}
 }
 
@@ -95,6 +133,7 @@ E_Basic_Enemy InitializeEnemy_1()
 	retval.go.vel.y = 0;
 	retval.tracking = 0;
 	retval.myfloor = NULL;
+	retval.floatingtimer = 0;
 	retval.currAnim = SetSpriteAnim(&enemy1Animations[ANIM_ENEMY_1_ACTIVE_MOVING], ACTIVE_ANIM_SPEED);
 	retval.type = 0;
 	// random direction
@@ -152,6 +191,9 @@ void UpdateEnemyList(E_Basic_Enemy arr[], int size)
 
 void EnemytoWallCollision(E_Basic_Enemy *enemy, GameObject wallreference[])
 {
+	if (enemy->enemytype == 2)
+		return;
+
 	//hard code for now
 	for (int i = 0; i < 10; ++i)
 	{
@@ -216,7 +258,7 @@ void EnemyPathing(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, Ga
 {
 	if (!enemy->tracking)
 		return;
-	if (enemy->myfloor == NULL)
+	if (enemy->myfloor == NULL && enemy->enemytype == 1)
 		return;
 
 
@@ -424,6 +466,8 @@ GameObject* GetShortestNode(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* 
 	float shortest_Distance = GameObjectDistance(enemy->go, nodes[0], 0);
 	for (int i = 1; i < size; i++)
 	{
+		if (nodes[i].pos.y > enemy->go.pos.y + 60)
+			continue;
 		float distance = GameObjectDistance(enemy->go, nodes[i], 0);
 		shortest_Node = shortest_Distance > distance ? &nodes[i] : shortest_Node;
 		shortest_Distance = shortest_Distance > distance ? distance : shortest_Distance;
@@ -431,7 +475,7 @@ GameObject* GetShortestNode(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* 
 	return shortest_Node;
 }
 
-GameObject* Jump2ShortestNode(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, int size)
+GameObject* Jump2ShortestNode(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, int size, GameObject currnode)
 {
 	GameObject* shortest_Node = &nodes[0];
 	float shortest_Distance = GameObjectDistance(enemy->go, nodes[0], 0);
@@ -440,8 +484,11 @@ GameObject* Jump2ShortestNode(E_Basic_Enemy* enemy, GameObject nodes[], E_Player
 		// if nodes are below me 
 		if (nodes[i].pos.y > enemy->go.pos.y + 5)
 			continue;
-
+		if (&nodes[i] == &currnode)
+			continue;
 		float distance = GameObjectDistance(enemy->go, nodes[i], 0);
+
+
 		shortest_Node = shortest_Distance > distance ? &nodes[i] : shortest_Node;
 		shortest_Distance = shortest_Distance > distance ? distance : shortest_Distance;
 	}
@@ -517,11 +564,11 @@ GameObject* Xaxis_check(GameObject* currnode, GameObject nodes[], E_Player* play
 }
 
 // tracking 
-void EnemyPathing3(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size, GameObject walls[])
+void EnemyPathing3(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size, GameObject walls[], GameObject nodes2[])
 {
 	if (!enemy->go.active ||
-		!enemy->tracking ||
-		enemy->myfloor == NULL)
+		enemy->tracking == 0 ||
+		(enemy->myfloor == NULL && enemy->enemytype == 1))
 		return;
 
 	GameObject* shortest_node = NULL;
@@ -532,84 +579,132 @@ void EnemyPathing3(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, G
 	//printf("\nYcheck %d\n", ycheck);
 	//printf("ycheck %d\n", ycheck);
 
-
-	if (player->grounded && prevfloor != enemy->myfloor && enemy->grounded)
+	switch (enemy->enemytype)
 	{
-		if (ycheck == 1)
+	case 1:
+	{
+		if (player->grounded && prevfloor != enemy->myfloor && enemy->grounded)
 		{
-			enemy->debugshortestnode = GetShortestNode(enemy, nodes, player, size);
-			float y_axis_check = GameObjectDistance(player->go, enemy->go, -1);
-			float x_axis_check = GameObjectDistance(player->go, enemy->go, 1);
-			//printf("\n yaxis %.1f   xaxis %.1f\n", y_axis_check, x_axis_check);
-			if (y_axis_check < 230.f)
-				enemy->debugshortestnode = Xaxis_check(enemy->debugshortestnode, nodes, player, size, walls);
-
-
-			float jumpingrange = GameObjectDistance(enemy->go, *enemy->debugshortestnode, 1);
-			// if can jump
-			if (jumpingrange <= JUMP_RANGE)
+			if (ycheck == 1)
 			{
-				// find next node
-				enemy->grounded = 0;
-				enemy->debugshortestnode = Jump2ShortestNode(enemy, nodes, player, size);
-				float jumpdischeck = GameObjectDistance(enemy->go, *enemy->debugshortestnode, -1);
-				if (jumpdischeck > 60)
+				enemy->debugshortestnode = GetShortestNode(enemy, nodes, player, size);
+				float y_axis_check = GameObjectDistance(player->go, enemy->go, -1);
+				float x_axis_check = GameObjectDistance(player->go, enemy->go, 1);
+				printf("\n yaxis %.1f   xaxis %.1f\n", y_axis_check, x_axis_check);
+				printf("total distance %.1f\n", GameObjectDistance(player->go, enemy->go, 0));
+
+				if (enemy->myfloor != prevfloor && player->go.pos.y != enemy->go.pos.y)
+					enemy->debugshortestnode = Xaxis_check(enemy->debugshortestnode, nodes, player, size, walls);
+
+
+				float jumpingrange = GameObjectDistance(enemy->go, *enemy->debugshortestnode, 1);
+				// if can jump
+				if (jumpingrange <= JUMP_RANGE)
 				{
+					// find next node
+					enemy->grounded = 0;
+					enemy->debugshortestnode = Jump2ShortestNode(enemy, nodes, player, size, *enemy->debugshortestnode);
+					//float jumpdischeck = GameObjectDistance(enemy->go, *enemy->debugshortestnode, -1);
 					enemy->go.vel.y = JUMP_VEL1;
-				}
-				else
-				{
-					enemy->go.vel.y = JUMP_VEL2;
-				}
 
+
+				}
+				enemy->go.dir.x = enemy->debugshortestnode->pos.x > enemy->go.pos.x ? 1 : -1;
 			}
-			enemy->go.dir.x = enemy->debugshortestnode->pos.x > enemy->go.pos.x ? 1 : -1;
-		}
-		else if (ycheck == -1)
-		{
-			enemy->debugshortestnode = GetShortestNode(enemy, nodes, player, size);
-			float y_axis_check = GameObjectDistance(player->go, enemy->go, -1);
-			float x_axis_check = GameObjectDistance(player->go, enemy->go, 1);
-			//printf("\n yaxis %.1f   xaxis %.1f\n", y_axis_check, x_axis_check);
-			if (y_axis_check > 220.f)
-				enemy->debugshortestnode = Xaxis_check(enemy->debugshortestnode, nodes, player, size, walls);
-			
-
-
-			float walkoffrange = GameObjectDistance(enemy->go, *enemy->debugshortestnode, 1);
-			if (walkoffrange <= JUMP_RANGE)
+			else if (ycheck == -1)
 			{
-				enemy->grounded = 0;
-				enemy->debugshortestnode = FindShortestNodeBelow(enemy, nodes, player, size, *enemy->debugshortestnode);
-				enemy->go.vel.y = JUMP_VEL3;
-			}
-			enemy->go.dir.x = enemy->debugshortestnode->pos.x > enemy->go.pos.x ? 1 : -1;
+				enemy->debugshortestnode = GetShortestNode(enemy, nodes, player, size);
+				float y_axis_check = GameObjectDistance(player->go, enemy->go, -1);
+				float x_axis_check = GameObjectDistance(player->go, enemy->go, 1);
+				//printf("\n yaxis %.1f   xaxis %.1f\n", y_axis_check, x_axis_check);
+				if (y_axis_check > 220.f)
+					enemy->debugshortestnode = Xaxis_check(enemy->debugshortestnode, nodes, player, size, walls);
 
+
+
+				float walkoffrange = GameObjectDistance(enemy->go, *enemy->debugshortestnode, 1);
+				if (walkoffrange <= JUMP_RANGE)
+				{
+					enemy->grounded = 0;
+					enemy->debugshortestnode = FindShortestNodeBelow(enemy, nodes, player, size, *enemy->debugshortestnode);
+					enemy->go.vel.y = JUMP_VEL3;
+				}
+				enemy->go.dir.x = enemy->debugshortestnode->pos.x > enemy->go.pos.x ? 1 : -1;
+
+			}
+		}
+		else if (prevfloor == enemy->myfloor)
+		{
+			enemy->go.dir.x = player->go.pos.x > enemy->go.pos.x ? 1 : -1;
 		}
 	}
-	else if (prevfloor == enemy->myfloor)
+		break;
+	case 2:
 	{
-		enemy->go.dir.x = player->go.pos.x > enemy->go.pos.x ? 1 : -1;
+		if (enemy->debugshortestnode == NULL)
+		{
+			// random new locatioin
+			int newpos = CP_Random_RangeInt(1, 4);
+			switch (newpos)
+			{
+			case 1:
+				enemy->debugshortestnode = &nodes2[0];
+				break;
+			case 2:
+				enemy->debugshortestnode = &nodes2[1];
+				break;
+			case 3:
+				enemy->debugshortestnode = &nodes2[2];
+				break;
+			case 4:
+				enemy->debugshortestnode = &nodes2[3];
+				break;
+			}
+			if (enemy->debugshortestnode != NULL)
+			{
+				printf("pos %.1f %.1f \n", enemy->debugshortestnode->pos.x, enemy->debugshortestnode->pos.y);
+				
+				enemy->go.dir = CP_Vector_Normalize(CP_Vector_Set(enemy->debugshortestnode->pos.x - enemy->go.pos.x, 
+					enemy->debugshortestnode->pos.y - enemy->go.pos.y));
+			}
+		}
+		else
+		{
+			if (GameObjectDistance(*enemy->debugshortestnode, enemy->go, 0) <= 10)
+			{
+				enemy->floatingtimer = 0;
+				enemy->debugshortestnode = NULL;
+			}
+		}
 	}
+		break;
+	}
+	
 }
 
 void SpawnEnemy(int type, CP_Vector pos)
 {
 	SpawnEnemyMessage enemy;
 	enemy.position = pos;
-	enemy.type = type;
+	//enemy.type = type;
 	enemy.tracking = 0;
 	enemy.score = 0;
 	switch (type)
 	{
 	case 0:
+		enemy.type = 0;
 		enemy.score = 100;
 		break;
 	case 1:
 		enemy.tracking = 1;
+		enemy.type = 1;
 		enemy.score = 200;
 		break;
 	case 2:
+		enemy.type = 2;
+		enemy.tracking = 1;
+		enemy.score = 150;
+
 		break;
 	}
 

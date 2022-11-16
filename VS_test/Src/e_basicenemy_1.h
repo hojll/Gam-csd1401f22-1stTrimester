@@ -25,6 +25,7 @@ typedef enum ENEMY_1_ANIMATIONS {
 typedef enum ENEMY_TYPE {
 	ENEMY_TYPE_1,
 	ENEMY_TYPE_2,
+	ENEMY_TYPE_3,
 	NUM_ENEMY_TYPE
 }ENEMY_TYPE;
 typedef struct E_Basic_Enemy {
@@ -50,6 +51,7 @@ typedef struct E_Basic_Enemy {
 	double HP;
 	int enemytype;
 	int enemyscore;
+	float floatingtimer;
 
 
 	void (*Update[STATE_ENEMY_NUM_STATES])(E_BASIC_ENEMY_STATES_1*);
@@ -73,7 +75,7 @@ void EnemytoWallCollision(E_Basic_Enemy *enemy, GameObject wallreference[]);
 
 void EnemyPathing(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size);
 
-void EnemyPathing3(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size, GameObject walls[]);
+void EnemyPathing3(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size, GameObject walls[], GameObject nodes2[]);
 
 void SpawnEnemy(int type, CP_Vector pos);
 
