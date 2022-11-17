@@ -5,6 +5,11 @@
 #include "e_player.h"
 
 #define MAX_PATHFINDING_NODES 12
+enum {
+	HEALTH_ENEMY_1 = 2,
+	HEALTH_ENEMY_2 = 1,
+	HEALTH_ENEMY_3 = 1
+};
 
 /*-----------------------------------------------------------------*/
 // E_BASICENEMY ENTITY 1
@@ -46,13 +51,12 @@ typedef struct E_Basic_Enemy {
 	SpriteAnimData* animData;
 	int animState;
 	SpriteAnimInstance currAnim;
-	
+	float redTintVal; // goes from 0 to 255
 	// Stats
-	double HP;
+	int HP;
 	int enemytype;
 	int enemyscore;
 	float floatingtimer;
-
 
 	void (*Update[STATE_ENEMY_NUM_STATES])(E_BASIC_ENEMY_STATES_1*);
 } E_Basic_Enemy;
@@ -81,6 +85,8 @@ void SpawnEnemy(int type, CP_Vector pos);
 
 void ResetEnemy(E_Basic_Enemy* enemy);
 
+// Enemy takes input damage. Returns go.active (0 for dead)
+int EnemyTakeDamage(E_Basic_Enemy* enemy, int dmg);
 /*-----------------------------------------------------------------*/
 // Declarations for enemy state functions (for reuses)
 /*-----------------------------------------------------------------*/

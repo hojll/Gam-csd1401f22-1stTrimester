@@ -25,6 +25,7 @@ typedef struct SpawnEnemyMessage {
 	CP_BOOL tracking;
 	int type;
 	int score;
+	
 }SpawnEnemyMessage;
 
 /// <summary>

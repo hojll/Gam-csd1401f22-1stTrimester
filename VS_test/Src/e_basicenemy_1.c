@@ -18,12 +18,14 @@ static const float JUMP_VEL1 = -2500.f;
 static const float JUMP_VEL2 = -1150.f;
 static const float JUMP_VEL3 = -1200.f;
 static const float JUMP_RANGE = 20.f;
-static const float ACTIVE_ANIM_SPEED = 0.1f;
+static const float ACTIVE_ANIM_SPEED = 0.05f;
+static const float RED_TINT_DECAY_RATE = 0.7f;
 enum {
 	FRAME_DIM_WIDTH = 48,
 	FRAME_DIM_HEIGHT = 48,
 	IMAGE_DIM_WIDTH = 192,
-	IMAGE_DIM_HEIGHT = 48
+	IMAGE_DIM_HEIGHT = 48,
+	NUM_FRAMES = 4
 };
 
 /*----------------------------------------------------*/
@@ -73,7 +75,7 @@ void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)
 		default:
 			break;
 		}
-
+		
 		
 
 		if (enemy->enemytype == 0 || enemy->enemytype == 1)
@@ -89,7 +91,9 @@ void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)
 
 			}
 		}
-		
+		enemy->go.faceDir = (int)enemy->go.vel.x;
+		enemy->currAnim.flip = enemy->go.faceDir < 0;
+		enemy->redTintVal = enemy->redTintVal + (-255.f) * RED_TINT_DECAY_RATE * g_scaledDt;
 	}
 }
 
@@ -107,14 +111,13 @@ void InitAnimdata_E1()
 		activeAnim.imageDim[0] = IMAGE_DIM_WIDTH;
 		activeAnim.imageDim[1] = IMAGE_DIM_HEIGHT;
 
-		activeAnim.numFrames = 2;
+		activeAnim.numFrames = NUM_FRAMES;
 		activeAnim.imageStart[0] = 0;
 		activeAnim.imageStart[1] = 0;
 
 		activeAnim.loop = 1;
 		enemy1Animations[ANIM_ENEMY_1_ACTIVE_MOVING] = activeAnim;
 	}
-	printf("Initialized anim for enemy_1!\n");
 }
 
 E_Basic_Enemy InitializeEnemy_1()
@@ -126,8 +129,8 @@ E_Basic_Enemy InitializeEnemy_1()
 	retval.state = STATE_ENEMY_ACTIVE;
 	retval.HP = 0;
 	retval.go.active = 0;
-	retval.go.height = 50.f;
-	retval.go.width = 50.f;
+	retval.go.height = 100.f;
+	retval.go.width = 100.f;
 	retval.grounded = 0;
 	retval.go.dir.y = 0;
 	retval.go.vel.y = 0;
@@ -135,7 +138,8 @@ E_Basic_Enemy InitializeEnemy_1()
 	retval.myfloor = NULL;
 	retval.floatingtimer = 0;
 	retval.currAnim = SetSpriteAnim(&enemy1Animations[ANIM_ENEMY_1_ACTIVE_MOVING], ACTIVE_ANIM_SPEED);
-	retval.type = 0;
+	retval.type = ENEMY_TYPE_1;
+	retval.redTintVal = 0.f;
 	// random direction
 	int randomdir = returnRange(1, 20);
 	if (randomdir >= 10)
@@ -162,6 +166,14 @@ void ResetEnemy(E_Basic_Enemy* enemy)
 	enemy->go.vel.y = 0;
 	enemy->tracking = 0;
 	enemy->myfloor = NULL;
+}
+
+int EnemyTakeDamage(E_Basic_Enemy* enemy, int dmg)
+{
+	if ((enemy->HP -= dmg) <= 0) 
+		return enemy->go.active = 0;
+	enemy->redTintVal = 255.f;
+	return enemy->go.active;
 }
 
 // Helper function

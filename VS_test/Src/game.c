@@ -124,8 +124,19 @@ void MessageSpawnEnemy(void* messageInfo) {
         curr->tracking = enemyMsg->tracking;
         if (curr->tracking == 1)
             curr->go.dir.x = 0;
-        curr->enemytype = enemyMsg->type;    
+        curr->enemytype = enemyMsg->type;
+        switch (enemyMsg->type) {
+        case ENEMY_TYPE_1:
+            curr->HP = HEALTH_ENEMY_1;
+            break;
+        case ENEMY_TYPE_2:
+            curr->HP = HEALTH_ENEMY_2;
+            break;
+        case ENEMY_TYPE_3:
+            curr->HP = HEALTH_ENEMY_3;
+        }
         curr->debugshortestnode = NULL;
+        curr->redTintVal = 0.f;
         break;
     }
 }
@@ -642,7 +653,7 @@ void game_update(void)
             }
         }
 
-        // Bullet - Enemy1
+        // Bullet - Enemy
         for (int j = 0; j < MAX_ENEMIES; j++)
         {
             if (!enemies[j].go.active)
@@ -662,8 +673,8 @@ void game_update(void)
 
                 bullets->Destroy(&bullets[i]);
 
-                enemies[j].go.active = 0;
-                killconfirmed();
+                if (!EnemyTakeDamage(&enemies[j], 1))
+                    killconfirmed();
             }
         }
     }
@@ -838,12 +849,15 @@ void game_update(void)
 
             CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
             //CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y + enemies[i].go.height + 20, 5);
+            CP_Settings_Tint(CP_Color_Create(255, 0, 0, (int)enemies[i].redTintVal));
             RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_1 + enemies[i].type], enemies[i].go.pos.x,
                 enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
             //CP_Settings_Stroke(CP_Color_Create(255, 0, 0, 255));
             //if (enemies[i].debugshortestnode)
                 //CP_Graphics_DrawLine(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].debugshortestnode->pos.x, enemies[i].debugshortestnode->pos.y);
 
+            // Remove tint from enemy
+            CP_Settings_NoTint();
         }
     }
 
