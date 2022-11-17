@@ -21,10 +21,11 @@ typedef struct E_Bullet {
 	float lifetime;
 	CP_Vector collide_pos;
 	CP_Color color;
+	short friendly;
 	void (*Update)(E_Bullet*);
 	void (*Destroy)(E_Bullet*);
 }E_Bullet;
 E_Bullet InitializeBullet();
 void DestroyBullet(E_Bullet* bullet);
-void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type);
+void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type, short friendly);
 #endif

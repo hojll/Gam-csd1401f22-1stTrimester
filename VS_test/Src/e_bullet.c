@@ -117,7 +117,7 @@ void DestroyBullet(E_Bullet* bullet)
 	}
 }
 
-void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type)
+void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type, short friendly)
 {
 	SpawnBulletMessage bullet;
 	GameObject go;
@@ -130,7 +130,7 @@ void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type)
 	go.height = 20.f;
 	bullet.lifetime = -100.f;
 	bullet.color = CP_Color_Create(0, 100, 0, 255);
-
+	bullet.friendly = friendly;
 	switch (type)
 	{
 	case BULLET_SCATTER:
@@ -145,7 +145,7 @@ void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type)
 		bullet.lifetime = 0.0f;
 		break;
 	case BULLET_DUAL:
-		CreateBullet(position, -facedir, BULLET_DEFAULT);
+		CreateBullet(position, -facedir, BULLET_DEFAULT, 1);
 		break;
 	case BULLET_BLACK_HOLE:
 		go.vel.x = BULLET_SPEED * facedir / 1.5f;

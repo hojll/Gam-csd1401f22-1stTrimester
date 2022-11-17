@@ -9,6 +9,7 @@ typedef enum SPRITE {
 	SPRITE_PLAYER,
 	SPRITE_ENEMY_1,
 	SPRITE_ENEMY_2,
+	SPRITE_ENEMY_3,
 	NUM_SPRITES
 }SPRITE;
 // The data for the extracted strip. 

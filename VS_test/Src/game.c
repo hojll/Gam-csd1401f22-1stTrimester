@@ -75,7 +75,7 @@ GameObject ai_nodes[MAX_PATHFINDING_NODES];
 CP_BOOL shownodes = 1;
 GameObject *playerPrevPlatform;
 // Oznola Game Loop stuff
-int level = 0;
+float scalar = 0;
 double difficulty_timer = 0;
 float spawntimer[3];
 int combocounter = 0;
@@ -135,8 +135,10 @@ void MessageSpawnEnemy(void* messageInfo) {
         case ENEMY_TYPE_3:
             curr->HP = HEALTH_ENEMY_3;
         }
-        curr->debugshortestnode = NULL;
+        curr->enemy_shortestNode = NULL;
         curr->redTintVal = 0.f;
+        //curr->enemytype = enemyMsg->type;
+       
         break;
     }
 }
@@ -164,6 +166,9 @@ void game_init(void)
     // within their respective file
     sprites[SPRITE_PLAYER] = CP_Image_Load("./Assets/SPRITESHEET.png");
     sprites[SPRITE_ENEMY_1] = CP_Image_Load("./Assets/ENEMY1_Spritesheet.png");
+    sprites[SPRITE_ENEMY_2] = CP_Image_Load("./Assets/ENEMY2_Spritesheet.png");
+    sprites[SPRITE_ENEMY_3] = CP_Image_Load("./Assets/ENEMY3_Spritesheet.png");
+
     backgroundSprite = CP_Image_Load("./Assets/background.png");
     CP_System_SetFrameRate(60.f);
     printf("Image: %-15s|  dims: %d, %d\n","player", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
@@ -199,7 +204,8 @@ void game_init(void)
         spawntimer[k] = BASE_SPAWN_FREQUENCY;
     }
     
-
+    scalar = 1;
+    difficulty_timer = 0;
     gamestart = 0;
 
     // AI NODES
@@ -218,14 +224,14 @@ void game_init(void)
         ai_nodes[2].pos = CP_Vector_Set(480, 725);
         ai_nodes[3].pos = CP_Vector_Set(1440, 725);
 
-        ai_nodes[4].pos = CP_Vector_Set(330, 525);
-        ai_nodes[5].pos = CP_Vector_Set(1590, 525);
+        ai_nodes[4].pos = CP_Vector_Set(330, 540);
+        ai_nodes[5].pos = CP_Vector_Set(1590, 540);
 
         ai_nodes[6].pos = CP_Vector_Set(480, 325);
         ai_nodes[7].pos = CP_Vector_Set(1440, 325);
 
         // bottom 2
-        ai_nodes[8].pos = CP_Vector_Set(960, 1000);
+        //ai_nodes[8].pos = CP_Vector_Set(960, 1000);
         //ai_nodes[9].pos = CP_Vector_Set(1060, 955);
 
         for (int i = 0; i < MAX_PATHFINDING_NODES; i++)
@@ -268,15 +274,15 @@ void game_init(void)
         walls[5].width = 50.f;
         walls[5].active = 1;
 
-        // Walls in the level
+        // Walls in the scalar
         
 
-        walls[6].pos = CP_Vector_Set(225, 525);
+        walls[6].pos = CP_Vector_Set(225, 540);
         walls[6].height = 50.f;
         walls[6].width = 250.f;
         walls[6].active = 1;
 
-        walls[7].pos = CP_Vector_Set(1695, 525);
+        walls[7].pos = CP_Vector_Set(1695, 540);
         walls[7].height = 50.f;
         walls[7].width = 250.f;
         walls[7].active = 1;
@@ -296,6 +302,7 @@ void game_init(void)
         walls[10].width = 350.f;
         walls[10].active = 1;*/
 
+        // top
         walls[11].pos = CP_Vector_Set(960, 325);
         walls[11].height = 50.f;
         walls[11].width = 1000.f;
@@ -330,6 +337,7 @@ void game_init(void)
     // So the first box spawns faster
     spawnWeaponBoxTimer = 2;
     GAMEOVER = 0;
+    combocounter = 0;
     reset_timer(60.0f); // reset timer
 }
 
@@ -339,8 +347,8 @@ void game_update(void)
     CP_Graphics_ClearBackground(CP_Color_Create(150, 150, 150, 255));
     // Update scaled dt
     g_scaledDt = CP_System_GetDt();
-
-
+    g_scaledDt *= scalar + (combocounter / 50);
+    printf("scaled dt modifier is %.3f\n", scalar + (combocounter / 50));
 
     //printf("play pos %.2f,%.2f\n", player->go.pos.x, player->go.pos.y);
 #pragma region UPDATE
@@ -414,9 +422,10 @@ void game_update(void)
 
         }*/
         difficulty_timer += 1.0f * CP_System_GetDt();
+        printf("difficulty %.3f\n", difficulty_timer);
         if (difficulty_timer >= DIFFICULT_INCREMENT){
             difficulty_timer = 0.0f;
-            ++level;
+            scalar += 0.01f;
         }
         // Basic Dumb enemy spawning
         spawntimer[0] += 1.0f * CP_System_GetDt();
@@ -428,8 +437,7 @@ void game_update(void)
             else
                 SpawnEnemy(0, e_spawnPos2);
         }
-        if (level > 0)
-        {
+        if (scalar > 1){
             spawntimer[1] += 1.0f * CP_System_GetDt();
             if(spawntimer[1] > BASE_SPAWN_FREQUENCY + 3){
                 spawntimer[1] = 0.0f;
@@ -442,7 +450,21 @@ void game_update(void)
                     SpawnEnemy(1, e2_spawnPos[2].pos);
                 else if (random_pos <= 100)
                     SpawnEnemy(1, e2_spawnPos[3].pos);
-
+            }
+        }
+        if (scalar > 1.05f) {
+            spawntimer[2] += 1.0f * CP_System_GetDt();
+            if (spawntimer[2] > BASE_SPAWN_FREQUENCY + 3) {
+                spawntimer[2] = 0.0f;
+                int random_pos = returnRange(1, 100);
+                if (random_pos <= 25)
+                    SpawnEnemy(2, e2_spawnPos[0].pos);
+                else if (random_pos <= 50)
+                    SpawnEnemy(2, e2_spawnPos[1].pos);
+                else if (random_pos <= 75)
+                    SpawnEnemy(2, e2_spawnPos[2].pos);
+                else if (random_pos <= 100)
+                    SpawnEnemy(2, e2_spawnPos[3].pos);
             }
         }
     }
@@ -631,6 +653,29 @@ void game_update(void)
         if (!bullets[i].go.active)
             continue;
 
+        if (bullets[i].friendly == 0){
+            if (AABB(player[0].go, bullets[i].go)) {
+                bullets[i].go.active = 0;
+                player[0].go.active = 0;
+                GAMEOVER = 1;
+
+                for (int p = 0; p < MAX_TEXT_POPUP; ++p)
+                {
+                    if (!(popUp[p].go.active))
+                    {
+                        set_popup(&popUp[p],
+                            player->go.pos.x,
+                            player->go.pos.y - player->go.height / 2.f - 10.f,
+                            CP_Color_Create(255, 0, 0, 255),
+                            (int)DEFAULT_FONT_SIZE,
+                            3.0f,
+                            "DIED");
+                        break;
+                    }
+                }
+            }
+        }
+
         // Bullet - Wall
         for (int j = 0; j < MAX_WALLS; ++j)
         {
@@ -740,8 +785,8 @@ void game_update(void)
         {
             //EnemyPathing(&enemies[j], walls, &player, playerPrevPlatform, MAX_WALLS);
             //EnemyPathing(&enemies[j], ai_nodes, &player, playerPrevPlatform, MAX_PATHFINDING_NODES);
-            EnemyPathing3(&enemies[j], ai_nodes, &player, playerPrevPlatform, MAX_PATHFINDING_NODES, walls, e2_spawnPos);
-
+            //EnemyPathing3(&enemies[j], ai_nodes, &player, playerPrevPlatform, MAX_PATHFINDING_NODES, walls, e2_spawnPos);
+            EnemyPathing4(&enemies[j], &player, playerPrevPlatform, MAX_PATHFINDING_NODES, walls, ai_nodes, e2_spawnPos);
         }
 
     }
@@ -803,7 +848,7 @@ void game_update(void)
     }
 
     // Walls
-    const CP_Color wallColor = CP_Color_Create(120, 120, 120, 255);
+    const CP_Color wallColor = CP_Color_Create(120, 120, 120,  100);
     CP_Settings_Fill(wallColor);
     for (int i = 0; i < MAX_WALLS; ++i) {
         if (walls[i].active)
@@ -835,26 +880,36 @@ void game_update(void)
             {
             case 0:
                 CP_Settings_Fill(enemyColor);
+                CP_Settings_Tint(CP_Color_Create(255, 0, 0, (int)enemies[i].redTintVal));
+                RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_1 + enemies[i].type], enemies[i].go.pos.x,
+                    enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
                 break;
             case 1:
                 CP_Settings_Fill(enemyColor2);
+                CP_Settings_Tint(CP_Color_Create(255, 0, 0, (int)enemies[i].redTintVal));
+                RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_2 + enemies[i].type], enemies[i].go.pos.x,
+                    enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
                 break;
             case 2:
                 CP_Settings_Fill(enemyColor3);
+                CP_Settings_Tint(CP_Color_Create(255, 0, 0, (int)enemies[i].redTintVal));
+                RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_3 + enemies[i].type], enemies[i].go.pos.x,
+                    enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
                 break;
             default:
                 break;
             }
 
 
-            CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
+            //CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
             //CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y + enemies[i].go.height + 20, 5);
-            CP_Settings_Tint(CP_Color_Create(255, 0, 0, (int)enemies[i].redTintVal));
-            RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_1 + enemies[i].type], enemies[i].go.pos.x,
-                enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
+            //CP_Settings_Tint(CP_Color_Create(255, 0, 0, (int)enemies[i].redTintVal));
+            //RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_1 + enemies[i].type], enemies[i].go.pos.x,
+            //    enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
             //CP_Settings_Stroke(CP_Color_Create(255, 0, 0, 255));
-            //if (enemies[i].debugshortestnode)
-                //CP_Graphics_DrawLine(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].debugshortestnode->pos.x, enemies[i].debugshortestnode->pos.y);
+            //if (enemies[i].enemy_shortestNode)
+                //CP_Graphics_DrawLine(enemies[i].go.pos.x, enemies[i].go.pos.y + enemies[i].go.height * 0.5f ,
+                    //enemies[i].enemy_shortestNode->pos.x, enemies[i].enemy_shortestNode->pos.y);
 
             // Remove tint from enemy
             CP_Settings_NoTint();

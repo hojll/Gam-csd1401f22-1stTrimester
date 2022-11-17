@@ -14,6 +14,7 @@ typedef struct SpawnBulletMessage {
 	GameObject go;
 	BULLET_TYPE type;
 	CP_Color color;
+	short friendly;
 	float lifetime;
 }SpawnBulletMessage;
 

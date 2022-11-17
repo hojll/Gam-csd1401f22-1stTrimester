@@ -45,7 +45,7 @@ typedef struct E_Basic_Enemy {
 
 	GameObject *nodes;
 	GameObject *myfloor;
-	GameObject* debugshortestnode;
+	GameObject* enemy_shortestNode;
 
 	// Animations
 	SpriteAnimData* animData;
@@ -56,6 +56,7 @@ typedef struct E_Basic_Enemy {
 	int HP;
 	int enemytype;
 	int enemyscore;
+	float hitstun;
 	float floatingtimer;
 
 	void (*Update[STATE_ENEMY_NUM_STATES])(E_BASIC_ENEMY_STATES_1*);
@@ -80,6 +81,9 @@ void EnemytoWallCollision(E_Basic_Enemy *enemy, GameObject wallreference[]);
 void EnemyPathing(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size);
 
 void EnemyPathing3(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size, GameObject walls[], GameObject nodes2[]);
+
+void EnemyPathing4(E_Basic_Enemy* enemy, E_Player* player, GameObject* p_prevfloor, int size,
+	GameObject walls[], GameObject nodes[], GameObject nodes2[]);
 
 void SpawnEnemy(int type, CP_Vector pos);
 
