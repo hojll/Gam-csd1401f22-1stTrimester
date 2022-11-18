@@ -950,7 +950,7 @@ void game_update(void)
 
     // Render AI Pathfinding nodes
     // Render enemy spawn location
-    if (shownodes)
+    /*if (shownodes)
     {
         const CP_Color nodeColor = CP_Color_Create(118, 78, 191, 255);
         CP_Settings_Fill(nodeColor);
@@ -967,7 +967,7 @@ void game_update(void)
                 e2_spawnPos[i].pos.y, 20, 20);
         }
     }
-    
+    */
     CP_Settings_ResetMatrix();
     // UI ELEMENTS
     
