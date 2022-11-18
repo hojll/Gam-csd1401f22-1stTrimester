@@ -33,8 +33,8 @@ E_WeaponBox InitializeWeaponBox()
 	E_WeaponBox weaponBox;
 	weaponBox.Update = WeaponBox_ActiveUpdate;
 	weaponBox.go.active = 0;
-	weaponBox.go.width = 30;
-	weaponBox.go.height = 30;
+	weaponBox.go.width = 70;
+	weaponBox.go.height = 70;
 	weaponBox.go.pos = CP_Vector_Zero();
 	weaponBox.go.vel = CP_Vector_Zero();
 	weaponBox.lifetime = WEAPON_BOX_LIFETIME;

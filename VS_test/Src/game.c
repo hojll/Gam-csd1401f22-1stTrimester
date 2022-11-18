@@ -38,10 +38,11 @@ enum {
     OZNOLA_BASE_DIFFICULTY_MAX = 3
 };
     //o z n o l a
-static const float BASE_SPAWN_FREQUENCY = 1.0f; 
+static const float BASE_SPAWN_FREQUENCY = 1.5f; 
 static const float COMBO_TIME_DEDUCTION = 1.0f; // speed where the combo end
-static const float COMBO_TIME = 2.f; // time given before combo counter end
+static const float COMBO_TIME = 3.f; // time given before combo counter end
 static const float DIFFICULT_INCREMENT = 10.f; // difficulty increment
+static const float MAX_DT_SCALE = 1.3f;
 
 /*
 In �Configuration Properties->Debugging- Working Directory�
@@ -347,8 +348,10 @@ void game_update(void)
     CP_Graphics_ClearBackground(CP_Color_Create(150, 150, 150, 255));
     // Update scaled dt
     g_scaledDt = CP_System_GetDt();
-    g_scaledDt *= scalar + (combocounter / 50);
-    printf("scaled dt modifier is %.3f\n", scalar + (combocounter / 50));
+    if (scalar + (combocounter / 50.f) > MAX_DT_SCALE)
+        g_scaledDt *= MAX_DT_SCALE;
+    else
+        g_scaledDt *= scalar + (combocounter / 50.f);
 
     //printf("play pos %.2f,%.2f\n", player->go.pos.x, player->go.pos.y);
 #pragma region UPDATE
@@ -422,7 +425,6 @@ void game_update(void)
 
         }*/
         difficulty_timer += 1.0f * CP_System_GetDt();
-        printf("difficulty %.3f\n", difficulty_timer);
         if (difficulty_timer >= DIFFICULT_INCREMENT){
             difficulty_timer = 0.0f;
             scalar += 0.01f;
@@ -537,11 +539,15 @@ void game_update(void)
         CP_BOOL player_grounded_flag = 0;
 
         //player out of bounds
-        if (player[i].go.pos.x > CP_System_GetWindowWidth() || player[i].go.pos.x < 0 || player[i].go.pos.y > CP_System_GetWindowHeight() || player[i].go.pos.y < 20)
-        {
-            player[i].go.active = 0;
-            GAMEOVER = 1;
-        }
+        if (player[i].go.pos.x > CP_System_GetWindowWidth() - 100)
+            player[i].go.pos.x = 100;
+        else if (player[i].go.pos.x < 100)
+            player[i].go.pos.x = CP_System_GetWindowWidth() - 100;
+
+        if (player[i].go.pos.y > CP_System_GetWindowHeight() - 100)
+            player[i].go.pos.y = 100;
+        else if (player[i].go.pos.y < 100)
+            player[i].go.pos.y = CP_System_GetWindowHeight() - 100;
 
         // Player - Wall
         for (int j = 0; j < MAX_WALLS; ++j)
