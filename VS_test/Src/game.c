@@ -26,6 +26,8 @@ enum {
     MAX_GAMESTART_TEXT = 9,
 };
 
+static int TEMPORARY;
+
 static const float WEAPON_BOX_SPAWN_TIME = 3;
 
 static const float DEFAULT_FONT_SIZE = 150.0f;
@@ -85,6 +87,8 @@ double combocounter_timer = 0;
 double show_oznometer_fade = 0;
 static int highest_combo = 0;
 int gamestart = 0;
+float screenshake_timer = 0.0f;
+
 static float gamestart_timer = 1.0f;
 static char* gamestart_text[] = {   "Press Spacebar to START!", "Come on already press Spacebar", "Hurry up and press Spacebar!",
                                     "Are you not gonna play?", "Bruh SPACEBAR!!", "I'm just gonna start the game for you!",
@@ -346,6 +350,7 @@ void game_init(void)
     combocounter_timer = 0.f;
     reset_timer(60.0f); // reset timer
     highest_combo = 0;
+    screenshake_timer = 0.0f;
 }
 
 void game_update(void)
@@ -733,6 +738,7 @@ void game_update(void)
                     bullets[i].collide_pos.x = enemies[j].go.pos.x + enemies[j].go.width / 2.f + bullets[i].go.width / 2.f;
 
                 bullets->Destroy(&bullets[i]);
+                screenshake_timer = 0.5f;
 
                 if (!EnemyTakeDamage(&enemies[j], 1))
                     killconfirmed();
@@ -819,7 +825,24 @@ void game_update(void)
     // Render stuff here
     //----------------------------------------------------------------------------------------------------------------------
 #pragma region RENDER
-    
+    //SCREENSHAKE
+    if (combocounter < 30)
+    {
+        TEMPORARY = highest_combo/3;
+    }
+    screenshake_timer = 1.0f;
+    if (screenshake_timer > 0)
+    {
+        screenshake_timer -= CP_System_GetDt();
+        cameraPos.x = CP_Random_RangeFloat(-(float)TEMPORARY, (float)TEMPORARY);
+        cameraPos.y = CP_Random_RangeFloat(-(float)TEMPORARY, (float)TEMPORARY);
+    }
+    else
+    {
+        cameraPos.x = 0.0f;
+        cameraPos.y = 0.0f;
+    }
+
 
     CP_Settings_Stroke(CP_Color_Create(0, 0, 0, 255));
     // Background
