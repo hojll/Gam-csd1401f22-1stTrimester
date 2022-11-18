@@ -176,7 +176,7 @@ void main_menu_update(void)
 
 		// Tutorial
 		CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[1]));
-		CP_Font_DrawText("TUTORIAL", text_offset(1), y_position[2]);
+		CP_Font_DrawText("UNAVAILABLE", text_offset(1), y_position[2]);
 
 		// Exit
 		CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[2]));
