@@ -342,6 +342,7 @@ void game_init(void)
     GAMEOVER = 0;
     game_start_text_counter = 0;
     combocounter = 0;
+    combocounter_timer = 0.f;
     reset_timer(60.0f); // reset timer
 }
 
@@ -423,10 +424,6 @@ void game_update(void)
      // GameLoop stuff
     if (gamestart == 1)
     {
-        /*if (time < 0)
-        {
-
-        }*/
         difficulty_timer += 1.0f * CP_System_GetDt();
         if (difficulty_timer >= DIFFICULT_INCREMENT){
             difficulty_timer = 0.0f;
@@ -539,6 +536,14 @@ void game_update(void)
     {
         if (!player[i].go.active)
             continue;
+
+        // GAME OVER SET
+        if ((combocounter_timer / COMBO_TIME) < 0)
+        {
+            GAMEOVER = 1;
+            player[i].go.active = 0;
+        }
+
         CP_BOOL player_grounded_flag = 0;
 
         //player out of bounds
@@ -799,6 +804,7 @@ void game_update(void)
         }
 
     }
+
     
 
 #pragma endregion
@@ -961,28 +967,32 @@ void game_update(void)
     CP_Settings_ResetMatrix();
     // UI ELEMENTS
     
-    CP_Settings_TextSize(DEFAULT_FONT_SIZE);
-    CP_Settings_Fill(DEFAULT_FONT_COLOR);
-    if (gamestart)
-    {
-        update_timer();
-    }
+    //CP_Settings_TextSize(DEFAULT_FONT_SIZE);
+    //CP_Settings_Fill(DEFAULT_FONT_COLOR);
+    //if (gamestart)
+    //{
+    //    update_timer();
+    //}
  
 
     float oznoalpha = updateOznometerFade(255, &combocounter_timer, COMBO_TIME);
     updateComboCounterTimer(&combocounter,&combocounter_timer, COMBO_TIME_DEDUCTION, COMBO_TIME);
 
-    printComboCounter(CP_Vector_Set(129.8f, 40), 52, 0, 0, 0, oznoalpha);
-    printComboCounter(CP_Vector_Set(130, 40), 50, 194, 46, 19, oznoalpha);
+    printComboCounter(CP_Vector_Set(CP_System_GetWindowWidth() / 2.f - 0.2f, 40), 52, 0, 0, 0, oznoalpha);
+    printComboCounter(CP_Vector_Set(CP_System_GetWindowWidth() / 2.f, 40), 50, 194, 46, 19, oznoalpha);
     
     CP_Vector barpos = CP_Vector_Set(CP_System_GetWindowWidth() * 0.20F, 
         CP_System_GetWindowHeight() * 0.015F);
-    printComboCountdownTimer(CP_Vector_Set(35, 64), 
+    if ((combocounter_timer / COMBO_TIME) <= 0)
+        CP_Settings_StrokeWeight(0.f);
+    printComboCountdownTimer(CP_Vector_Set(CP_System_GetWindowWidth() / 2.f - barpos.x / 2.f, 64),
         CP_Vector_Set((float)(combocounter_timer / COMBO_TIME) * barpos.x
         , barpos.y), 194, 46, 19, oznoalpha);
+    CP_Settings_StrokeWeight(3.f);
     char combocountertxt[5];
     sprintf_s(combocountertxt, sizeof((int)combocounter), "%d", combocounter);
-    CP_Font_DrawText(combocountertxt, barpos.x + 78, barpos.y + 35);
+    CP_Settings_TextSize(100.f);
+    CP_Font_DrawText(combocountertxt, CP_System_GetWindowWidth() / 2.f, 120);
 
     // OZNOLA METER
     if (CP_Input_KeyTriggered(KEY_F11)) // debug
