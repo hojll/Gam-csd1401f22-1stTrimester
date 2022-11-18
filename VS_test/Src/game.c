@@ -75,6 +75,7 @@ GameObject ai_nodes[MAX_PATHFINDING_NODES];
 CP_BOOL shownodes = 1;
 GameObject *playerPrevPlatform;
 // Oznola Game Loop stuff
+CP_Vector cameraPos;
 float scalar = 0;
 double difficulty_timer = 0;
 float spawntimer[3];
@@ -176,6 +177,7 @@ void game_init(void)
     /////////////////////////
     CP_System_SetWindowSize(1920, 1080);
     CP_Settings_RectMode(CP_POSITION_CENTER);
+    cameraPos = CP_Vector_Zero();// Camera
     //Assets/DigiPen_Singapore_WEB_RED.png
     for (int i = 0; i < MAX_PLAYERS; ++i) {
         InitializePlayer(&player[i]);
@@ -349,7 +351,7 @@ void game_update(void)
     // Update scaled dt
     g_scaledDt = CP_System_GetDt();
     g_scaledDt *= scalar + (combocounter / 50);
-    printf("scaled dt modifier is %.3f\n", scalar + (combocounter / 50));
+    //printf("scaled dt modifier is %.3f\n", scalar + (combocounter / 50));
 
     //printf("play pos %.2f,%.2f\n", player->go.pos.x, player->go.pos.y);
 #pragma region UPDATE
@@ -807,6 +809,8 @@ void game_update(void)
     // Background
     //CP_Image_Draw(backgroundSprite, 0.f, 0.f, 1920, 1800, 255);
 
+    CP_Matrix camTransform = CP_Matrix_Translate(cameraPos);
+    CP_Settings_ApplyMatrix(camTransform);
     // Bullets
     for (int i = 0; i < MAX_BULLETS; ++i) {
         if (bullets[i].go.active)
@@ -948,7 +952,7 @@ void game_update(void)
         }
     }
     
-
+    CP_Settings_ResetMatrix();
     // UI ELEMENTS
     
     CP_Settings_TextSize(DEFAULT_FONT_SIZE);
