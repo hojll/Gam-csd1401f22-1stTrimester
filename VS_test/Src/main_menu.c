@@ -91,107 +91,101 @@ void main_menu_update(void)
 	if (CP_Input_KeyTriggered(KEY_Q))
 		CP_Engine_Terminate();
 
-	if(!testing)
+	if (CP_Input_KeyTriggered(KEY_DOWN) || CP_Input_KeyTriggered(KEY_S))
 	{
-		if (CP_Input_KeyTriggered(KEY_DOWN) || CP_Input_KeyTriggered(KEY_S))
+		if (!selected)
 		{
-			if (!selected)
+			selector_count += 1;
+			if (selector_count == 3)
 			{
-				selector_count += 1;
-				if (selector_count == 3)
-				{
-					selector_count = 0;
-				}
+				selector_count = 0;
 			}
 		}
-
-		if (CP_Input_KeyTriggered(KEY_UP) || CP_Input_KeyTriggered(KEY_W))
-		{
-			if (!selected)
-			{
-				selector_count -= 1;
-				if (selector_count == -1)
-				{
-					selector_count = 2;
-				}
-			}
-		}
-
-		if ((CP_Input_KeyTriggered(KEY_ENTER) || CP_Input_KeyTriggered(KEY_D) || CP_Input_KeyTriggered(KEY_RIGHT) || CP_Input_KeyTriggered(KEY_SPACE)))
-		{
-
-			if (selector_count == 0)
-			{
-				selected = 1;
-			}
-			if (selector_count == 2)
-			{
-				selected = 1;
-
-			}
-		}
-
-		if (selected)
-		{
-			button_movement -= 10.0f;
-			timer -= CP_System_GetDt();
-			if (selector_count == 0)
-			{
-				alpha[1] -= ALPHA_DECREMENT;
-				alpha[2] -= ALPHA_DECREMENT;
-				if (timer <= 0.0f)
-				{
-					CP_Engine_SetNextGameState(game_init, game_update, game_exit);
-				}
-			}
-			if (selector_count == 1)
-			{
-				alpha[0] -= ALPHA_DECREMENT;
-				alpha[2] -= ALPHA_DECREMENT;
-				if (timer <= 0.0f)
-				{
-					exit(0);
-				}
-			}
-			if (selector_count == 2)
-			{
-				alpha[0] -= ALPHA_DECREMENT;
-				alpha[1] -= ALPHA_DECREMENT;
-				if (timer <= 0.0f)
-				{
-					exit(0);
-				}
-			}
-		}
-
-		CP_Graphics_ClearBackground(CP_Color_Create(20, 5, 5, 255));
-		// OZNOLAND
-		title_text_format();
-		CP_Font_DrawText("OZNOLAND", x_position[1], y_position[0]);
-
-		button_text_format();
-		CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[0]));
-		// Play
-		CP_Font_DrawText("PLAY", text_offset(0), y_position[1]);
-
-		// Tutorial
-		CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[1]));
-		CP_Font_DrawText("UNAVAILABLE", text_offset(1), y_position[2]);
-
-		// Exit
-		CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[2]));
-		CP_Font_DrawText("EXIT", text_offset(2), y_position[3]);
-
-		// Triangle Selector
-		CP_Graphics_DrawTriangle(x_position[0], y_position[selector_count + 1] + 3.0f, x_position[0] - 30.0f, y_position[selector_count + 1] - 10.0f + 3.0f, x_position[0] - 30.0f, y_position[selector_count + 1] + 10.0f + 3.0f);
-		CP_Settings_Stroke(CP_Color_Create(255, 255, 255, 255));
-		//CP_Graphics_DrawLine(line_offset(), y_position[selector_count + 1] + 3.0f, line_offset() + 5000.f, y_position[selector_count + 1] + 3.0f);
-		//CP_Graphics_DrawTriangle(line_offset(), y_position[selector_count + 1] + 3.0f, line_offset() + 30.0f, y_position[selector_count + 1] - 10.0f + 3.0f, line_offset() + 30.0f, y_position[selector_count + 1] + 10.0f + 3.0f);
 	}
-	else
+
+	if (CP_Input_KeyTriggered(KEY_UP) || CP_Input_KeyTriggered(KEY_W))
 	{
-	game_over_popup();
+		if (!selected)
+		{
+			selector_count -= 1;
+			if (selector_count == -1)
+			{
+				selector_count = 2;
+			}
+		}
 	}
+
+	if ((CP_Input_KeyTriggered(KEY_ENTER) || CP_Input_KeyTriggered(KEY_D) || CP_Input_KeyTriggered(KEY_RIGHT) || CP_Input_KeyTriggered(KEY_SPACE)))
+	{
+
+		if (selector_count == 0)
+		{
+			selected = 1;
+		}
+		if (selector_count == 2)
+		{
+			selected = 1;
+
+		}
+	}
+
+	if (selected)
+	{
+		button_movement -= 10.0f;
+		timer -= CP_System_GetDt();
+		if (selector_count == 0)
+		{
+			alpha[1] -= ALPHA_DECREMENT;
+			alpha[2] -= ALPHA_DECREMENT;
+			if (timer <= 0.0f)
+			{
+				CP_Engine_SetNextGameState(game_init, game_update, game_exit);
+			}
+		}
+		if (selector_count == 1)
+		{
+			alpha[0] -= ALPHA_DECREMENT;
+			alpha[2] -= ALPHA_DECREMENT;
+			if (timer <= 0.0f)
+			{
+				exit(0);
+			}
+		}
+		if (selector_count == 2)
+		{
+			alpha[0] -= ALPHA_DECREMENT;
+			alpha[1] -= ALPHA_DECREMENT;
+			if (timer <= 0.0f)
+			{
+				exit(0);
+			}
+		}
+	}
+
+	CP_Graphics_ClearBackground(CP_Color_Create(20, 5, 5, 255));
+	// OZNOLAND
+	title_text_format();
+	CP_Font_DrawText("OZNOLAND", x_position[1], y_position[0]);
+
+	button_text_format();
+	CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[0]));
+	// Play
+	CP_Font_DrawText("PLAY", text_offset(0), y_position[1]);
+
+	// Tutorial
+	CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[1]));
+	CP_Font_DrawText("UNAVAILABLE", text_offset(1), y_position[2]);
+
+	// Exit
+	CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[2]));
+	CP_Font_DrawText("EXIT", text_offset(2), y_position[3]);
+
+	// Triangle Selector
+	CP_Graphics_DrawTriangle(x_position[0], y_position[selector_count + 1] + 3.0f, x_position[0] - 30.0f, y_position[selector_count + 1] - 10.0f + 3.0f, x_position[0] - 30.0f, y_position[selector_count + 1] + 10.0f + 3.0f);
+	CP_Settings_Stroke(CP_Color_Create(255, 255, 255, 255));
+	//CP_Graphics_DrawLine(line_offset(), y_position[selector_count + 1] + 3.0f, line_offset() + 5000.f, y_position[selector_count + 1] + 3.0f);
+	//CP_Graphics_DrawTriangle(line_offset(), y_position[selector_count + 1] + 3.0f, line_offset() + 30.0f, y_position[selector_count + 1] - 10.0f + 3.0f, line_offset() + 30.0f, y_position[selector_count + 1] + 10.0f + 3.0f);
+	
 }
 
 void main_menu_exit(void)
