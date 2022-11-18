@@ -859,7 +859,7 @@ void game_update(void)
     }
 
     // Walls
-    const CP_Color wallColor = CP_Color_Create(120, 120, 120,  100);
+    const CP_Color wallColor = CP_Color_Create(120, 120, 120,  255);
     CP_Settings_Fill(wallColor);
     for (int i = 0; i < MAX_WALLS; ++i) {
         if (walls[i].active)

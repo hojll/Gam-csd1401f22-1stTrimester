@@ -874,10 +874,10 @@ void EnemyPathing4(E_Basic_Enemy* enemy, E_Player* player, GameObject* p_prevflo
 			enemy->go.dir.x = player->go.pos.x > enemy->go.pos.x ? 1 : -1;
 		}
 		//enemy->go.dir.x = 0;
-		if (enemy->enemy_shortestNode) {
+		/*if (enemy->enemy_shortestNode) {
 			CP_Settings_Stroke(CP_Color_Create(255, 0, 0, 255));
 			CP_Graphics_DrawLine(enemy->go.pos.x, enemy->go.pos.y + enemy->go.height * 0.5f, enemy->enemy_shortestNode->pos.x, enemy->enemy_shortestNode->pos.y);
-		}
+		}*/
 	}
 		break;
 	case 2:
