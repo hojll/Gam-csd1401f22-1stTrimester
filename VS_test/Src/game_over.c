@@ -1,4 +1,5 @@
 #include "CProcessing.h"
+#include <stdio.h>
 #include "restart.h"
 #define ALPHA_DECREMENT 50
 
@@ -10,6 +11,7 @@ static char selected;
 static float timer;
 static float button_movement;
 static char game_over_initialized = 0;
+static char highscore[10];
 
 void main_menu_init(void);
 void main_menu_update(void);
@@ -18,7 +20,7 @@ void game_init(void);
 void game_update(void);
 void game_exit(void);
 
-void initialize_value(void)
+void initialize_value(int score)
 {
 	if (!game_over_initialized)
 	{
@@ -33,6 +35,7 @@ void initialize_value(void)
 		timer = 0.5f;
 		game_over_initialized = 1;
 		alpha[0] = 255, alpha[1] = 255, alpha[2] = 255;
+		sprintf_s(highscore, sizeof(highscore), "%d", score);
 	}
 }
 
@@ -49,9 +52,9 @@ int arrow_offset(void)
 	return 0;
 }
 
-void game_over_popup(void)
+void game_over_popup(int score)
 {
-	initialize_value();
+	initialize_value(score);
 	if (CP_Input_KeyTriggered(KEY_DOWN) || CP_Input_KeyTriggered(KEY_S))
 	{
 		if (!selected)
@@ -124,7 +127,12 @@ void game_over_popup(void)
 
 	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 150));
 	CP_Graphics_DrawRect((float)CP_System_GetWindowWidth() * 0.5f, (float)CP_System_GetWindowHeight() * 0.5f, (float)CP_System_GetWindowWidth(), (float)CP_System_GetWindowHeight());
-
+	
+	CP_Settings_TextSize(300.0f);
+	CP_Settings_Fill(CP_Color_Create(255, 100, 100, 255));
+	CP_Font_DrawText(highscore, x_position[1], y_position[0] - 175.0f);
+	
+	CP_Settings_TextSize(150.0f);
 	CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
 	CP_Font_DrawText("GAME OVER", x_position[1], y_position[0]);
 

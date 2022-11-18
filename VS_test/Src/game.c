@@ -83,6 +83,7 @@ float spawntimer[3];
 int combocounter = 0;
 double combocounter_timer = 0;
 double show_oznometer_fade = 0;
+static int highest_combo = 0;
 int gamestart = 0;
 static float gamestart_timer = 1.0f;
 static char* gamestart_text[] = {   "Press Spacebar to START!", "Come on already press Spacebar", "Hurry up and press Spacebar!",
@@ -344,6 +345,7 @@ void game_init(void)
     combocounter = 0;
     combocounter_timer = 0.f;
     reset_timer(60.0f); // reset timer
+    highest_combo = 0;
 }
 
 void game_update(void)
@@ -805,6 +807,10 @@ void game_update(void)
 
     }
 
+    if (highest_combo < combocounter)
+    {
+        highest_combo = combocounter;
+    }
     
 
 #pragma endregion
@@ -813,9 +819,7 @@ void game_update(void)
     // Render stuff here
     //----------------------------------------------------------------------------------------------------------------------
 #pragma region RENDER
-
-
-  
+    
 
     CP_Settings_Stroke(CP_Color_Create(0, 0, 0, 255));
     // Background
@@ -865,7 +869,7 @@ void game_update(void)
     }
 
     // Walls
-    const CP_Color wallColor = CP_Color_Create(120, 120, 120,  100);
+    const CP_Color wallColor = CP_Color_Create(120, 120, 120,  255);
     CP_Settings_Fill(wallColor);
     for (int i = 0; i < MAX_WALLS; ++i) {
         if (walls[i].active)
@@ -1064,7 +1068,7 @@ void game_update(void)
     //GAME OVER
     if (GAMEOVER)
     {
-        game_over_popup();
+        game_over_popup(highest_combo);
     }
 #pragma endregion
 }
