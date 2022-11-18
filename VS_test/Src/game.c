@@ -337,6 +337,7 @@ void game_init(void)
     // So the first box spawns faster
     spawnWeaponBoxTimer = 2;
     GAMEOVER = 0;
+    game_start_text_counter = 0;
     combocounter = 0;
     reset_timer(60.0f); // reset timer
 }
@@ -1000,7 +1001,7 @@ void game_update(void)
                             player[q].go.pos.x,
                             player[q].go.pos.y - 50.0f,
                             CP_Color_Create(0, 0, 0, 200),
-                            35,
+                            50,
                             3.0f,
                             gamestart_text[game_start_text_counter]);
                         ++game_start_text_counter;
