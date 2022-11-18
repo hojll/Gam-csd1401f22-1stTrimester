@@ -76,6 +76,7 @@ GameObject ai_nodes[MAX_PATHFINDING_NODES];
 CP_BOOL shownodes = 1;
 GameObject *playerPrevPlatform;
 // Oznola Game Loop stuff
+CP_Vector cameraPos;
 float scalar = 0;
 double difficulty_timer = 0;
 float spawntimer[3];
@@ -177,6 +178,7 @@ void game_init(void)
     /////////////////////////
     CP_System_SetWindowSize(1920, 1080);
     CP_Settings_RectMode(CP_POSITION_CENTER);
+    cameraPos = CP_Vector_Zero();// Camera
     //Assets/DigiPen_Singapore_WEB_RED.png
     for (int i = 0; i < MAX_PLAYERS; ++i) {
         InitializePlayer(&player[i]);
@@ -338,6 +340,7 @@ void game_init(void)
     // So the first box spawns faster
     spawnWeaponBoxTimer = 2;
     GAMEOVER = 0;
+    game_start_text_counter = 0;
     combocounter = 0;
     reset_timer(60.0f); // reset timer
 }
@@ -812,6 +815,8 @@ void game_update(void)
     // Background
     //CP_Image_Draw(backgroundSprite, 0.f, 0.f, 1920, 1800, 255);
 
+    CP_Matrix camTransform = CP_Matrix_Translate(cameraPos);
+    CP_Settings_ApplyMatrix(camTransform);
     // Bullets
     for (int i = 0; i < MAX_BULLETS; ++i) {
         if (bullets[i].go.active)
@@ -953,7 +958,7 @@ void game_update(void)
         }
     }
     
-
+    CP_Settings_ResetMatrix();
     // UI ELEMENTS
     
     CP_Settings_TextSize(DEFAULT_FONT_SIZE);
@@ -1006,7 +1011,7 @@ void game_update(void)
                             player[q].go.pos.x,
                             player[q].go.pos.y - 50.0f,
                             CP_Color_Create(0, 0, 0, 200),
-                            35,
+                            50,
                             3.0f,
                             gamestart_text[game_start_text_counter]);
                         ++game_start_text_counter;
