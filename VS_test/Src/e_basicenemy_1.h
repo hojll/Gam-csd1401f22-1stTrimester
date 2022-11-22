@@ -45,10 +45,10 @@ typedef struct E_Basic_Enemy {
 
 	GameObject *nodes;
 	GameObject *myfloor;
-	GameObject* enemy_shortestNode;
+	GameObject *enemy_shortestNode;
 
 	// Animations
-	SpriteAnimData* animData;
+	SpriteAnimData *animData;
 	int animState;
 	SpriteAnimInstance currAnim;
 	float redTintVal; // goes from 0 to 255
@@ -70,7 +70,7 @@ typedef struct E_Basic_Enemy {
 /*-----------------------------------------------------------------*/
 void InitAnimdata_E1();
 
-E_Basic_Enemy InitializeEnemy_1();
+E_Basic_Enemy* InitializeEnemy_1(E_Basic_Enemy* enemy);
 
 void InitEnemyList(E_Basic_Enemy arr[], int size, GameObject nodes[]);
 

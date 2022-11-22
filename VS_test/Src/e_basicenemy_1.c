@@ -125,38 +125,38 @@ void InitAnimdata_E1()
 	}
 }
 
-E_Basic_Enemy InitializeEnemy_1()
+E_Basic_Enemy* InitializeEnemy_1(E_Basic_Enemy* enemy)
 {
-	E_Basic_Enemy retval;
-	retval.Update[STATE_ENEMY_DEAD] = Enemy_DeadUpdate;
-	retval.Update[STATE_ENEMY_ACTIVE] = Enemy_ActiveUpdate;
+	enemy->Update[STATE_ENEMY_DEAD] = Enemy_DeadUpdate;
+	enemy->Update[STATE_ENEMY_ACTIVE] = Enemy_ActiveUpdate;
 
-	retval.state = STATE_ENEMY_ACTIVE;
-	retval.HP = 0;
-	retval.go.active = 0;
-	retval.go.height = 100.f;
-	retval.go.width = 100.f;
-	retval.grounded = 0;
-	retval.go.dir.y = 0;
-	retval.go.vel.y = 0;
-	retval.tracking = 0;
-	retval.myfloor = NULL;
-	retval.floatingtimer = 0;
-	retval.currAnim = SetSpriteAnim(&enemy1Animations[ANIM_ENEMY_1_ACTIVE_MOVING], ACTIVE_ANIM_SPEED);
-	retval.type = ENEMY_TYPE_1;
-	retval.redTintVal = 0.f;
-	retval.hitstun = 0;
+	enemy->animData = enemy1Animations;
+	enemy->state = STATE_ENEMY_ACTIVE;
+	enemy->HP = 0;
+	enemy->go.active = 0;
+	enemy->go.height = 100.f;
+	enemy->go.width = 100.f;
+	enemy->grounded = 0;
+	enemy->go.dir.y = 0;
+	enemy->go.vel.y = 0;
+	enemy->tracking = 0;
+	enemy->myfloor = NULL;
+	enemy->floatingtimer = 0;
+	enemy->currAnim = SetSpriteAnim(&enemy1Animations[ANIM_ENEMY_1_ACTIVE_MOVING], ACTIVE_ANIM_SPEED);
+	enemy->type = ENEMY_TYPE_1;
+	enemy->redTintVal = 0.f;
+	enemy->hitstun = 0;
 	// random direction
 	int randomdir = returnRange(1, 20);
 	if (randomdir >= 10)
 	{
-		retval.go.dir.x = 1;
+		enemy->go.dir.x = 1;
 	}
 	else
 	{
-		retval.go.dir.x = -1;
+		enemy->go.dir.x = -1;
 	}
-	return retval;
+	return enemy;
 }
 
 void ResetEnemy(E_Basic_Enemy* enemy)
@@ -165,8 +165,8 @@ void ResetEnemy(E_Basic_Enemy* enemy)
 	enemy->state = STATE_ENEMY_ACTIVE;
 	enemy->HP = 0;
 	enemy->go.active = 0;
-	enemy->go.height = 50.f;
-	enemy->go.width = 50.f;
+	enemy->go.height = 100.f;
+	enemy->go.width = 100.f;
 	enemy->grounded = 0;
 	enemy->go.dir.y = 0;
 	enemy->go.vel.y = 0;
@@ -189,7 +189,7 @@ void InitEnemyList(E_Basic_Enemy arr[], int size, GameObject nodes[])
 	srand(123);	
 	for (int i = 0; i < size; ++i)
 	{
-		arr[i] = InitializeEnemy_1();
+		InitializeEnemy_1(&arr[i]);
 		arr[i].nodes = nodes;
 	}
 }

@@ -126,17 +126,13 @@ void MessageSpawnEnemy(void* messageInfo) {
         E_Basic_Enemy* curr = &enemies[j];
         if (curr->go.active)
             continue;
-        curr->go.active = 1;
-        curr->go.pos = enemyMsg->position;
-        curr->tracking = enemyMsg->tracking;
-        if (curr->tracking == 1)
-            curr->go.dir.x = 0;
-        curr->enemytype = enemyMsg->type;
         switch (enemyMsg->type) {
         case ENEMY_TYPE_1:
+            InitializeEnemy_1(curr);
             curr->HP = HEALTH_ENEMY_1;
             break;
         case ENEMY_TYPE_2:
+            InitializeEnemy_2(curr);
             curr->HP = HEALTH_ENEMY_2;
             break;
         case ENEMY_TYPE_3:
@@ -144,10 +140,16 @@ void MessageSpawnEnemy(void* messageInfo) {
         }
         curr->enemy_shortestNode = NULL;
         curr->redTintVal = 0.f;
-        //curr->enemytype = enemyMsg->type;
        
+        curr->go.active = 1;
+        curr->go.pos = enemyMsg->position;
+        curr->tracking = enemyMsg->tracking;
+        if (curr->tracking == 1)
+            curr->go.dir.x = 0;
+        curr->enemytype = enemyMsg->type;
         break;
     }
+
 }
 
 void MessageToPlayerDir(void* messageInfo) {
@@ -200,6 +202,7 @@ void game_init(void)
 
     // AI / ENEMY
     InitAnimdata_E1();
+    InitAnimdata_E2();
     enemies = (E_Basic_Enemy*)malloc(sizeof(E_Basic_Enemy) * MAX_ENEMIES);
     InitEnemyList(enemies, MAX_ENEMIES, ai_nodes);
     e_spawnPos1 = CP_Vector_Set(960, 110);
@@ -925,19 +928,19 @@ void game_update(void)
             case 0:
                 CP_Settings_Fill(enemyColor);
                 CP_Settings_Tint(CP_Color_Create(255, 0, 0, (int)enemies[i].redTintVal));
-                RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_1 + enemies[i].type], enemies[i].go.pos.x,
+                RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_1], enemies[i].go.pos.x,
                     enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
                 break;
             case 1:
                 CP_Settings_Fill(enemyColor2);
                 CP_Settings_Tint(CP_Color_Create(255, 0, 0, (int)enemies[i].redTintVal));
-                RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_2 + enemies[i].type], enemies[i].go.pos.x,
+                RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_2], enemies[i].go.pos.x,
                     enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
                 break;
             case 2:
                 CP_Settings_Fill(enemyColor3);
                 CP_Settings_Tint(CP_Color_Create(255, 0, 0, (int)enemies[i].redTintVal));
-                RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_3 + enemies[i].type], enemies[i].go.pos.x,
+                RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_3], enemies[i].go.pos.x,
                     enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
                 break;
             default:
