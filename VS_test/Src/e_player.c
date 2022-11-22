@@ -5,16 +5,16 @@
 #include "utilities.h"
 
 Messenger g_messenger;
-#define PLAYER_SPEED 650.f
+#define PLAYER_SPEED 750.f
 #define ROLL_SPEED PLAYER_SPEED*2.f
 #define ROLL_DURATION 0.5f
-#define GRAVITY 8000.f
-#define MAX_GRAV_VEL 2500.f
+#define GRAVITY 7000.f
+#define MAX_GRAV_VEL 3500.f
 #define JUMP_VEL -2000.f
 #define DEFAULT_ATTACK_SPEED 0.3f
 // DEFINITIONS FOR ANIMATIONS
-#define FRAME_DIM_WIDTH 48
-#define FRAME_DIM_HEIGHT 48
+#define FRAME_DIM_WIDTH 37
+#define FRAME_DIM_HEIGHT 37
 #define IMAGE_DIM_WIDTH 192
 #define IMAGE_DIM_HEIGHT 144
 #define NUM_ROLL_FRAMES 5

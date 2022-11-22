@@ -1,5 +1,4 @@
 #include "CProcessing.h"
-#include "game_over.h"
 #define ALPHA_DECREMENT 50
 
 static float y_position[4], x_position[2], timer;
@@ -15,6 +14,10 @@ static float button_movement;
 void game_init(void);
 void game_update(void);
 void game_exit(void);
+void credits_init(void);
+void credits_update(void);
+void credits_exit(void);
+
 
 void title_text_format(void)
 {
@@ -68,8 +71,8 @@ float line_offset(void)
 
 void main_menu_init(void)
 {
-	CP_System_SetWindowSize(900, 900);
 	CP_Settings_RectMode(CP_POSITION_CENTER);
+	
 
 	CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
 
@@ -115,18 +118,9 @@ void main_menu_update(void)
 		}
 	}
 
-	if ((CP_Input_KeyTriggered(KEY_ENTER) || CP_Input_KeyTriggered(KEY_D) || CP_Input_KeyTriggered(KEY_RIGHT) || CP_Input_KeyTriggered(KEY_SPACE)))
+	if ((CP_Input_KeyTriggered(KEY_ENTER) || CP_Input_KeyTriggered(KEY_SPACE)))
 	{
-
-		if (selector_count == 0)
-		{
-			selected = 1;
-		}
-		if (selector_count == 2)
-		{
-			selected = 1;
-
-		}
+		selected = 1;
 	}
 
 	if (selected)
@@ -148,7 +142,7 @@ void main_menu_update(void)
 			alpha[2] -= ALPHA_DECREMENT;
 			if (timer <= 0.0f)
 			{
-				exit(0);
+				CP_Engine_SetNextGameState(credits_init, credits_update, credits_exit);
 			}
 		}
 		if (selector_count == 2)
@@ -174,11 +168,15 @@ void main_menu_update(void)
 
 	// Tutorial
 	CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[1]));
-	CP_Font_DrawText("UNAVAILABLE", text_offset(1), y_position[2]);
+	CP_Font_DrawText("CREDITS", text_offset(1), y_position[2]);
 
 	// Exit
 	CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[2]));
 	CP_Font_DrawText("EXIT", text_offset(2), y_position[3]);
+
+	CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
+	CP_Settings_TextSize(35.0f);
+	CP_Font_DrawText("PRESS SPACE OR ENTER TO SELECT", CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.95f);
 
 	// Triangle Selector
 	CP_Graphics_DrawTriangle(x_position[0], y_position[selector_count + 1] + 3.0f, x_position[0] - 30.0f, y_position[selector_count + 1] - 10.0f + 3.0f, x_position[0] - 30.0f, y_position[selector_count + 1] + 10.0f + 3.0f);

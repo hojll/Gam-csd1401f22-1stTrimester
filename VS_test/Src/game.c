@@ -42,7 +42,7 @@ enum {
     //o z n o l a
 static const float BASE_SPAWN_FREQUENCY = 1.5f; 
 static const float COMBO_TIME_DEDUCTION = 1.0f; // speed where the combo end
-static const float COMBO_TIME = 3.f; // time given before combo counter end
+static const float COMBO_TIME = 10.f; // time given before combo counter end
 static const float DIFFICULT_INCREMENT = 10.f; // difficulty increment
 static const float MAX_DT_SCALE = 1.3f;
 
@@ -183,7 +183,7 @@ void game_init(void)
     printf("Image: %-15s|  dims: %d, %d\n","player", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
     printf("Image: %-15s| dims: %d, %d\n", "background", CP_Image_GetWidth(backgroundSprite), CP_Image_GetHeight(backgroundSprite));
     /////////////////////////
-    CP_System_SetWindowSize(1920, 1080);
+    
     CP_Settings_RectMode(CP_POSITION_CENTER);
     cameraPos = CP_Vector_Zero();// Camera
     //Assets/DigiPen_Singapore_WEB_RED.png
@@ -348,6 +348,15 @@ void game_init(void)
     // So the first box spawns faster
     spawnWeaponBoxTimer = 2;
     GAMEOVER = 0;
+    gamestart_text[0] = "Press Spacebar to START!";
+    gamestart_text[1] = "Come on already press Spacebar";
+    gamestart_text[2] = "Hurry up and press Spacebar!";
+    gamestart_text[3] = "Are you not gonna play?";
+    gamestart_text[4] = "Bruh SPACEBAR!!";
+    gamestart_text[5] = "I'm just gonna start the game for you!";
+    gamestart_text[6] = "I'm really gonna start the game!";
+    gamestart_text[7] = "Why are you doing this to me?";
+    gamestart_text[8] = "OK I give up...";
     game_start_text_counter = 0;
     combocounter = 0;
     combocounter_timer = 0.f;
@@ -550,8 +559,8 @@ void game_update(void)
         // GAME OVER SET
         if ((combocounter_timer / COMBO_TIME) < 0)
         {
-            GAMEOVER = 1;
-            player[i].go.active = 0;
+            //GAMEOVER = 1;
+            //player[i].go.active = 0;
         }
 
         CP_BOOL player_grounded_flag = 0;
@@ -829,9 +838,9 @@ void game_update(void)
     //----------------------------------------------------------------------------------------------------------------------
 #pragma region RENDER
     //SCREENSHAKE
-    if (combocounter < 30)
+    if (combocounter < 50)
     {
-        TEMPORARY = highest_combo/3;
+        TEMPORARY = highest_combo/5;
     }
     screenshake_timer = 1.0f;
     if (screenshake_timer > 0)
@@ -1046,7 +1055,6 @@ void game_update(void)
                 {
                     if (!(popUp[i].go.active))
                     {
-                        printf("%d", game_start_text_counter);
                         set_popup(&popUp[i],
                             player[q].go.pos.x,
                             player[q].go.pos.y - 50.0f,

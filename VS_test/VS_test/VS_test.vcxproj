@@ -102,6 +102,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   <ItemGroup>
     <ClCompile Include="..\Src\collision.c" />
     <ClCompile Include="..\Src\combo_counter.ui.c" />
+    <ClCompile Include="..\Src\credits.c" />
     <ClCompile Include="..\Src\e_basicenemy_1.c" />
     <ClCompile Include="..\Src\e_basicenemy_2.c" />
     <ClCompile Include="..\Src\e_bullet.c" />
@@ -113,6 +114,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClCompile Include="..\Src\main.c" />
     <ClCompile Include="..\Src\main_menu.c" />
     <ClCompile Include="..\Src\restart.c" />
+    <ClCompile Include="..\Src\splashscreen.c" />
     <ClCompile Include="..\Src\spriteData.c" />
     <ClCompile Include="..\Src\ui.c" />
     <ClCompile Include="..\Src\utilities.c" />
@@ -120,6 +122,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
   <ItemGroup>
     <ClInclude Include="..\Src\collision.h" />
     <ClInclude Include="..\Src\combo_counter_ui.h" />
+    <ClInclude Include="..\Src\credits.h" />
     <ClInclude Include="..\Src\easing.h" />
     <ClInclude Include="..\Src\entities.h" />
     <ClInclude Include="..\Src\e_basicenemy_1.h" />
@@ -133,6 +136,7 @@ xcopy "$(SolutionDir)Assets\*" "$(OutDir)Assets\" /s /r /y /q
     <ClInclude Include="..\Src\messenger.h" />
     <ClInclude Include="..\Src\e_player.h" />
     <ClInclude Include="..\Src\restart.h" />
+    <ClInclude Include="..\Src\splashscreen.h" />
     <ClInclude Include="..\Src\spriteData.h" />
     <ClInclude Include="..\Src\ui.h" />
     <ClInclude Include="..\Src\utilities.h" />

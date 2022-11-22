@@ -21,8 +21,8 @@ static const float JUMP_RANGE = 20.f;
 static const float ACTIVE_ANIM_SPEED = 0.05f;
 static const float RED_TINT_DECAY_RATE = 0.7f;
 enum {
-	FRAME_DIM_WIDTH = 48,
-	FRAME_DIM_HEIGHT = 48,
+	FRAME_DIM_WIDTH = 48,//41,
+	FRAME_DIM_HEIGHT = 48,//38,
 	IMAGE_DIM_WIDTH = 192,
 	IMAGE_DIM_HEIGHT = 48,
 	NUM_FRAMES = 4
