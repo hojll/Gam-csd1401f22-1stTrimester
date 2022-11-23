@@ -1,6 +1,7 @@
 #include "e_basicenemy_2.h"
 #include "messenger.h"
 #include "collision.h"
+#include "easing.h"
 
 Messenger g_messenger;
 //static const float E_SPEED = 700.f;
@@ -37,8 +38,18 @@ void Enemy_2_ActiveUpdate(E_Basic_Enemy* enemy) {
 	//g_messenger.messages[1];
 }
 
-void Enemy_2_DeadUpdate() {
-
+void Enemy_2_DeadUpdate(E_Basic_Enemy* enemy) {
+	int end = 2;
+	enemy->floatingtimer += 1 * CP_System_GetDt();
+	if (enemy->floatingtimer > end) {
+		enemy->go.active = 0;
+		enemy->isDying = 0;
+		ResetEnemy(enemy);
+	}
+	else {
+		enemy->go.pos.x = EaseOutExpo(enemy->go.pos.x, enemy->go.prevPos.x, enemy->floatingtimer / end);
+		enemy->go.pos.y = EaseOutExpo(enemy->go.pos.y, enemy->go.prevPos.y, enemy->floatingtimer / end);
+	}
 }
 
 void InitAnimdata_E2()

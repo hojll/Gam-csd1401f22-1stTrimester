@@ -783,16 +783,17 @@ void game_update(void)
                 else
                     bullets[i].collide_pos.x = enemies[j].go.pos.x + enemies[j].go.width / 2.f + bullets[i].go.width / 2.f;
 
-                bullets->Destroy(&bullets[i]);
-                BulletHitParticles(bullets[i]);
-                //EnemyBloodSplatter(enemies[j]);
-                screenshake_timer = 0.5f;
 
-                if (!EnemyTakeDamage(&enemies[j], 1))
+                if (!EnemyTakeDamage(&enemies[j], 1, &bullets[i]))
                 {
                     EnemyBloodSplatter(enemies[j]);
                     killconfirmed();
                 }
+
+                bullets->Destroy(&bullets[i]);
+                BulletHitParticles(bullets[i]);
+                //EnemyBloodSplatter(enemies[j]);
+                screenshake_timer = 0.5f;
             }
         }
     }
@@ -982,14 +983,6 @@ void game_update(void)
         {
             if (!enemies[i].go.active)
                 continue;
-            /*if (enemies[i].tracking)
-            {
-                CP_Settings_Fill(enemyColor2);
-            }
-            else
-            {
-                CP_Settings_Fill(enemyColor);
-            }*/
             switch (enemies[i].enemytype)
             {
             case 0:

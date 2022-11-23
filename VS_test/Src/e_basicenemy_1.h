@@ -1,3 +1,5 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+
 #ifndef E_BASICENEMY_1
 #define E_BASICENEMY_1
 
@@ -58,6 +60,7 @@ typedef struct E_Basic_Enemy {
 	int enemyscore;
 	float hitstun;
 	float floatingtimer;
+	int isDying;
 
 	void (*Update[STATE_ENEMY_NUM_STATES])(E_BASIC_ENEMY_STATES_1*);
 } E_Basic_Enemy;
@@ -78,9 +81,7 @@ void UpdateEnemyList(E_Basic_Enemy arr[], int size);
 
 void EnemytoWallCollision(E_Basic_Enemy *enemy, GameObject wallreference[]);
 
-void EnemyPathing(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size);
 
-void EnemyPathing3(E_Basic_Enemy* enemy, GameObject nodes[], E_Player* player, GameObject* prevfloor, int size, GameObject walls[], GameObject nodes2[]);
 
 void EnemyPathing4(E_Basic_Enemy* enemy, E_Player* player, GameObject* p_prevfloor, int size,
 	GameObject walls[], GameObject nodes[], GameObject nodes2[]);
@@ -90,7 +91,7 @@ void SpawnEnemy(int type, CP_Vector pos);
 void ResetEnemy(E_Basic_Enemy* enemy);
 
 // Enemy takes input damage. Returns go.active (0 for dead)
-int EnemyTakeDamage(E_Basic_Enemy* enemy, int dmg);
+int EnemyTakeDamage(E_Basic_Enemy* enemy, int dmg, GameObject *bullet);
 /*-----------------------------------------------------------------*/
 // Declarations for enemy state functions (for reuses)
 /*-----------------------------------------------------------------*/
