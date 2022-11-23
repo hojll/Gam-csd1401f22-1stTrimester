@@ -100,6 +100,7 @@ E_Basic_Enemy*InitializeEnemy_2(E_Basic_Enemy *enemy)
 	enemy->go.dir.y = 0;
 	enemy->go.vel.y = 0;
 	enemy->tracking = 0;
+	enemy->isDying = 0;
 	enemy->myfloor = NULL;
 	// random direction
 	int randomdir = returnRange(1, 20);

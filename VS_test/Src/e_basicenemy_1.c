@@ -120,7 +120,6 @@ void Enemy_DeadUpdate(E_Basic_Enemy* enemy)
 		enemy->go.pos.x = EaseOutExpo(enemy->go.pos.x, enemy->go.prevPos.x, enemy->floatingtimer / end);
 		enemy->go.pos.y = EaseOutExpo(enemy->go.pos.y, enemy->go.prevPos.y, enemy->floatingtimer / end);
 	}
-
 }
 
 void InitAnimdata_E1()
@@ -220,7 +219,7 @@ int EnemyTakeDamage(E_Basic_Enemy* enemy, int dmg, GameObject *bullet)
 // Helper function
 void InitEnemyList(E_Basic_Enemy arr[], int size, GameObject nodes[])
 {
-	srand(123);	
+	//srand(123);	
 	for (int i = 0; i < size; ++i)
 	{
 		InitializeEnemy_1(&arr[i]);
