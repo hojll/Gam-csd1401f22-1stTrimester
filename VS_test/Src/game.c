@@ -15,6 +15,7 @@
 #include "e_weaponBox.h"
 #include "combo_counter_ui.h"
 #include "game_over.h"
+#include "e_particles.h"
 
 enum {
     MAX_BULLETS = 100,
@@ -24,6 +25,7 @@ enum {
     MAX_TEXT_POPUP = 20,
     MAX_WEAPON_BOX = 5,
     MAX_GAMESTART_TEXT = 9,
+    MAX_PARTICLES = 2000
 };
 
 static int TEMPORARY;
@@ -68,6 +70,8 @@ int playerCount;
 
 E_Bullet bullets[MAX_BULLETS];
 GameObject walls[MAX_WALLS];
+
+E_Particle particles[MAX_PARTICLES];
 
 // Enemy stuff by Ryan
 E_Basic_Enemy* enemies;
@@ -114,6 +118,22 @@ void MessageSpawnBullet(void* messageInfo) {
         curr->lifetime = bulletMSG->lifetime;
         curr->color = bulletMSG->color;
         curr->collide_pos = CP_Vector_Zero();
+        break;
+    }
+}
+
+void MessageSpawnParticle(void* messageInfo) {
+    SpawnParticleMessage* particleMSG = (SpawnParticleMessage*)messageInfo;
+    // Spawn bullet here
+    for (int i = 0; i < MAX_PARTICLES; ++i) {
+        E_Particle* curr = &particles[i];
+        if (curr->go.active)
+            continue;
+        curr->go = particleMSG->go;
+        curr->go.active = 1;
+        curr->lifetime = particleMSG->lifetime;
+        curr->color = particleMSG->color;
+        curr->collided = particleMSG->collided;
         break;
     }
 }
@@ -328,6 +348,7 @@ void game_init(void)
     {
         g_messenger.messages[MSG_SPAWN_BULLET] = MessageSpawnBullet;
         g_messenger.messages[MSG_SPAWN_ENEMY1] = MessageSpawnEnemy;
+        g_messenger.messages[MSG_SPAWN_PARTICLE] = MessageSpawnParticle;
     }
 
     playerCount = 1;
@@ -345,6 +366,12 @@ void game_init(void)
     {
         weapon_boxes[i] = InitializeWeaponBox();
     }
+
+    for (int i = 0; i < MAX_PARTICLES; i++)
+    {
+        particles[i] = InitializeParticle();
+    }
+
     // So the first box spawns faster
     spawnWeaponBoxTimer = 2;
     GAMEOVER = 0;
@@ -394,6 +421,12 @@ void game_update(void)
     for (int i = 0; i < MAX_WEAPON_BOX; ++i) {
         if (weapon_boxes[i].go.active)
             weapon_boxes[i].Update(&weapon_boxes[i]);
+    }
+    // Update Particles
+    for (int i = 0; i < MAX_PARTICLES; ++i)
+    {
+        if (particles[i].go.active)
+            particles[i].Update(&particles[i]);
     }
     // Spawn weapon box
     if (gamestart)
@@ -728,6 +761,7 @@ void game_update(void)
                     bullets[i].collide_pos.x = walls[j].pos.x + walls[j].width / 2.f + bullets[i].go.width / 2.f;
 
                 bullets->Destroy(&bullets[i]);
+                BulletHitParticles(bullets[i]);
             }
         }
 
@@ -750,10 +784,34 @@ void game_update(void)
                     bullets[i].collide_pos.x = enemies[j].go.pos.x + enemies[j].go.width / 2.f + bullets[i].go.width / 2.f;
 
                 bullets->Destroy(&bullets[i]);
+                BulletHitParticles(bullets[i]);
+                //EnemyBloodSplatter(enemies[j]);
                 screenshake_timer = 0.5f;
 
                 if (!EnemyTakeDamage(&enemies[j], 1))
+                {
+                    EnemyBloodSplatter(enemies[j]);
                     killconfirmed();
+                }
+            }
+        }
+    }
+
+    // Particle - x
+    for (int i = 0; i < MAX_PARTICLES; ++i)
+    {
+        if (!particles[i].go.active || particles[i].collided)
+            continue;
+
+        // Particle - Walls
+        for (int j = 0; j < MAX_WALLS; ++j)
+        {
+            if (!walls[j].active)
+                continue;
+            if (AABB(particles[i].go, walls[j]))
+            {
+                particles[i].collided = 1;
+                particles[i].go.vel = CP_Vector_Zero();
             }
         }
     }
@@ -980,6 +1038,17 @@ void game_update(void)
         {
             CP_Settings_Fill(weapon_boxes[i].color);
             CP_Graphics_DrawRect(weapon_boxes[i].go.pos.x, weapon_boxes[i].go.pos.y, weapon_boxes[i].go.width, weapon_boxes[i].go.height);
+        }
+    }
+
+    // Particles
+    for (int i = 0; i < MAX_PARTICLES; ++i) {
+        if (particles[i].go.active)
+        {
+            CP_Settings_StrokeWeight(1.f);
+            CP_Settings_Fill(particles[i].color);
+            CP_Graphics_DrawRect(particles[i].go.pos.x, particles[i].go.pos.y, particles[i].go.width, particles[i].go.height);
+            CP_Settings_StrokeWeight(3.f);
         }
     }
 

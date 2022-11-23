@@ -7,6 +7,7 @@ typedef enum MessageType {
 	MSG_SPAWN_ENEMY1,
 	MSG_SPAWN_ENEMY2,
 	MSG_GAME_OVER,
+	MSG_SPAWN_PARTICLE,
 	MSG_NUM_MESSAGE_TYPE
 }MessageType;
 
@@ -17,6 +18,13 @@ typedef struct SpawnBulletMessage {
 	short friendly;
 	float lifetime;
 }SpawnBulletMessage;
+
+typedef struct SpawnParticleMessage {
+	GameObject go;
+	CP_Color color;
+	float lifetime;
+	CP_BOOL collided;
+}SpawnParticleMessage;
 
 /// <summary>
 /// Spawn an enemy of specific type
