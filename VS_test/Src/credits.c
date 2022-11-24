@@ -101,6 +101,9 @@ void credits_init(void)
 
 void credits_update(void)
 {
+	if (CP_Input_KeyTriggered(KEY_Q))
+		CP_Engine_Terminate();
+
 	if (selector > 1)
 	{
 		selector = 0;
@@ -263,8 +266,10 @@ void credits_update(void)
 	CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
 	CP_Settings_TextSize(20.0f);
 	CP_Font_DrawText("All content copyrighted 2022 DigiPen Institute of Technology Singapore. All Rights Reserved", CP_System_GetWindowWidth() * 0.5f, ypos[6]);
-	CP_Settings_TextSize(35.0f);
-	CP_Font_DrawText("PRESS SPACE OR ENTER TO SELECT", CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.95f);
+	CP_Settings_TextSize(30.0f);
+	CP_Settings_Fill(CP_Color_Create(255, 255, 255, 150));
+	CP_Font_DrawText("PRESS W OR S TO MOVE SELECTION", CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.93f);
+	CP_Font_DrawText("PRESS SPACE OR ENTER TO SELECT", CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.96f);
 
 }
 

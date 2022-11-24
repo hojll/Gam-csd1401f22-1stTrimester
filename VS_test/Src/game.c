@@ -62,6 +62,7 @@ float g_scaledDt;
 CP_Image backgroundSprite;
 CP_Image sprites[NUM_SPRITES];
 CP_Image spriteData[NUM_SPRITES]; // TODO: REMOVE THIS SHIT IF NOT USING
+CP_Image instructions_image[2];
 /*----------------------*/
 // All the entities here//
 /*----------------------*/
@@ -91,7 +92,9 @@ double combocounter_timer = 0;
 double show_oznometer_fade = 0;
 static int highest_combo = 0;
 int gamestart = 0;
+static char instructions = 0;
 float screenshake_timer = 0.0f;
+static float instruction_alpha = 255.0f;
 
 static float gamestart_timer = 1.0f;
 static char* gamestart_text[] = {   "Press Spacebar to START!", "Come on already press Spacebar", "Hurry up and press Spacebar!",
@@ -238,7 +241,9 @@ void game_init(void)
     
     scalar = 1;
     difficulty_timer = 0;
-    gamestart = 0;
+    gamestart = -1;
+    instructions_image[0] = CP_Image_Load("./Assets/Instructions1.png");
+    instructions_image[1] = CP_Image_Load("./Assets/Instructions2.png");
 
     // AI NODES
     {
@@ -538,6 +543,19 @@ void game_update(void)
                     }
                 }
 
+            }
+        }
+
+        if (gamestart == -1)
+        {
+            if (CP_Input_KeyTriggered(KEY_ENTER)) 
+            {
+                ++instructions;
+                if (instructions == 2)
+                {
+                    gamestart = 0;
+                    instructions = 3;
+                }
             }
         }
     }
@@ -1163,6 +1181,27 @@ void game_update(void)
     {
         game_over_popup(highest_combo);
     }
+
+    if (gamestart == -1)
+    {
+        if (instruction_alpha > 120)
+        {
+            instruction_alpha -= 80 * CP_System_GetDt();
+        }
+        CP_Settings_Fill(CP_Color_Create(255, 255, 255, (int)instruction_alpha));//CP_Color_Create(20, 5, 5, (int)instruction_alpha));
+        CP_Graphics_DrawRect(CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.5f, CP_System_GetWindowWidth() * 0.75f, CP_System_GetWindowHeight() * 0.75f);
+        if (instructions == 0)
+        {
+            CP_Image_Draw(instructions_image[0], CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.51f, (float)CP_Image_GetWidth(instructions_image[0]) * 0.95f, (float)CP_Image_GetHeight(instructions_image[0]) * 0.95f, 255);
+        }
+        if (instructions == 1)
+        {
+            CP_Image_Draw(instructions_image[1], CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.51f, (float)CP_Image_GetWidth(instructions_image[1]) * 0.95f, (float)CP_Image_GetHeight(instructions_image[1]) * 0.95f, 255);
+        }
+
+        
+    }
+
 #pragma endregion
 }
 

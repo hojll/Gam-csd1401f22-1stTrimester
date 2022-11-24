@@ -175,8 +175,10 @@ void main_menu_update(void)
 	CP_Font_DrawText("EXIT", text_offset(2), y_position[3]);
 
 	CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
-	CP_Settings_TextSize(35.0f);
-	CP_Font_DrawText("PRESS SPACE OR ENTER TO SELECT", CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.95f);
+	CP_Settings_TextSize(30.0f);
+	CP_Settings_Fill(CP_Color_Create(255, 255, 255, 150));
+	CP_Font_DrawText("PRESS W OR S TO MOVE SELECTION", CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.93f);
+	CP_Font_DrawText("PRESS SPACE OR ENTER TO SELECT", CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.96f);
 
 	// Triangle Selector
 	CP_Graphics_DrawTriangle(x_position[0], y_position[selector_count + 1] + 3.0f, x_position[0] - 30.0f, y_position[selector_count + 1] - 10.0f + 3.0f, x_position[0] - 30.0f, y_position[selector_count + 1] + 10.0f + 3.0f);

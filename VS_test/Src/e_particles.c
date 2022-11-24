@@ -65,7 +65,7 @@ void EnemyBloodSplatter(E_Basic_Enemy enemy)
 		particle_msg.go.pos = enemy.go.pos;
 		particle_msg.go.vel = CP_Vector_Scale(CP_Vector_Normalize((CP_Vector_Set(CP_Random_RangeFloat(-1.f, 1.f), CP_Random_RangeFloat(-1.f, 1.f)))), PARTICLE_SPEED);
 		particle_msg.lifetime = 100.f;
-		particle_msg.color = CP_Color_Create(200, 3, 3, 255);
+		particle_msg.color = CP_Color_Create(120, 200, 200, 255); //CP_Color_Create(200, 3, 3, 255); //BLOOD COLOUR
 		particle_msg.go.width = 6;
 		particle_msg.go.height = 6;
 		particle_msg.collided = 0;

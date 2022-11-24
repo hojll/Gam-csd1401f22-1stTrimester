@@ -60,6 +60,11 @@ void splash_screen_update(void)
 		CP_Engine_Terminate();
 	}
 
+	if (CP_Input_KeyTriggered(KEY_SPACE))
+	{
+		CP_Engine_SetNextGameState(main_menu_init, main_menu_update, main_menu_exit);	
+	}
+
 	//LOGIC
 	if (alpha >= 255)
 	{
