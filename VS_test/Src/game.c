@@ -25,7 +25,7 @@ enum {
     MAX_TEXT_POPUP = 20,
     MAX_WEAPON_BOX = 5,
     MAX_GAMESTART_TEXT = 9,
-    MAX_PARTICLES = 2000
+    MAX_PARTICLES = 20000
 };
 
 static int TEMPORARY;
@@ -180,8 +180,9 @@ void MessageToPlayerDir(void* messageInfo) {
 #pragma endregion
 
 // call this function everytime you kill an enemy
-void killconfirmed()
+void killconfirmed(E_Basic_Enemy *enemy)
 {
+    
     ++combocounter;
     addcombotime(&combocounter_timer, COMBO_TIME);
 }
@@ -770,6 +771,8 @@ void game_update(void)
         {
             if (!enemies[j].go.active)
                 continue;
+            if (enemies[j].isDying == 1)
+                continue;
             if (AABB(bullets[i].go, enemies[j].go))
             {
                 bullets[i].collide_pos = bullets[i].go.pos;
@@ -787,7 +790,7 @@ void game_update(void)
                 if (!EnemyTakeDamage(&enemies[j], 1, &bullets[i]))
                 {
                     EnemyBloodSplatter(enemies[j]);
-                    killconfirmed();
+                    killconfirmed(&enemies[j]);
                 }
 
                 bullets->Destroy(&bullets[i]);
@@ -1095,12 +1098,6 @@ void game_update(void)
     CP_Settings_TextSize(100.f);
     CP_Font_DrawText(combocountertxt, CP_System_GetWindowWidth() / 2.f, 120);
 
-    // OZNOLA METER
-    if (CP_Input_KeyTriggered(KEY_F11)) // debug
-    {
-        // lowkey got lazy u want add time just call this func ea time the mob die
-        killconfirmed();
-    }
 
     
     if (!gamestart)
