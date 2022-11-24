@@ -72,6 +72,8 @@ int playerCount;
 E_Bullet bullets[MAX_BULLETS];
 GameObject walls[MAX_WALLS];
 
+CP_Image crate;
+
 E_Particle particles[MAX_PARTICLES];
 
 // Enemy stuff by Ryan
@@ -241,9 +243,14 @@ void game_init(void)
     
     scalar = 1;
     difficulty_timer = 0;
+    if (instructions >= 2)
+    {
+        gamestart = 0;
+    }else
     gamestart = -1;
     instructions_image[0] = CP_Image_Load("./Assets/Instructions1.png");
     instructions_image[1] = CP_Image_Load("./Assets/Instructions2.png");
+    crate = CP_Image_Load("./Assets/Crate.png");
 
     // AI NODES
     {
@@ -938,7 +945,7 @@ void game_update(void)
 
     CP_Settings_Stroke(CP_Color_Create(0, 0, 0, 255));
     // Background
-    //CP_Image_Draw(backgroundSprite, 0.f, 0.f, 1920, 1800, 255);
+    CP_Image_Draw(backgroundSprite, CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.5f, 1920, 1800, 255);
 
     CP_Matrix camTransform = CP_Matrix_Translate(cameraPos);
     CP_Settings_ApplyMatrix(camTransform);
@@ -984,7 +991,7 @@ void game_update(void)
     }
 
     // Walls
-    const CP_Color wallColor = CP_Color_Create(120, 120, 120,  255);
+    const CP_Color wallColor = CP_Color_Create(80, 60, 80,  255);
     CP_Settings_Fill(wallColor);
     for (int i = 0; i < MAX_WALLS; ++i) {
         if (walls[i].active)
@@ -1051,7 +1058,8 @@ void game_update(void)
         if (weapon_boxes[i].go.active)
         {
             CP_Settings_Fill(weapon_boxes[i].color);
-            CP_Graphics_DrawRect(weapon_boxes[i].go.pos.x, weapon_boxes[i].go.pos.y, weapon_boxes[i].go.width, weapon_boxes[i].go.height);
+            CP_Image_Draw(crate, weapon_boxes[i].go.pos.x, weapon_boxes[i].go.pos.y, weapon_boxes[i].go.width, weapon_boxes[i].go.height, 255);
+            //CP_Graphics_DrawRect(weapon_boxes[i].go.pos.x, weapon_boxes[i].go.pos.y, weapon_boxes[i].go.width, weapon_boxes[i].go.height);
         }
     }
 
