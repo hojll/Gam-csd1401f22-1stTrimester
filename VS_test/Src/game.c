@@ -84,7 +84,7 @@ CP_Vector e_spawnPos1, e_spawnPos2; // Basic Enemy spawn locations
 GameObject e2_spawnPos[4];
 
 GameObject ai_nodes[MAX_PATHFINDING_NODES];
-CP_BOOL shownodes = 1;
+CP_BOOL shownodes = 0;
 GameObject *playerPrevPlatform;
 // Oznola Game Loop stuff
 CP_Vector cameraPos;
@@ -626,10 +626,13 @@ void game_update(void)
         if (CP_Input_KeyTriggered(KEY_8)) {
             SpawnEnemy(1, e2_spawnPos[3].pos);
         }
-
         if (CP_Input_MouseTriggered(MOUSE_BUTTON_RIGHT))
         {
             SpawnEnemy(1, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
+        }
+        if (CP_Input_MouseTriggered(MOUSE_BUTTON_MIDDLE))
+        {
+            SpawnEnemy(3, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
         }
         if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
         {
@@ -744,6 +747,8 @@ void game_update(void)
         // Player - Enemy
         for (int j = 0; j < MAX_ENEMIES; j++)
         {
+            if (shownodes == 1)
+                continue;
             if (!enemies[j].go.active)
                 continue;
             if (AABB(player[i].go, enemies[j].go) && player[i].state != STATE_PLAYER_ROLLING)
@@ -994,6 +999,15 @@ void game_update(void)
     {
         highest_combo = combocounter;
     }
+
+    // Debug toggle
+    if (CP_Input_KeyTriggered(KEY_PAGE_UP)) {
+        if (shownodes == 1)
+            shownodes = 0;
+        else if (shownodes == 0)
+            shownodes = 1;
+        printf("debug toggle %d\n", shownodes);
+    }
     
 
 #pragma endregion
@@ -1124,11 +1138,15 @@ void game_update(void)
             //CP_Settings_Tint(CP_Color_Create(255, 0, 0, (int)enemies[i].redTintVal));
             //RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_1 + enemies[i].type], enemies[i].go.pos.x,
             //    enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
-            //CP_Settings_Stroke(CP_Color_Create(255, 0, 0, 255));
-            //if (enemies[i].enemy_shortestNode)
-                //CP_Graphics_DrawLine(enemies[i].go.pos.x, enemies[i].go.pos.y + enemies[i].go.height * 0.5f ,
-                    //enemies[i].enemy_shortestNode->pos.x, enemies[i].enemy_shortestNode->pos.y);
-
+            
+            
+            
+            if (shownodes == 1) {
+                CP_Settings_Stroke(CP_Color_Create(255, 0, 0, 255));
+                if (enemies[i].enemy_shortestNode)
+                    CP_Graphics_DrawLine(enemies[i].go.pos.x, enemies[i].go.pos.y + enemies[i].go.height * 0.5f ,
+                    enemies[i].enemy_shortestNode->pos.x, enemies[i].enemy_shortestNode->pos.y);
+            }            
             // Remove tint from enemy
             CP_Settings_NoTint();
         }

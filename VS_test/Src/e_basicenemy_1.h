@@ -49,6 +49,7 @@ typedef struct E_Basic_Enemy {
 
 	GameObject *nodes;
 	GameObject *myfloor;
+	GameObject* enemy_prevNode;
 	GameObject *enemy_shortestNode;
 
 	// Animations

@@ -156,6 +156,9 @@ E_Basic_Enemy* InitializeEnemy_1(E_Basic_Enemy* enemy)
 	enemy->go.vel.y = 0;
 	enemy->tracking = 0;
 	enemy->myfloor = NULL;
+	enemy->enemy_prevNode = NULL;
+	enemy->enemy_shortestNode = NULL;
+
 	enemy->floatingtimer = 0;
 	enemy->currAnim = SetSpriteAnim(&enemy1Animations[ANIM_ENEMY_1_ACTIVE_MOVING], ACTIVE_ANIM_SPEED);
 	enemy->type = ENEMY_TYPE_1;
@@ -189,6 +192,8 @@ void ResetEnemy(E_Basic_Enemy* enemy)
 	enemy->tracking = 0;
 	enemy->isDying = 0;
 	enemy->myfloor = NULL;
+	enemy->enemy_shortestNode = NULL;
+	enemy->enemy_prevNode = NULL;
 }
 
 int EnemyTakeDamage(E_Basic_Enemy* enemy, int dmg, GameObject *bullet)
@@ -362,80 +367,75 @@ GameObject *getShortestNode2(GameObject *enemy, GameObject nodes[], int size)
 	return returnNode;
 }
 
-GameObject* shortestNode2PlayeronMyAxis(E_Basic_Enemy* enemy, GameObject *player, GameObject nodes[], int size)
-{
+// find the closest node the enemy can move off
+//e.g if there is one node on the platform to jump to the next node where the player is standing 
+GameObject* findClosestNode(E_Basic_Enemy* enemy, E_Player* player, GameObject nodes[], int size) {
 	GameObject* returnNode = NULL;
-	CP_Vector enemyPivot;
-	enemyPivot = CP_Vector_Set(enemy->go.pos.x, enemy->go.pos.y + enemy->go.height * 0.5f);
-	float dist = getDist(nodes[0].pos, player->pos, 0);
-	returnNode = &nodes[0];
-	CP_BOOL check;
-	for (int i = 1; i < size; ++i) {
-		check = AABB(nodes[i], *enemy->myfloor);
-		if (check == 0)
-			continue;
-		float newDist = getDist(nodes[i].pos, player->pos, 0);
-		if (dist > newDist) {
-			dist = newDist;
-			returnNode = &nodes[i];
+	float currDistance = 99999;
+	float newDist;
+	for (int i = 0; i < size; ++i) {
+		if (AABB(nodes[i], *enemy->myfloor) == 1) {
+			newDist = GameObjectDistance(enemy->go, nodes[i], 0);
+			if (newDist < currDistance) {
+				currDistance = newDist;
+				returnNode = &nodes[i];
+			}
 		}
 	}
 	return returnNode;
 }
 
-GameObject *getNodeonSameAxis(GameObject *player, GameObject* currNode, GameObject nodes[], int size)
-{
+
+// Find the node based off the players x axis
+GameObject* findNodePlayer(E_Basic_Enemy *enemy, E_Player* player, GameObject nodes[], int size) {
+	GameObject* returnNode = enemy->enemy_shortestNode;
+	float currDistance = GameObjectDistance(*returnNode, player->go, 1);
+	float newDist;
+	for (int i = 0; i < size; ++i) {
+		if (returnNode == &nodes[i] || nodes[i].pos.y != returnNode->pos.y)
+			continue;
+		currDistance = GameObjectDistance(*returnNode, player->go,1);
+		newDist = GameObjectDistance(nodes[i], player->go, 1);
+		if (newDist < currDistance) {
+			returnNode = &nodes[i];
+			currDistance = newDist;
+		}
+	}
+	return returnNode;
+}
+
+
+GameObject* findUpperNode(E_Basic_Enemy* enemy, GameObject nodes[], int size) {
 	GameObject* returnNode = NULL;
-	returnNode = &nodes[0];
-	float dist = 9999;
+	float currDistance = 99999;
+	float newDist;
 	for (int i = 0; i < size; ++i) {
-		if (nodes[i].pos.y != currNode->pos.y)
+		if (&nodes[i] == enemy->enemy_shortestNode || nodes[i].pos.y > (enemy->go.pos.y + (enemy->go.height * 0.5f)))
 			continue;
-		float newDist = getDist(nodes[i].pos, player->pos,0);
-		if (dist > newDist) {
-			returnNode = &nodes[i];
-		}
-	}
-
-	return returnNode;
-}
-
-GameObject* getNodeHigher(GameObject* enemy, GameObject* currNode, GameObject nodes[], int size)
-{
-	GameObject* returnNode = currNode;
-	float dist = 9999;
-	for (int i = 0; i < size; ++i) {
-		if (nodes[i].pos.y > enemy->pos.y)
-			continue; // ignroe if below me
-		if (&nodes[i] == &currNode)
-			continue;
-		float newdist = getDist(nodes[i].pos, enemy->pos, 0);
-		if (newdist < dist) {
-			dist = newdist;
+		newDist = GameObjectDistance(*enemy->enemy_shortestNode, nodes[i], 0);
+		if (newDist < currDistance) {
+			currDistance = newDist;
 			returnNode = &nodes[i];
 		}
 	}
 	return returnNode;
 }
 
-GameObject* getNodeLower(GameObject* enemy, GameObject* currNode, GameObject nodes[], int size)
-{
-	GameObject* returnNode = currNode;
-	float dist = 9999;
+GameObject* findLowerNode(E_Basic_Enemy* enemy, GameObject nodes[], int size) {
+	GameObject* returnNode = NULL;
+	float currDistance = 99999;
+	float newDist;
 	for (int i = 0; i < size; ++i) {
-		if (nodes[i].pos.y < enemy->pos.y)
-			continue; // ignroe if above me
-		if (&nodes[i] == &currNode)
+		if (&nodes[i] == enemy->enemy_shortestNode || nodes[i].pos.y < (enemy->go.pos.y + (enemy->go.height * 0.5f)))
 			continue;
-		float newdist = getDist(nodes[i].pos, enemy->pos, 0);
-		if (newdist < dist) {
-			dist = newdist;
+		newDist = GameObjectDistance(*enemy->enemy_shortestNode, nodes[i], 0);
+		if (newDist < currDistance) {
+			currDistance = newDist;
 			returnNode = &nodes[i];
 		}
 	}
 	return returnNode;
 }
-
 
 void EnemyPathing4(E_Basic_Enemy* enemy, E_Player* player, GameObject* p_prevfloor, int size, 
 	GameObject walls[], GameObject nodes[], GameObject nodes2[])
@@ -443,7 +443,7 @@ void EnemyPathing4(E_Basic_Enemy* enemy, E_Player* player, GameObject* p_prevflo
 	if (!enemy->go.active)
 		return;
 	if (enemy->enemytype == 1)
-		if (p_prevfloor == NULL || enemy->myfloor == NULL)
+		if (p_prevfloor == NULL || enemy->myfloor == NULL || enemy->grounded == 0)
 			return;
 	CP_Vector enemyLegs;
 	enemyLegs = CP_Vector_Set(enemy->go.pos.x, enemy->go.pos.y + enemy->go.height * 0.5f);
@@ -454,41 +454,47 @@ void EnemyPathing4(E_Basic_Enemy* enemy, E_Player* player, GameObject* p_prevflo
 	case 1:
 	{
 		//printf("enemy 1 working \n");
-		if (enemy->floatingtimer > 0.f) {
+		if (enemy->floatingtimer > 0.f) { // enemy is doing an action jumping etc
 			enemy->floatingtimer -= 1 * CP_System_GetDt();
 		}
-		//printf("enemy distance %.1f\n", getDist(player->go.pos, enemyLegs, -1));
-		if ((p_prevfloor != enemy->myfloor) && (enemy->floatingtimer <= 0.f)) {
-			//enemy->enemy_shortestNode = getShortestNode2(&enemy->go, nodes, size);
-			enemy->enemy_shortestNode = shortestNode2PlayeronMyAxis(&enemy->go, &player->go, nodes, size);
-
-			if (getDist(enemy->enemy_shortestNode->pos, enemy->go.pos, 1) <= JUMP_RANGE) {
-				if (player->go.pos.y >= enemy->go.pos.y + enemy->go.height * 0.5f) { // lower
-					//printf("falling\n");
-					enemy->enemy_shortestNode = getNodeLower(&enemy->go, enemy->enemy_shortestNode, nodes, size);
-					enemy->floatingtimer = 0.57f;
-				}
-				else { // higher
-					//printf("jumping\n");
-					enemy->enemy_shortestNode = getNodeHigher(&enemy->go, enemy->enemy_shortestNode, nodes, size);
-					enemy->grounded = 0;
-					enemy->go.vel.y = JUMP_VEL1;
-					enemy->floatingtimer = 0.57f;
+		else // do path finding 
+		{
+			// same floor same Y axis
+			if (p_prevfloor == enemy->myfloor || p_prevfloor->pos.y == enemy->myfloor->pos.y)
+			{
+				if (enemy->enemy_shortestNode)
+					enemy->enemy_shortestNode = NULL;
+				enemy->go.dir.x = player->go.pos.x > enemy->go.pos.x ? 1 : -1;
+			}
+			else {
+				// enemy find player
+				enemy->enemy_shortestNode = findClosestNode(enemy, player, nodes, size);
+				//if (player->go.pos.y > enemyLegs.y)
+				enemy->enemy_shortestNode = findNodePlayer(enemy, player, nodes, size);
+				enemy->go.dir.x = enemy->enemy_shortestNode->pos.x > enemy->go.pos.x ? 1 : -1;
+				if (GameObjectDistance(*enemy->enemy_shortestNode, enemy->go, 1) < JUMP_RANGE){
+					if (player->go.pos.y > enemyLegs.y) { // below me
+						enemy->enemy_shortestNode = findLowerNode(enemy, nodes, size);
+						if (enemy->enemy_shortestNode) {
+							//enemy->grounded = 0;
+							//enemy->go.vel.y = JUMP_VEL1;
+							enemy->go.dir.x = enemy->enemy_shortestNode->pos.x > enemy->go.pos.x ? 1 : -1;
+							enemy->floatingtimer = 0.2f;
+						}
+					}
+					else // above me
+					{
+						enemy->enemy_shortestNode = findUpperNode(enemy, nodes, size);
+						if (enemy->enemy_shortestNode) {
+							enemy->grounded = 0;
+							enemy->go.vel.y = JUMP_VEL1;
+							enemy->go.dir.x = enemy->enemy_shortestNode->pos.x > enemy->go.pos.x ? 1 : -1;
+							enemy->floatingtimer = 0.2f;
+						}
+					}
 				}
 			}
-			enemy->go.dir.x = enemy->enemy_shortestNode->pos.x > enemy->go.pos.x ? 1 : -1;
 		}
-		if (p_prevfloor == enemy->myfloor)
-		{
-			if (enemy->enemy_shortestNode)
-				enemy->enemy_shortestNode = NULL;
-			enemy->go.dir.x = player->go.pos.x > enemy->go.pos.x ? 1 : -1;
-		}
-		//enemy->go.dir.x = 0;
-		/*if (enemy->enemy_shortestNode) {
-			CP_Settings_Stroke(CP_Color_Create(255, 0, 0, 255));
-			CP_Graphics_DrawLine(enemy->go.pos.x, enemy->go.pos.y + enemy->go.height * 0.5f, enemy->enemy_shortestNode->pos.x, enemy->enemy_shortestNode->pos.y);
-		}*/
 	}
 		break;
 	case 2:
