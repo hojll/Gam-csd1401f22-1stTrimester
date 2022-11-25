@@ -34,8 +34,6 @@ void Enemy_2_ActiveUpdate(E_Basic_Enemy* enemy) {
 		enemy->animState = ANIM_ENEMY_2_ACTIVE_MOVING;
 		enemy->currAnim = SetSpriteAnim(&enemy->animData[ANIM_ENEMY_2_ACTIVE_MOVING], ACTIVE_ANIM_SPEED);
 	}
-	// For ranged attacks here:
-	//g_messenger.messages[1];
 }
 
 void Enemy_2_DeadUpdate(E_Basic_Enemy* enemy) {

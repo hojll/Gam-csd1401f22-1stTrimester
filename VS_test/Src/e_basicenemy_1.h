@@ -10,7 +10,8 @@
 enum {
 	HEALTH_ENEMY_1 = 2,
 	HEALTH_ENEMY_2 = 1,
-	HEALTH_ENEMY_3 = 1
+	HEALTH_ENEMY_3 = 1,
+	HEALTH_BOSS_1 = 4
 };
 
 /*-----------------------------------------------------------------*/
@@ -33,6 +34,7 @@ typedef enum ENEMY_TYPE {
 	ENEMY_TYPE_1,
 	ENEMY_TYPE_2,
 	ENEMY_TYPE_3,
+	ENEMY_BOSS_1,
 	NUM_ENEMY_TYPE
 }ENEMY_TYPE;
 typedef struct E_Basic_Enemy {
@@ -60,6 +62,7 @@ typedef struct E_Basic_Enemy {
 	int enemyscore;
 	float hitstun;
 	float floatingtimer;
+	float bossTimer;	// For the boss
 	int isDying;
 
 	void (*Update[STATE_ENEMY_NUM_STATES])(E_BASIC_ENEMY_STATES_1*);

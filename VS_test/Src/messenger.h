@@ -5,7 +5,7 @@
 typedef enum MessageType {
 	MSG_SPAWN_BULLET,
 	MSG_SPAWN_ENEMY1,
-	MSG_SPAWN_ENEMY2,
+	MSG_SPAWN_ENEMY_BULLET,
 	MSG_GAME_OVER,
 	MSG_SPAWN_PARTICLE,
 	MSG_NUM_MESSAGE_TYPE
@@ -38,8 +38,7 @@ typedef struct SpawnEnemyMessage {
 }SpawnEnemyMessage;
 
 /// <summary>
-/// Message to query which direction player is
-/// Will give 0 if player's y axis different
+/// USELESS DELETE
 /// </summary>
 typedef struct ToPlayerDirMessage {
 	// Input value:
@@ -54,6 +53,7 @@ typedef struct ToPlayerDirMessage {
 typedef struct SpawnEnemyBulletMessage {
 	CP_Vector startPos;
 	float vel;
+	float lifetime;
 }SpawnEnemyBulletMessage;
 
 typedef struct Messenger {

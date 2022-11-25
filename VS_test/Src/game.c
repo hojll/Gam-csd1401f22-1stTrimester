@@ -10,6 +10,7 @@
 #include "e_text_popup.h"
 #include "e_basicenemy_1.h"
 #include "e_basicenemy_2.h"
+#include "e_enemyBoss_1.h"
 #include "spriteData.h"
 #include "e_bullet.h"
 #include "e_weaponBox.h"
@@ -70,6 +71,7 @@ E_Player player[MAX_PLAYERS];
 int playerCount;
 
 E_Bullet bullets[MAX_BULLETS];
+E_Bullet bossBullets[MAX_BULLETS];
 GameObject walls[MAX_WALLS];
 
 CP_Image crate;
@@ -77,7 +79,7 @@ CP_Image crate;
 E_Particle particles[MAX_PARTICLES];
 
 // Enemy stuff by Ryan
-E_Basic_Enemy* enemies;
+E_Basic_Enemy enemies[MAX_ENEMIES];
 CP_Vector e_spawnPos1, e_spawnPos2; // Basic Enemy spawn locations
 GameObject e2_spawnPos[4];
 
@@ -162,6 +164,11 @@ void MessageSpawnEnemy(void* messageInfo) {
             break;
         case ENEMY_TYPE_3:
             curr->HP = HEALTH_ENEMY_3;
+            break;
+        case ENEMY_BOSS_1:
+            InitializeEnemyBoss_1(curr);
+            curr->HP = HEALTH_ENEMY_2;
+            break;
         }
         curr->enemy_shortestNode = NULL;
         curr->redTintVal = 0.f;
@@ -177,6 +184,23 @@ void MessageSpawnEnemy(void* messageInfo) {
 
 }
 
+void MessageSpawnEnemyBullet(void* messageInfo) {
+    SpawnEnemyBulletMessage* msg = (SpawnEnemyBulletMessage*)messageInfo;
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        E_Bullet* curr = &bossBullets[i];
+        if (curr->go.active)
+            continue;
+        curr->go.active = 1;
+        curr->lifetime = msg->lifetime;
+        curr->collide_pos = CP_Vector_Zero();
+        curr->go.pos = msg->startPos;
+        int dir = player[0].go.pos.x < curr->go.pos.x;
+        curr->go.vel = CP_Vector_Set( -1.f * (float)dir * msg->vel + 1.f * (float)!dir * msg->vel, 0.f);
+        curr->go.height = 20.f;
+        curr->go.width = 20.f;
+    }
+}
+// Alonzo: TODO
 void MessageToPlayerDir(void* messageInfo) {
     ToPlayerDirMessage* msg = (ToPlayerDirMessage*)messageInfo;
     if (msg->entityPos.y > player[0].go.pos.y - player[0].go.height / 2.f)
@@ -219,6 +243,7 @@ void game_init(void)
     player[0].go.active = 1;
     for (int i = 0; i < MAX_BULLETS; ++i) {
         bullets[i] = InitializeBullet();
+        bossBullets[i] = InitializeBullet();
     }
 
     e2_spawnPos[0].pos = CP_Vector_Set(150, 150);
@@ -229,12 +254,10 @@ void game_init(void)
     // AI / ENEMY
     InitAnimdata_E1();
     InitAnimdata_E2();
-    enemies = (E_Basic_Enemy*)malloc(sizeof(E_Basic_Enemy) * MAX_ENEMIES);
+    InitAnimdata_EB1();
     InitEnemyList(enemies, MAX_ENEMIES, ai_nodes);
     e_spawnPos1 = CP_Vector_Set(960, 110);
     e_spawnPos2 = CP_Vector_Set(960, 110);
-
-    
 
     for (int k = 0; k < 3; k++)
     {
@@ -362,6 +385,7 @@ void game_init(void)
         g_messenger.messages[MSG_SPAWN_BULLET] = MessageSpawnBullet;
         g_messenger.messages[MSG_SPAWN_ENEMY1] = MessageSpawnEnemy;
         g_messenger.messages[MSG_SPAWN_PARTICLE] = MessageSpawnParticle;
+        g_messenger.messages[MSG_SPAWN_ENEMY_BULLET] = MessageSpawnEnemyBullet;
     }
 
     playerCount = 1;
@@ -425,6 +449,13 @@ void game_update(void)
         // Update position
     }
     // Update bullets
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        if (bullets[i].go.active)
+            bullets[i].Update(&bullets[i]);
+        if (bossBullets[i].go.active)
+            bossBullets[i].Update(&bossBullets[i]);
+    }
+    // Update enemyBullets
     for (int i = 0; i < MAX_BULLETS; ++i) {
         if (bullets[i].go.active)
             bullets[i].Update(&bullets[i]);
@@ -744,7 +775,7 @@ void game_update(void)
     {
         if (!bullets[i].go.active)
             continue;
-
+        // RYAN TODO:
         if (bullets[i].friendly == 0){
             if (AABB(player[0].go, bullets[i].go)) {
                 bullets[i].go.active = 0;
@@ -825,7 +856,54 @@ void game_update(void)
             }
         }
     }
+    // EnemyBullet - x. God forgive me. I was running out of time
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        E_Bullet* curr = &bossBullets[i];
+        if (!curr->go.active)
+            continue;
+        for (int j = 0; j < MAX_WALLS; ++j)
+        {
+            if (!walls[j].active)
+                continue;
+            if (AABB(bossBullets[i].go, walls[j]))
+            {
+                bossBullets[i].collide_pos = bossBullets[i].go.pos;
+                COLLISION_DIRECTION collision_dir = AABB_Direction(bossBullets[i].go, walls[j]);
+                if (collision_dir == COLLISION_TOP)
+                    bossBullets[i].collide_pos.y = walls[j].pos.y - walls[j].height / 2.f - bossBullets[i].go.height / 2.f;
+                else if (collision_dir == COLLISION_BOTTOM)
+                    bossBullets[i].collide_pos.y = walls[j].pos.y + walls[j].height / 2.f + bossBullets[i].go.height / 2.f;
+                else if (collision_dir == COLLISION_LEFT)
+                    bossBullets[i].collide_pos.x = walls[j].pos.x - walls[j].width / 2.f - bossBullets[i].go.width / 2.f;
+                else
+                    bossBullets[i].collide_pos.x = walls[j].pos.x + walls[j].width / 2.f + bossBullets[i].go.width / 2.f;
 
+                bossBullets->Destroy(&bossBullets[i]);
+                //BulletHitParticles(bossBullets[i]);
+            }
+        }
+        if (AABB(player[0].go, bossBullets[i].go)) {
+            bossBullets[i].go.active = 0;
+            player[0].go.active = 0;
+            GAMEOVER = 1;
+
+            for (int p = 0; p < MAX_TEXT_POPUP; ++p)
+            {
+                if (!(popUp[p].go.active))
+                {
+                    set_popup(&popUp[p],
+                        player->go.pos.x,
+                        player->go.pos.y - player->go.height / 2.f - 10.f,
+                        CP_Color_Create(255, 0, 0, 255),
+                        (int)DEFAULT_FONT_SIZE,
+                        3.0f,
+                        "DIED");
+                    break;
+                }
+            }
+        }
+
+    }
     // Particle - x
     for (int i = 0; i < MAX_PARTICLES; ++i)
     {
@@ -950,11 +1028,16 @@ void game_update(void)
     CP_Matrix camTransform = CP_Matrix_Translate(cameraPos);
     CP_Settings_ApplyMatrix(camTransform);
     // Bullets
+    const CP_Color BOSS_BULLET_COLOR = CP_Color_Create(100, 0, 0, 255);
     for (int i = 0; i < MAX_BULLETS; ++i) {
         if (bullets[i].go.active)
         {
             CP_Settings_Fill(bullets[i].color);
             CP_Graphics_DrawCircle(bullets[i].go.pos.x, bullets[i].go.pos.y, bullets[i].go.height);
+        }
+        if (bossBullets[i].go.active) {
+            CP_Settings_Fill(BOSS_BULLET_COLOR);
+            CP_Graphics_DrawCircle(bossBullets[i].go.pos.x, bossBullets[i].go.pos.y, bossBullets[i].go.height);
         }
     }
 
@@ -1215,5 +1298,4 @@ void game_update(void)
 
 void game_exit(void)
 {
-    free(enemies);
 }
