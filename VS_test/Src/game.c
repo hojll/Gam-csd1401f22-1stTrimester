@@ -123,6 +123,7 @@ int currspawnCount[4];
 int maxspawnCount[4];
 int totalenemieskilled = 0;
 int wavetextpopup = 0;
+CP_Sound SoundArray[50];
 
 
 #pragma region MESSAGES
@@ -306,7 +307,7 @@ void game_init(void)
     sprites[SPRITE_ENEMY_1] = CP_Image_Load("./Assets/ENEMY1_Spritesheet.png");
     sprites[SPRITE_ENEMY_2] = CP_Image_Load("./Assets/ENEMY2_Spritesheet.png");
     sprites[SPRITE_ENEMY_3] = CP_Image_Load("./Assets/ENEMY3_Spritesheet.png");
-
+    SoundArray[0] = CP_Sound_Load("./Assets/UewPlayer_Death.mp3");
     backgroundSprite = CP_Image_Load("./Assets/background.png");
     CP_System_SetFrameRate(60.f);
     printf("Image: %-15s|  dims: %d, %d\n","player", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
@@ -871,6 +872,7 @@ void game_update(void)
                 GAMEOVER = 1;
                 wave_spawningtimer = 0;
                 wavetextpopup = 0;
+                CP_Sound_Play(SoundArray[0]);
                 for (int p = 0; p < MAX_TEXT_POPUP; ++p)
                 {
                     if (!(popUp[p].go.active))
@@ -987,6 +989,7 @@ void game_update(void)
             GAMEOVER = 1;
             wave_spawningtimer = 0;
             wavetextpopup = 0;
+            CP_Sound_Play(SoundArray[0]);
             for (int p = 0; p < MAX_TEXT_POPUP; ++p)
             {
                 if (!(popUp[p].go.active))
