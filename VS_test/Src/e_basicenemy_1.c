@@ -62,7 +62,6 @@ void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)
 			enemy->go.vel.x = enemy->go.dir.x * E_SPEED2;
 			enemy->go.pos.x += enemy->go.vel.x * g_scaledDt;
 			enemy->go.pos.y += enemy->go.vel.y * g_scaledDt;
-
 			break;
 		case 2:
 			/*enemy->go.vel.x = enemy->go.dir.x * E_SPEED2;
@@ -80,13 +79,18 @@ void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)
 			//printf("??? %.1f %.1f\n", enemy->enemy_shortestNode->pos.x, enemy->enemy_shortestNode->pos.y);
 			//printf("enemy dir, enemy speed %.1f %.1f   %.1f%.1f\n", enemy->go.dir.x, enemy->go.dir.y, enemy->go.vel.x, enemy->go.vel.y);
 			break;
+		case 3:
+			enemy->go.vel.x = enemy->go.dir.x * E_SPEED2;
+			enemy->go.pos.x += enemy->go.vel.x * g_scaledDt;
+			enemy->go.pos.y += enemy->go.vel.y * g_scaledDt;
+			break;
 		default:
 			break;
 		}
 		
 		
 
-		if (enemy->enemytype == 0 || enemy->enemytype == 1)
+		if (enemy->enemytype == 0 || enemy->enemytype == 1 || enemy->enemytype == 3)
 		{
 			if (!enemy->grounded && enemy->go.vel.y < MAX_GRAV_VEL)
 			{
@@ -536,6 +540,55 @@ void EnemyPathing4(E_Basic_Enemy* enemy, E_Player* player, GameObject* p_prevflo
 		}
 	}
 		break;
+	case 3:
+	{
+		//printf("enemy 1 working \n");
+		if (enemy->floatingtimer > 0.f) { // enemy is doing an action jumping etc
+			enemy->floatingtimer -= 1 * CP_System_GetDt();
+		}
+		else // do path finding 
+		{			
+			// same floor same Y axis
+			if (enemy->myfloor == NULL)
+				return;
+
+			if (p_prevfloor == enemy->myfloor || p_prevfloor->pos.y == enemy->myfloor->pos.y)
+			{
+				if (enemy->enemy_shortestNode)
+					enemy->enemy_shortestNode = NULL;
+				enemy->go.dir.x = player->go.pos.x > enemy->go.pos.x ? 1 : -1;
+			}
+			else {
+				// enemy find player
+				enemy->enemy_shortestNode = findClosestNode(enemy, player, nodes, size);
+				//if (player->go.pos.y > enemyLegs.y)
+				enemy->enemy_shortestNode = findNodePlayer(enemy, player, nodes, size);
+				enemy->go.dir.x = enemy->enemy_shortestNode->pos.x > enemy->go.pos.x ? 1 : -1;
+				if (GameObjectDistance(*enemy->enemy_shortestNode, enemy->go, 1) < JUMP_RANGE) {
+					if (player->go.pos.y > enemyLegs.y) { // below me
+						enemy->enemy_shortestNode = findLowerNode(enemy, nodes, size);
+						if (enemy->enemy_shortestNode) {
+							//enemy->grounded = 0;
+							//enemy->go.vel.y = JUMP_VEL1;
+							enemy->go.dir.x = enemy->enemy_shortestNode->pos.x > enemy->go.pos.x ? 1 : -1;
+							enemy->floatingtimer = 0.4f;
+						}
+					}
+					else // above me
+					{
+						enemy->enemy_shortestNode = findUpperNode(enemy, nodes, size);
+						if (enemy->enemy_shortestNode) {
+							enemy->grounded = 0;
+							enemy->go.vel.y = JUMP_VEL1;
+							enemy->go.dir.x = enemy->enemy_shortestNode->pos.x > enemy->go.pos.x ? 1 : -1;
+							enemy->floatingtimer = 0.4f;
+						}
+					}
+				}
+			}
+		}
+	}
+		break;
 	}
 }
 
@@ -561,7 +614,12 @@ void SpawnEnemy(int type, CP_Vector pos)
 		enemy.type = 2;
 		enemy.tracking = 1;
 		enemy.score = 150;
-
+		break;
+	case 3:
+		enemy.type = 3;
+		enemy.tracking = 1;
+		enemy.score = 200;
+		
 		break;
 	}
 

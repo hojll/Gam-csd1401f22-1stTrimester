@@ -633,6 +633,7 @@ void game_update(void)
         }
         if (CP_Input_MouseTriggered(MOUSE_BUTTON_MIDDLE))
         {
+
             SpawnEnemy(3, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
         }
         if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
@@ -781,29 +782,7 @@ void game_update(void)
     {
         if (!bullets[i].go.active)
             continue;
-        // RYAN TODO:
-        if (bullets[i].friendly == 0){
-            if (AABB(player[0].go, bullets[i].go)) {
-                bullets[i].go.active = 0;
-                player[0].go.active = 0;
-                GAMEOVER = 1;
-
-                for (int p = 0; p < MAX_TEXT_POPUP; ++p)
-                {
-                    if (!(popUp[p].go.active))
-                    {
-                        set_popup(&popUp[p],
-                            player->go.pos.x,
-                            player->go.pos.y - player->go.height / 2.f - 10.f,
-                            CP_Color_Create(255, 0, 0, 255),
-                            (int)DEFAULT_FONT_SIZE,
-                            3.0f,
-                            "DIED");
-                        break;
-                    }
-                }
-            }
-        }
+        
 
         // Bullet - Wall
         for (int j = 0; j < MAX_WALLS; ++j)
