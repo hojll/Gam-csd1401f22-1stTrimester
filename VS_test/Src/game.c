@@ -172,13 +172,16 @@ void MessageSpawnEnemy(void* messageInfo) {
         case ENEMY_TYPE_1:
             InitializeEnemy_1(curr);
             curr->HP = HEALTH_ENEMY_1;
+            CP_Sound_Play(SoundArray[9]);
             break;
         case ENEMY_TYPE_2:
             InitializeEnemy_2(curr);
             curr->HP = HEALTH_ENEMY_2;
+            CP_Sound_Play(SoundArray[10]);
             break;
         case ENEMY_TYPE_3:
             curr->HP = HEALTH_ENEMY_3;
+            CP_Sound_Play(SoundArray[11]);
             break;
         case ENEMY_BOSS_1:
             InitializeEnemyBoss_1(curr);
@@ -307,7 +310,20 @@ void game_init(void)
     sprites[SPRITE_ENEMY_1] = CP_Image_Load("./Assets/ENEMY1_Spritesheet.png");
     sprites[SPRITE_ENEMY_2] = CP_Image_Load("./Assets/ENEMY2_Spritesheet.png");
     sprites[SPRITE_ENEMY_3] = CP_Image_Load("./Assets/ENEMY3_Spritesheet.png");
-    SoundArray[0] = CP_Sound_Load("./Assets/UewPlayer_Death.mp3");
+    SoundArray[0] = CP_Sound_Load("./Assets/SFX/Uew(Player_Death).mp3");
+    SoundArray[1] = CP_Sound_Load("./Assets/SFX/Duung(Player_Jump).mp3");
+    SoundArray[2] = CP_Sound_Load("./Assets/SFX/Doo(Shoot_Basic).mp3");
+    SoundArray[3] = CP_Sound_Load("./Assets/SFX/Poong(Shoot_Scatter).mp3");
+    SoundArray[4] = CP_Sound_Load("./Assets/SFX/Shoot(Shoot_Smg).mp3");
+    SoundArray[5] = CP_Sound_Load("./Assets/SFX/Pook(Shoot_Shotgun).mp3");
+    SoundArray[6] = CP_Sound_Load("./Assets/SFX/Didik(Shoot_Dual).mp3");
+    SoundArray[7] = CP_Sound_Load("./Assets/SFX/BIGSHAQ(Bullet_BH).mp3");
+    SoundArray[8] = CP_Sound_Load("./Assets/SFX/Ueh(Mob_Death).mp3");
+    SoundArray[9] = CP_Sound_Load("./Assets/SFX/Ululu(Mob1_spawn).mp3"); // Enemy 1
+    SoundArray[10] = CP_Sound_Load("./Assets/SFX/ShishShish(Mob2_Spawn).mp3"); // Enemy 2
+    SoundArray[11] = CP_Sound_Load("./Assets/SFX/Wueh(Mob3_Spawn).mp3"); // Enemy 3
+    SoundArray[12] = CP_Sound_Load("./Assets/SFX/Dedede(Wave_Cleared).mp3");
+    SoundArray[13] = CP_Sound_Load("./Assets/SFX/ZhengZheng(Wave_Start).mp3");
     backgroundSprite = CP_Image_Load("./Assets/background.png");
     CP_System_SetFrameRate(60.f);
     printf("Image: %-15s|  dims: %d, %d\n","player", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
@@ -663,6 +679,7 @@ void game_update(void)
                             break;
                         }
                     }
+                    CP_Sound_Play(SoundArray[12]);
                     wavetextpopup = 1;
                 }
                 
@@ -692,6 +709,7 @@ void game_update(void)
                         break;
                     }
                 }
+                CP_Sound_Play(SoundArray[13]);
                 wave_spawningtimer = 0;
                 spawnStateMachine = 1;                
             }
@@ -946,6 +964,7 @@ void game_update(void)
                 {
                     EnemyBloodSplatter(enemies[j]);
                     killconfirmed(&enemies[j]);
+                    CP_Sound_Play(SoundArray[8]);
                 }
 
                 bullets->Destroy(&bullets[i]);

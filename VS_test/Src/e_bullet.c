@@ -18,6 +18,8 @@
 #define BLACK_HOLE_GROWTH_TIME ((BLACK_HOLE_LIFETIME - BLACK_HOLE_MAX_TIME) / 2.f)
 #define BLACK_HOLE_GROWTH_RATE BLACK_HOLE_MAX_SIZE / BLACK_HOLE_GROWTH_TIME
 
+extern CP_Sound SoundArray[50];
+
 void Bullet_ActiveUpdate(E_Bullet* bullet)
 {
 	bullet->go.pos = CP_Vector_Add(bullet->go.pos, CP_Vector_Scale(bullet->go.vel, g_scaledDt));
@@ -134,23 +136,29 @@ void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type)
 	{
 	case BULLET_SCATTER:
 		bullet.color = CP_Color_Create(200, 200, 200, 255);
+		CP_Sound_Play(SoundArray[3]);
 		break;
 	case BULLET_SMG:
 		go.width = 10.f;
 		go.height = 10.f;
 		go.vel.x = BULLET_SPEED * facedir * 1.5f;
+		CP_Sound_Play(SoundArray[4]);
 		break;
 	case BULLET_SHOTGUN:
 		bullet.lifetime = 0.0f;
+		CP_Sound_Play(SoundArray[5]);
 		break;
 	case BULLET_DUAL:
 		CreateBullet(position, -facedir, BULLET_DEFAULT, 1);
+		CP_Sound_Play(SoundArray[6]);
 		break;
 	case BULLET_BLACK_HOLE:
 		go.vel.x = BULLET_SPEED * facedir / 1.5f;
 		bullet.color = CP_Color_Create(0, 0, 0, 255);
+		CP_Sound_Play(SoundArray[7]);
 		break;
 	default:
+		CP_Sound_Play(SoundArray[2]);
 		break;
 	}
 	

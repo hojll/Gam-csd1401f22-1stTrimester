@@ -19,6 +19,9 @@ Messenger g_messenger;
 #define IMAGE_DIM_HEIGHT 144
 #define NUM_ROLL_FRAMES 5
 #define ACTIVE_ANIM_SPEED 0.1f
+
+extern CP_Sound SoundArray[50];
+
 ////////////////////////////////////////////////////////////////////////
 /*--------*/
 // PLAYER //
@@ -95,6 +98,7 @@ void Player_ActiveUpdate(E_Player* player) {
 	{
 		player->go.vel.y = JUMP_VEL * ((int)CP_Input_KeyDown(KEY_W) || (int)CP_Input_KeyDown(KEY_UP));
 		player->grounded = 0;
+		CP_Sound_Play(SoundArray[1]);
 	}
 
 	//printf("x_vel:%.2f, y_vel:%.2f\n", player->go.vel.x, player->go.vel.y);
