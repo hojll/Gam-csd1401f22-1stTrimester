@@ -88,7 +88,7 @@ void Player_ActiveUpdate(E_Player* player) {
 
 	// Gravity
 	if (!player->grounded && player->go.vel.y < MAX_GRAV_VEL)
-		player->go.vel.y += GRAVITY * g_scaledDt;
+		player->go.vel.y += GRAVITY * CP_System_GetDt(); //changed from scaled dt -> normal Dt, prevents player from clipping tru floor
 
 	// Jump
 	if (player->grounded && (CP_Input_KeyDown(KEY_W) || CP_Input_KeyDown(KEY_UP)))
