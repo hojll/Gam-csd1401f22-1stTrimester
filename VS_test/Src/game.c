@@ -1420,4 +1420,7 @@ void game_update(void)
 
 void game_exit(void)
 {
+    for (int i = 0; i < 50; i++) {
+        CP_Sound_Free(SoundArray[i]);
+    }
 }
