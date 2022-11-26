@@ -293,6 +293,8 @@ void waveSpawnFunction(int index, int enemyType) {
     }
 }
 
+
+
 void game_init(void)
 {
     /*---------------------*/
@@ -864,7 +866,8 @@ void game_update(void)
                 enemies[j].go.active = 0;
                 player[i].go.active = 0;
                 GAMEOVER = 1;
-
+                wave_spawningtimer = 0;
+                wavetextpopup = 0;
                 for (int p = 0; p < MAX_TEXT_POPUP; ++p)
                 {
                     if (!(popUp[p].go.active))
@@ -979,7 +982,8 @@ void game_update(void)
             bossBullets[i].go.active = 0;
             player[0].go.active = 0;
             GAMEOVER = 1;
-
+            wave_spawningtimer = 0;
+            wavetextpopup = 0;
             for (int p = 0; p < MAX_TEXT_POPUP; ++p)
             {
                 if (!(popUp[p].go.active))
