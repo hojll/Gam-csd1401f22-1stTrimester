@@ -644,8 +644,6 @@ void game_update(void)
      // GameLoop stuff
     if (gamestart == 1)
     {
-        
-
         // WAVE spawning system
         int spawnedenemy = 0;
         switch (spawnStateMachine)
@@ -675,6 +673,7 @@ void game_update(void)
                     currspawnCount[i] = 0; // reset enemy spawned in the wave
                 }
                 ++wave;
+                scalar += 0.1f;
                 totalenemieskilled = 0;
                 maxspawnCount[0] += 2;
                 if (wave > 2)
