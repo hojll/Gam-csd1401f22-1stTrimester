@@ -311,7 +311,7 @@ void game_init(void)
     sprites[SPRITE_ENEMY_2] = CP_Image_Load("./Assets/ENEMY2_Spritesheet.png");
     sprites[SPRITE_ENEMY_3] = CP_Image_Load("./Assets/ENEMY3_Spritesheet.png");
     SoundArray[0] = CP_Sound_Load("./Assets/SFX/Uew(Player_Death).mp3");
-    SoundArray[1] = CP_Sound_Load("./Assets/SFX/Duung(Player_Jump).mp3");
+    SoundArray[1] = CP_Sound_Load("./Assets/SFX/Jump(Player_Jump).mp3");
     SoundArray[2] = CP_Sound_Load("./Assets/SFX/Doo(Shoot_Basic).mp3");
     SoundArray[3] = CP_Sound_Load("./Assets/SFX/Poong(Shoot_Scatter).mp3");
     SoundArray[4] = CP_Sound_Load("./Assets/SFX/Shoot(Shoot_Smg).mp3");
@@ -324,6 +324,7 @@ void game_init(void)
     SoundArray[11] = CP_Sound_Load("./Assets/SFX/Wueh(Mob3_Spawn).mp3"); // Enemy 3
     SoundArray[12] = CP_Sound_Load("./Assets/SFX/Dedede(Wave_Cleared).mp3");
     SoundArray[13] = CP_Sound_Load("./Assets/SFX/ZhengZheng(Wave_Start).mp3");
+    SoundArray[14] = CP_Sound_Load("./Assets/SFX/Zzsh(Player_Dash).mp3");
     backgroundSprite = CP_Image_Load("./Assets/background.png");
     CP_System_SetFrameRate(60.f);
     printf("Image: %-15s|  dims: %d, %d\n","player", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));

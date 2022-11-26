@@ -128,6 +128,7 @@ void Player_ActiveUpdate(E_Player* player) {
 		player->currAnim.flip = player->go.faceDir == -1;
 		player->go.timer = 0.f;
 		player->go.vel.y = 0.f;
+		CP_Sound_Play(SoundArray[14]);
 		for (int i = 0; i < PLAYER_ROLL_AFTERIMAGE; i++)
 			player->rollPrevPos[i] = CP_Vector_Zero();
 	}
