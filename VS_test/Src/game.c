@@ -348,8 +348,12 @@ void game_init(void)
         maxspawnCount[i] = 0;
         currspawnCount[i] = 0;
     }
+    spawnStateMachine = 0;
     maxspawnCount[0] = 3;
-
+    wave = 0;
+    totalenemieskilled = 0;
+    wave_spawningtimer = 0;
+    wavetextpopup = 0;
     
     scalar = 1;
     difficulty_timer = 0;
