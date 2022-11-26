@@ -17,6 +17,7 @@
 #include "combo_counter_ui.h"
 #include "game_over.h"
 #include "e_particles.h"
+#include <string.h>
 
 enum {
     MAX_BULLETS = 100,
@@ -48,6 +49,7 @@ static const float COMBO_TIME_DEDUCTION = 1.0f; // speed where the combo end
 static const float COMBO_TIME = 10.f; // time given before combo counter end
 static const float DIFFICULT_INCREMENT = 10.f; // difficulty increment
 static const float MAX_DT_SCALE = 1.3f;
+// Starting spawn count
 
 /*
 In �Configuration Properties->Debugging- Working Directory�
@@ -90,7 +92,6 @@ GameObject *playerPrevPlatform;
 CP_Vector cameraPos;
 float scalar = 0;
 double difficulty_timer = 0;
-float spawntimer[3];
 int combocounter = 0;
 double combocounter_timer = 0;
 double show_oznometer_fade = 0;
@@ -109,6 +110,16 @@ static int game_start_text_counter = 0;
 TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
 E_WeaponBox weapon_boxes[MAX_WEAPON_BOX];
 float spawnWeaponBoxTimer;
+
+// Wave spawning system
+int wave = 0;
+float wave_spawningtimer = 0;
+int spawnStateMachine = 0; // 0 no spawn 1 spawn;
+float spawntimer[4];
+int currspawnCount[4];
+int maxspawnCount[4];
+int totalenemieskilled = 0;
+int wavetextpopup = 0;
 
 
 #pragma region MESSAGES
@@ -212,9 +223,71 @@ void MessageToPlayerDir(void* messageInfo) {
 // call this function everytime you kill an enemy
 void killconfirmed(E_Basic_Enemy *enemy)
 {
-    
+    ++totalenemieskilled;
     ++combocounter;
     addcombotime(&combocounter_timer, COMBO_TIME);
+}
+
+void waveSpawnFunction(int index, int enemyType) {
+    if (currspawnCount[index] >= maxspawnCount[index]) {
+        spawntimer[index] = BASE_SPAWN_FREQUENCY;
+        return;
+    }
+    spawntimer[index] += 1 * g_scaledDt;
+    if (spawntimer[index] > BASE_SPAWN_FREQUENCY) {
+        spawntimer[index] = 0;
+        switch (enemyType) // spawn enemy once
+        {
+        case 0: //brain dead enemy
+        {
+            int randompos = returnRange(1, 50);
+            if (randompos <= 25)
+                SpawnEnemy(0, e_spawnPos1);
+            else
+                SpawnEnemy(0, e_spawnPos2);
+        }
+            break;
+        case 1: // chasing enemy
+        {
+            int randompos = (1, 40);
+            if (randompos <= 25)
+                SpawnEnemy(1, e2_spawnPos[0].pos);
+            else if (randompos <= 50)
+                SpawnEnemy(1, e2_spawnPos[1].pos);
+            else if (randompos <= 75)
+                SpawnEnemy(1, e2_spawnPos[2].pos);
+            else if (randompos <= 100)
+                SpawnEnemy(1, e2_spawnPos[3].pos);
+        }
+            break;
+        case 2: // flying enemy
+        {
+            int randompos = returnRange(1, 100);
+            if (randompos <= 25)
+                SpawnEnemy(2, e2_spawnPos[0].pos);
+            else if (randompos <= 50)
+                SpawnEnemy(2, e2_spawnPos[1].pos);
+            else if (randompos <= 75)
+                SpawnEnemy(2, e2_spawnPos[2].pos);
+            else if (randompos <= 100)
+                SpawnEnemy(2, e2_spawnPos[3].pos);
+        }
+            break;
+        case 3: // boss enemy
+        {
+            int randompos = returnRange(1, 50);
+            if (randompos <= 25)
+                SpawnEnemy(3, e_spawnPos1);
+            else
+                SpawnEnemy(3, e_spawnPos2);
+        }
+            break;
+        default:
+            break;
+        }
+        ++currspawnCount[index];
+        
+    }
 }
 
 void game_init(void)
@@ -260,10 +333,18 @@ void game_init(void)
     e_spawnPos1 = CP_Vector_Set(960, 110);
     e_spawnPos2 = CP_Vector_Set(960, 110);
 
-    for (int k = 0; k < 3; k++)
+    for (int k = 0; k < 4; k++)
     {
         spawntimer[k] = BASE_SPAWN_FREQUENCY;
     }
+
+    // Starting wave
+    for (int i = 0; i < 4; i++) {
+        maxspawnCount[i] = 0;
+        currspawnCount[i] = 0;
+    }
+    maxspawnCount[0] = 3;
+
     
     scalar = 1;
     difficulty_timer = 0;
@@ -516,55 +597,120 @@ void game_update(void)
     if (CP_Input_KeyTriggered(KEY_Q))
         CP_Engine_Terminate();
 
+    // Debug Spawn Enemy
+    {
+        // Debug Spawn Enemy
+        if (CP_Input_KeyTriggered(KEY_EQUAL)) {
+            SpawnEnemyMessage enemy;
+            int random_pos = returnRange(1, 50);
+            if (random_pos <= 25)
+                enemy.position = e_spawnPos1;
+            else
+                enemy.position = e_spawnPos2;
+
+            enemy.tracking = 0;
+            g_messenger.messages[MSG_SPAWN_ENEMY1](&enemy);
+            ++maxspawnCount[0];
+        }
+
+        if (CP_Input_MouseTriggered(MOUSE_BUTTON_RIGHT))
+        {
+            //++maxspawnCount[1];
+            SpawnEnemy(1, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
+        }
+        if (CP_Input_MouseTriggered(MOUSE_BUTTON_MIDDLE))
+        {
+            //++maxspawnCount[3];
+            SpawnEnemy(3, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
+        }
+        if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
+        {
+            //++maxspawnCount[2];
+            SpawnEnemy(2, e2_spawnPos[3].pos);
+        }
+    }
+
     
 #pragma region ENEMY_SPAWN_STUFF
      // GameLoop stuff
     if (gamestart == 1)
     {
-        difficulty_timer += 1.0f * CP_System_GetDt();
-        if (difficulty_timer >= DIFFICULT_INCREMENT){
-            difficulty_timer = 0.0f;
-            scalar += 0.01f;
-        }
-        // Basic Dumb enemy spawning
-        spawntimer[0] += 1.0f * CP_System_GetDt();
-        if (spawntimer[0] > BASE_SPAWN_FREQUENCY) {
-            spawntimer[0] = 0.0f; // spawn
-            int random_pos = returnRange(1, 50);
-            if (random_pos <= 25)
-                SpawnEnemy(0, e_spawnPos1);
-            else
-                SpawnEnemy(0, e_spawnPos2);
-        }
-        if (scalar > 1){
-            spawntimer[1] += 1.0f * CP_System_GetDt();
-            if(spawntimer[1] > BASE_SPAWN_FREQUENCY + 3){
-                spawntimer[1] = 0.0f;
-                int random_pos = returnRange(1, 100);
-                if (random_pos <= 25)
-                    SpawnEnemy(1, e2_spawnPos[0].pos);
-                else if (random_pos <= 50)
-                    SpawnEnemy(1, e2_spawnPos[1].pos);
-                else if (random_pos <= 75)
-                    SpawnEnemy(1, e2_spawnPos[2].pos);
-                else if (random_pos <= 100)
-                    SpawnEnemy(1, e2_spawnPos[3].pos);
+        
+
+        // WAVE spawning system
+        int spawnedenemy = 0;
+        switch (spawnStateMachine)
+        {
+        case 0: // no spawn
+            for (int i = 0; i < 4; ++i) { // find the max spawned count
+                spawnedenemy += maxspawnCount[i];
             }
-        }
-        if (scalar > 1.05f) {
-            spawntimer[2] += 1.0f * CP_System_GetDt();
-            if (spawntimer[2] > BASE_SPAWN_FREQUENCY + 3) {
-                spawntimer[2] = 0.0f;
-                int random_pos = returnRange(1, 100);
-                if (random_pos <= 25)
-                    SpawnEnemy(2, e2_spawnPos[0].pos);
-                else if (random_pos <= 50)
-                    SpawnEnemy(2, e2_spawnPos[1].pos);
-                else if (random_pos <= 75)
-                    SpawnEnemy(2, e2_spawnPos[2].pos);
-                else if (random_pos <= 100)
-                    SpawnEnemy(2, e2_spawnPos[3].pos);
+            if (totalenemieskilled >= spawnedenemy) { // if total enemies killed tallied to max enemies spawned
+                if (wavetextpopup == 0) {
+                    for (int i = 0; i < MAX_TEXT_POPUP; ++i) {
+                        if (!(popUp[i].go.active)) {
+                            set_popup(&popUp[i], CP_System_GetDisplayWidth() / 2,
+                                CP_System_GetDisplayHeight() / 2,
+                                CP_Color_Create(0, 100, 150, 255),
+                                60, 2.0f, "WAVE CLEARED");
+                            break;
+                        }
+                    }
+                    wavetextpopup = 1;
+                }
+                
+                wave_spawningtimer += 1 * CP_System_GetDt();
+                if (wave_spawningtimer < 1.3f)
+                    break;
+
+                for (int i = 0; i < 4; ++i) {
+                    currspawnCount[i] = 0; // reset enemy spawned in the wave
+                }
+                ++wave;
+                totalenemieskilled = 0;
+                maxspawnCount[0] += 2;
+                if (wave > 2)
+                    maxspawnCount[1] += 2;
+                if (wave > 4)
+                    maxspawnCount[2] += 3;
+                if (wave > 5)
+                    maxspawnCount[3] += 3;
+
+                for (int i = 0; i < MAX_TEXT_POPUP; ++i) {
+                    if (!(popUp[i].go.active)) {
+                        set_popup(&popUp[i], CP_System_GetDisplayWidth() / 2,
+                            CP_System_GetDisplayHeight() / 2,
+                            CP_Color_Create(200, 0, 0, 255),
+                            60, 2.0f, "WAVE START");
+                        break;
+                    }
+                }
+                wave_spawningtimer = 0;
+                spawnStateMachine = 1;                
             }
+            break;
+        case 1: // spawn
+            waveSpawnFunction(0, 0, 0);
+            waveSpawnFunction(1, 1, 1);
+            waveSpawnFunction(2, 2, 2);
+            waveSpawnFunction(3, 3, 3);
+            
+            // check if all enemies are spawned
+            // change state machine if max enemies spawned reach
+            int checkSpawnedCount = 0;
+            int checkMaxSpawnCount = 0;
+            for (int i = 0; i < 4; ++i) {
+                checkSpawnedCount += currspawnCount[i];
+                checkMaxSpawnCount += maxspawnCount[i];
+            }
+            if (checkSpawnedCount >= checkMaxSpawnCount) {
+                // Change next level;
+                spawnStateMachine = 0;
+                wavetextpopup = 0;
+            }
+            break;
+        default:
+            break;
         }
     }
     else
@@ -580,8 +726,8 @@ void game_update(void)
                             35, 1.0f, "START");
                         break;
                     }
-                }
-
+                }                
+                spawnStateMachine = 1;
             }
         }
 
@@ -600,47 +746,7 @@ void game_update(void)
     }
 #pragma endregion
 
-    // Debug Spawn Enemy
-    {
-        // Debug Spawn Enemy
-        if (CP_Input_KeyTriggered(KEY_EQUAL)) {
-            SpawnEnemyMessage enemy;
-            int random_pos = returnRange(1, 50);
-            if (random_pos <= 25)
-                enemy.position = e_spawnPos1;
-            else
-                enemy.position = e_spawnPos2;
-
-            enemy.tracking = 0;
-            g_messenger.messages[MSG_SPAWN_ENEMY1](&enemy);
-        }
-
-        if (CP_Input_KeyTriggered(KEY_MINUS)) {
-            SpawnEnemy(1, e2_spawnPos[0].pos);
-        }
-        if (CP_Input_KeyTriggered(KEY_0)) {
-            SpawnEnemy(1, e2_spawnPos[1].pos);
-        }
-        if (CP_Input_KeyTriggered(KEY_9)) {
-            SpawnEnemy(1, e2_spawnPos[2].pos);
-        }
-        if (CP_Input_KeyTriggered(KEY_8)) {
-            SpawnEnemy(1, e2_spawnPos[3].pos);
-        }
-        if (CP_Input_MouseTriggered(MOUSE_BUTTON_RIGHT))
-        {
-            SpawnEnemy(1, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
-        }
-        if (CP_Input_MouseTriggered(MOUSE_BUTTON_MIDDLE))
-        {
-
-            SpawnEnemy(3, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
-        }
-        if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
-        {
-            SpawnEnemy(2, e2_spawnPos[3].pos);
-        }
-    }
+    
     
 #pragma endregion
 #pragma region COLLISION LOOPS
@@ -867,6 +973,8 @@ void game_update(void)
                 //BulletHitParticles(bossBullets[i]);
             }
         }
+        if (shownodes == 1)
+            continue;
         if (AABB(player[0].go, bossBullets[i].go)) {
             bossBullets[i].go.active = 0;
             player[0].go.active = 0;
@@ -999,8 +1107,10 @@ void game_update(void)
     //SCREENSHAKE
     if (combocounter < 50)
     {
-        TEMPORARY = highest_combo/5;
+        TEMPORARY = highest_combo / 5;
     }
+    if (TEMPORARY > 3)
+        TEMPORARY = 3;
     screenshake_timer = 1.0f;
     if (screenshake_timer > 0)
     {
@@ -1163,7 +1273,7 @@ void game_update(void)
 
     // Render AI Pathfinding nodes
     // Render enemy spawn location
-    /*if (shownodes)
+    if (shownodes)
     {
         const CP_Color nodeColor = CP_Color_Create(118, 78, 191, 255);
         CP_Settings_Fill(nodeColor);
@@ -1180,7 +1290,7 @@ void game_update(void)
                 e2_spawnPos[i].pos.y, 20, 20);
         }
     }
-    */
+    
     CP_Settings_ResetMatrix();
     // UI ELEMENTS
     
