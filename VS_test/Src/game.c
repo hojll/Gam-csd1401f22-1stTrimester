@@ -661,8 +661,8 @@ void game_update(void)
                     wavetextpopup = 1;
                 }
                 
-                wave_spawningtimer += 0.5f * CP_System_GetDt();
-                if (wave_spawningtimer < 1.3f)
+                wave_spawningtimer += 1 * CP_System_GetDt();
+                if (wave_spawningtimer < 2.5f)
                     break;
 
                 for (int i = 0; i < 4; ++i) {
