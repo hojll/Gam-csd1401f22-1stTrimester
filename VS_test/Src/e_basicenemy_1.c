@@ -198,6 +198,7 @@ void ResetEnemy(E_Basic_Enemy* enemy)
 
 int EnemyTakeDamage(E_Basic_Enemy* enemy, int dmg, GameObject *bullet)
 {
+	enemy->redTintVal = 255.f;
 	if ((enemy->HP -= dmg) <= 0) {
 		enemy->floatingtimer = 0.0f;
 		enemy->go.dir.x = 0;
@@ -216,7 +217,6 @@ int EnemyTakeDamage(E_Basic_Enemy* enemy, int dmg, GameObject *bullet)
 		return 0;
 	}
 		//return enemy->go.active = 0;
-	enemy->redTintVal = 255.f;
 	enemy->hitstun = 0.05f;
 	return enemy->go.active;
 }

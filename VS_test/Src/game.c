@@ -176,6 +176,7 @@ void MessageSpawnEnemy(void* messageInfo) {
         curr->go.active = 1;
         curr->go.pos = enemyMsg->position;
         curr->tracking = enemyMsg->tracking;
+        curr->redTintVal = 0.f;
         if (curr->tracking == 1)
             curr->go.dir.x = 0;
         curr->enemytype = enemyMsg->type;
@@ -1126,6 +1127,12 @@ void game_update(void)
                 CP_Settings_Fill(enemyColor3);
                 CP_Settings_Tint(CP_Color_Create(255, 0, 0, (int)enemies[i].redTintVal));
                 RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_3], enemies[i].go.pos.x,
+                    enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
+                break;
+            case 3:
+                CP_Settings_Fill(enemyColor2);
+                CP_Settings_Tint(CP_Color_Create(255, 0, 0, (int)enemies[i].redTintVal));
+                RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_2], enemies[i].go.pos.x,
                     enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
                 break;
             default:
