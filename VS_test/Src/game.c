@@ -18,6 +18,7 @@
 #include "game_over.h"
 #include "e_particles.h"
 #include <string.h>
+#include "e_banner.h"
 
 enum {
     MAX_BULLETS = 100,
@@ -27,7 +28,8 @@ enum {
     MAX_TEXT_POPUP = 20,
     MAX_WEAPON_BOX = 5,
     MAX_GAMESTART_TEXT = 9,
-    MAX_PARTICLES = 20000
+    MAX_PARTICLES = 20000,
+    MAX_BANNER = 2
 };
 
 static int TEMPORARY;
@@ -108,6 +110,7 @@ static char* gamestart_text[] = {   "Press Spacebar to START!", "Come on already
 static int game_start_text_counter = 0;
 
 TextPopUp popUp[MAX_TEXT_POPUP]; // For UI by Joel
+Banner banner[MAX_BANNER];
 E_WeaponBox weapon_boxes[MAX_WEAPON_BOX];
 float spawnWeaponBoxTimer;
 
@@ -647,19 +650,18 @@ void game_update(void)
             }
             if (totalenemieskilled >= spawnedenemy) { // if total enemies killed tallied to max enemies spawned
                 if (wavetextpopup == 0) {
-                    for (int i = 0; i < MAX_TEXT_POPUP; ++i) {
-                        if (!(popUp[i].go.active)) {
-                            set_popup(&popUp[i], CP_System_GetDisplayWidth() / 2,
-                                CP_System_GetDisplayHeight() / 2,
-                                CP_Color_Create(0, 100, 150, 255),
-                                60, 2.0f, "WAVE CLEARED");
+                    for (int i = 0; i < MAX_BANNER; ++i)
+                    {
+                        if (!(banner[i].go.active))
+                        {
+                            create_banner(&banner[i], "WAVE CLEARED");
                             break;
                         }
                     }
                     wavetextpopup = 1;
                 }
                 
-                wave_spawningtimer += 1 * CP_System_GetDt();
+                wave_spawningtimer += 0.5f * CP_System_GetDt();
                 if (wave_spawningtimer < 1.3f)
                     break;
 
@@ -676,12 +678,11 @@ void game_update(void)
                 if (wave > 5)
                     maxspawnCount[3] += 3;
 
-                for (int i = 0; i < MAX_TEXT_POPUP; ++i) {
-                    if (!(popUp[i].go.active)) {
-                        set_popup(&popUp[i], CP_System_GetDisplayWidth() / 2,
-                            CP_System_GetDisplayHeight() / 2,
-                            CP_Color_Create(200, 0, 0, 255),
-                            60, 2.0f, "WAVE START");
+                for (int i = 0; i < MAX_BANNER; ++i)
+                {
+                    if (!(banner[i].go.active))
+                    {
+                        create_banner(&banner[i], "WAVE START");
                         break;
                     }
                 }
@@ -718,15 +719,14 @@ void game_update(void)
         if (gamestart == 0){
             if (CP_Input_KeyTriggered(KEY_SPACE)){
                 gamestart = 1;
-                for (int i = 0; i < MAX_TEXT_POPUP; ++i){
-                    if (!(popUp[i].go.active)){
-                        set_popup(&popUp[i], CP_System_GetDisplayWidth() / 2,
-                            CP_System_GetDisplayHeight() / 2,
-                            CP_Color_Create(255, 0, 0, 255), 
-                            35, 1.0f, "START");
+                for (int i = 0; i < MAX_BANNER; ++i)
+                {
+                    if (!(banner[i].go.active))
+                    {
+                        create_banner(&banner[i], "START");
                         break;
                     }
-                }                
+                }
                 spawnStateMachine = 1;
             }
         }
@@ -842,9 +842,9 @@ void game_update(void)
                         set_popup(&popUp[p], 
                             player->go.pos.x,
                             player->go.pos.y - player->go.height / 2.f - 10.f,
-                            CP_Color_Create(255, 0, 0, 255),
-                            35,
-                            3.0f,
+                            CP_Color_Create(80, 255, 80, 255),
+                            50,
+                            3.5f,
                             weapon_text);
                         break;
                     }
@@ -987,7 +987,7 @@ void game_update(void)
                     set_popup(&popUp[p],
                         player->go.pos.x,
                         player->go.pos.y - player->go.height / 2.f - 10.f,
-                        CP_Color_Create(255, 0, 0, 255),
+                        CP_Color_Create(0, 0, 0, 255),
                         (int)DEFAULT_FONT_SIZE,
                         3.0f,
                         "DIED");
@@ -1292,15 +1292,6 @@ void game_update(void)
     }
     
     CP_Settings_ResetMatrix();
-    // UI ELEMENTS
-    
-    //CP_Settings_TextSize(DEFAULT_FONT_SIZE);
-    //CP_Settings_Fill(DEFAULT_FONT_COLOR);
-    //if (gamestart)
-    //{
-    //    update_timer();
-    //}
- 
 
     float oznoalpha = updateOznometerFade(255, &combocounter_timer, COMBO_TIME);
     updateComboCounterTimer(&combocounter,&combocounter_timer, COMBO_TIME_DEDUCTION, COMBO_TIME);
@@ -1372,6 +1363,7 @@ void game_update(void)
                 break;
             }
         }
+
     }
 
     update_bullet_bar(player[0].currAmmo, player[0].maxAmmo);
@@ -1379,6 +1371,12 @@ void game_update(void)
     {
         update_popup(&popUp[i]);
         draw_popup(&popUp[i]);
+    }
+
+    for (int i = 0; i < MAX_BANNER; ++i)
+    {
+        update_banner(&banner[i]);
+        draw_banner(&banner[i]);
     }
 
     //GAME OVER
@@ -1393,7 +1391,7 @@ void game_update(void)
         {
             instruction_alpha -= 80 * CP_System_GetDt();
         }
-        CP_Settings_Fill(CP_Color_Create(255, 255, 255, (int)instruction_alpha));//CP_Color_Create(20, 5, 5, (int)instruction_alpha));
+        CP_Settings_Fill(CP_Color_Create(255, 255, 255, (int)instruction_alpha));
         CP_Graphics_DrawRect(CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.5f, CP_System_GetWindowWidth() * 0.75f, CP_System_GetWindowHeight() * 0.75f);
         if (instructions == 0)
         {

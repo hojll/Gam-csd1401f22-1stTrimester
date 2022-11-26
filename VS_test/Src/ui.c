@@ -69,8 +69,3 @@ void update_bullet_bar(int current_bullet_count, int total_bullet_count)
     CP_Settings_RectMode(CP_POSITION_CENTER);
     CP_Settings_Stroke(CP_Color_Create(0, 0, 0, 255));
 }
-
-void draw_button(float x, float y, float width, float height)
-{
-    CP_Graphics_DrawRect(x, y, width, height);
-}

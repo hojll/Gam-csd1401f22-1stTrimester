@@ -183,11 +183,11 @@ void credits_update(void)
 		}
 	}
 
-	if (CP_Input_KeyTriggered(KEY_W)) 
+	if (CP_Input_KeyTriggered(KEY_W) || CP_Input_KeyTriggered(KEY_UP))
 	{
 		--selector;
 	}
-	if (CP_Input_KeyTriggered(KEY_S))
+	if (CP_Input_KeyTriggered(KEY_S) || CP_Input_KeyTriggered(KEY_DOWN))
 	{
 		++selector;
 	}

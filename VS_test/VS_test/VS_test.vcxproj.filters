@@ -75,6 +75,9 @@
     <ClCompile Include="..\Src\e_enemyBoss_1.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\e_banner.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Src\game.h">
@@ -141,6 +144,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\e_enemyBoss_1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\e_banner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
