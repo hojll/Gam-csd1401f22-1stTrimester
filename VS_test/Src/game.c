@@ -252,7 +252,7 @@ void waveSpawnFunction(int index, int enemyType) {
             break;
         case 1: // chasing enemy
         {
-            int randompos = (1, 40);
+            int randompos = (1, 100);
             if (randompos <= 25)
                 SpawnEnemy(1, e2_spawnPos[0].pos);
             else if (randompos <= 50)
@@ -679,9 +679,9 @@ void game_update(void)
                 if (wave > 2)
                     maxspawnCount[1] += 2;
                 if (wave > 4)
-                    maxspawnCount[2] += 3;
+                    maxspawnCount[2] += 1;
                 if (wave > 5)
-                    maxspawnCount[3] += 3;
+                    maxspawnCount[3] += 2;
 
                 for (int i = 0; i < MAX_BANNER; ++i)
                 {
