@@ -128,6 +128,8 @@ void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type)
 	GameObject go;
 
 	go.pos = position;
+	if (facedir == 0)
+		facedir = 1;
 	go.vel.x = BULLET_SPEED * facedir;
 	go.faceDir = facedir;
 	go.vel.y = 0.f;
