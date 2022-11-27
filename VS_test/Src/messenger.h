@@ -2,6 +2,9 @@
 #define MESSENGER_H
 #include "cprocessing.h"
 #include "e_bullet.h"
+/// <summary>
+/// Message enum for array of func pointers
+/// </summary>
 typedef enum MessageType {
 	MSG_SPAWN_BULLET,
 	MSG_SPAWN_ENEMY1,
@@ -11,6 +14,9 @@ typedef enum MessageType {
 	MSG_NUM_MESSAGE_TYPE
 }MessageType;
 
+/// <summary>
+/// Message called by player to spawn bullet
+/// </summary>
 typedef struct SpawnBulletMessage {
 	GameObject go;
 	BULLET_TYPE type;
@@ -19,6 +25,9 @@ typedef struct SpawnBulletMessage {
 	float lifetime;
 }SpawnBulletMessage;
 
+/// <summary>
+/// Message to spawn particles
+/// </summary>
 typedef struct SpawnParticleMessage {
 	GameObject go;
 	CP_Color color;
@@ -38,17 +47,8 @@ typedef struct SpawnEnemyMessage {
 }SpawnEnemyMessage;
 
 /// <summary>
-/// USELESS DELETE
-/// </summary>
-typedef struct ToPlayerDirMessage {
-	// Input value:
-	CP_Vector entityPos;
-	// Output value:
-	int direction;
-} ToPlayerDirMessage;
-
-/// <summary>
 /// Shoots enemy bullet from position in 1 direction x axis
+/// The boss uses this
 /// </summary>
 typedef struct SpawnEnemyBulletMessage {
 	CP_Vector startPos;

@@ -20,6 +20,7 @@
 #include <string.h>
 #include "e_banner.h"
 
+#pragma region CONSTANTS
 enum {
     MAX_BULLETS = 100,
     MAX_ENEMIES = 100,
@@ -37,7 +38,7 @@ static int TEMPORARY;
 static const float WEAPON_BOX_SPAWN_TIME = 3;
 
 static const float DEFAULT_FONT_SIZE = 150.0f;
-#define DEFAULT_FONT_COLOR CP_Color_Create(0, 0, 0, 255)
+const CP_Color DEFAULT_FONT_COLOR = { 0, 0, 0, 255 };
 
 char GAMEOVER = 0;
 
@@ -52,13 +53,13 @@ static const float COMBO_TIME = 10.f; // time given before combo counter end
 static const float DIFFICULT_INCREMENT = 10.f; // difficulty increment
 static const float MAX_DT_SCALE = 1.3f;
 // Starting spawn count
-
+#pragma endregion
 /*
 In �Configuration Properties->Debugging- Working Directory�
 $(SolutionDir)bin\$(Configuration)-$(Platform)\
 Use this in  release mode settings if no work.
 */
-
+#pragma region VARIABLES
 Messenger g_messenger;
 float g_scaledDt;
 /*-------*/
@@ -124,9 +125,13 @@ int maxspawnCount[4];
 int totalenemieskilled = 0;
 int wavetextpopup = 0;
 CP_Sound SoundArray[50];
-
-
+#pragma endregion
+// For more information on the structs for every messageInfo, see messenger.h
 #pragma region MESSAGES
+/// <summary>
+/// Spawns player made bullets that damages enemies or collides with walls
+/// </summary>
+/// <param name="messageInfo">the pointer to message struct</param>
 void MessageSpawnBullet(void* messageInfo) {
     SpawnBulletMessage* bulletMSG = (SpawnBulletMessage*)messageInfo;
     // Spawn bullet here
@@ -143,7 +148,10 @@ void MessageSpawnBullet(void* messageInfo) {
         break;
     }
 }
-
+/// <summary>
+/// Spawns particle effects at location specified by message info
+/// </summary>
+/// <param name="messageInfo">the pointer to message struct</param>
 void MessageSpawnParticle(void* messageInfo) {
     SpawnParticleMessage* particleMSG = (SpawnParticleMessage*)messageInfo;
     // Spawn bullet here
@@ -159,7 +167,10 @@ void MessageSpawnParticle(void* messageInfo) {
         break;
     }
 }
-
+/// <summary>
+/// Spawns an enemy of specified type in messageinfo
+/// </summary>
+/// <param name="messageInfo">the pointer to message struct</param>
 void MessageSpawnEnemy(void* messageInfo) {
     SpawnEnemyMessage* enemyMsg = (SpawnEnemyMessage*)messageInfo;
     // Spawn enemy here
@@ -202,7 +213,10 @@ void MessageSpawnEnemy(void* messageInfo) {
     }
 
 }
-
+/// <summary>
+/// Spawns a bullet that can kill player or collide with wall
+/// </summary>
+/// <param name="messageInfo">the pointer to message struct</param>
 void MessageSpawnEnemyBullet(void* messageInfo) {
     SpawnEnemyBulletMessage* msg = (SpawnEnemyBulletMessage*)messageInfo;
     for (int i = 0; i < MAX_BULLETS; ++i) {
@@ -219,14 +233,9 @@ void MessageSpawnEnemyBullet(void* messageInfo) {
         curr->go.width = 20.f;
     }
 }
-// Alonzo: TODO
-void MessageToPlayerDir(void* messageInfo) {
-    ToPlayerDirMessage* msg = (ToPlayerDirMessage*)messageInfo;
-    if (msg->entityPos.y > player[0].go.pos.y - player[0].go.height / 2.f)
-        msg->direction = (int)(player[0].go.pos.x - msg->entityPos.x);
-}
 #pragma endregion
 
+#pragma region LOCAL_FUNCTIONS
 // call this function everytime you kill an enemy
 void killconfirmed(E_Basic_Enemy *enemy)
 {
@@ -296,8 +305,7 @@ void waveSpawnFunction(int index, int enemyType) {
         
     }
 }
-
-
+#pragma endregion
 
 void game_init(void)
 {
@@ -331,7 +339,7 @@ void game_init(void)
     CP_System_SetFrameRate(60.f);
     printf("Image: %-15s|  dims: %d, %d\n","player", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
     printf("Image: %-15s| dims: %d, %d\n", "background", CP_Image_GetWidth(backgroundSprite), CP_Image_GetHeight(backgroundSprite));
-    /////////////////////////
+    // END OF MEDIA INITIALIZATION
     
     CP_Settings_RectMode(CP_POSITION_CENTER);
     cameraPos = CP_Vector_Zero();// Camera
@@ -351,7 +359,7 @@ void game_init(void)
     e2_spawnPos[3].pos = CP_Vector_Set(1750, 800);
 
     // AI / ENEMY
-    InitAnimdata_E1();
+    InitAnimdata_E1();  // Initializing all the animation datas for enemies
     InitAnimdata_E2();
     InitAnimdata_EB1();
     InitEnemyList(enemies, MAX_ENEMIES, ai_nodes);
@@ -419,9 +427,9 @@ void game_init(void)
     }
     
 
-    // Walls
-    // Bottom
+    // Walls/Floors in level
     {
+        // Bottom
         walls[0].pos = CP_Vector_Set(475, 955);
         walls[0].height = 50.f;
         walls[0].width = 800.f;
@@ -488,7 +496,6 @@ void game_init(void)
         
     }
 
-    player->go.faceDir = 1;
     g_scaledDt = 0.f;
     
     // MESSAGE FUNC POINTER INIT
@@ -778,7 +785,7 @@ void game_update(void)
     
 #pragma endregion
 #pragma region COLLISION LOOPS
-    // Collision Loops
+    // Collision Loops | where x == everything else
     // Player - x
     for (int i = 0; i < playerCount; ++i)
     {
@@ -1194,11 +1201,6 @@ void game_update(void)
             RenderSpriteAnim(&player[i].currAnim, sprites[SPRITE_PLAYER], player[i].go.pos.x, 
                 player[i].go.pos.y, player[i].go.width, player[i].go.height, 255);
              
-            //CP_Image_DrawSubImage(sprites[0], player[i].go.pos.x, player[i].go.pos.y, player[i].go.height, player[i].go.height,
-            //    0, 0, 32, 32, 255);
-
-            //CP_Image_Draw(sprites[SPRITE_PLAYER], player[i].go.pos.x, player[i].go.pos.y, player[i].go.height, player[i].go.height, 255);
-            //CP_Graphics_DrawCircle(player[i].go.pos.x, player[i].go.pos.y, player[i].go.height);
             if (player[i].state == STATE_PLAYER_ROLLING)
             {
                 for (int j = 0; j < PLAYER_ROLL_AFTERIMAGE; j++)

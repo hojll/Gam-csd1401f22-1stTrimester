@@ -18,7 +18,17 @@ typedef enum ENEMY_2_ANIMATIONS {
 /*-----------------------------------------------------------------*/
 // Functions 
 /*-----------------------------------------------------------------*/
+
+/// <summary>
+/// Only need to call once. Will initialize enemy 2 sprite data
+/// </summary>
 void InitAnimdata_E2();
-E_Basic_Enemy *InitializeEnemy_2(E_Basic_Enemy *enemy);
+/// <summary>
+/// Initializes enemy 2 types on basic enemy struct
+/// We got different sprite anim data so this is required
+/// </summary>
+/// <param name="enemy">pointer to enemy to init</param>
+/// <returns>pointer to same enemy after initialization</returns>
+E_Basic_Enemy *InitializeEnemy_2(E_Basic_Enemy *enemy);	// 
 
 #endif
