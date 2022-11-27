@@ -18,7 +18,17 @@ typedef enum ENEMY_BOSS_1_ANIMATIONS {
 /*-----------------------------------------------------------------*/
 // Functions 
 /*-----------------------------------------------------------------*/
+/// <summary>
+/// Only need to call once. Will initialize boss sprite data
+/// </summary>
 void InitAnimdata_EB1();
+
+/// <summary>
+/// Initializes boss on basic enemy struct
+/// We got different sprite anim data so this is required
+/// </summary>
+/// <param name="enemy">pointer to enemy to init</param>
+/// <returns>pointer to same enemy after initialization</returns>
 E_Basic_Enemy* InitializeEnemyBoss_1(E_Basic_Enemy* enemy);
 
 #endif

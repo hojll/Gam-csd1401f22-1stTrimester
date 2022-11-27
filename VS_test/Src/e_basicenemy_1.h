@@ -99,5 +99,11 @@ int EnemyTakeDamage(E_Basic_Enemy* enemy, int dmg, GameObject *bullet);
 /*-----------------------------------------------------------------*/
 // Declarations for enemy state functions (for reuses)
 /*-----------------------------------------------------------------*/
+
+/// <summary>
+/// Active update functions for pathing and updating
+/// to be used by all enemies
+/// </summary>
+/// <param name="enemy">pointer to enemy</param>
 void Enemy_ActiveUpdate(E_Basic_Enemy* enemy);
 #endif

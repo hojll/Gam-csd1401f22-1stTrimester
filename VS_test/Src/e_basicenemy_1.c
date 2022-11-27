@@ -9,6 +9,8 @@
 #include "easing.h"
 
 Messenger g_messenger;
+// The sprite animation datas for enemy 1. Enemy 1 and 3 has
+// matching sprite anim dimensions and frame counts. Both use this
 SpriteAnimData enemy1Animations[ANIM_ENEMY_1_NUM_ANIM];
 
 static const float E_SPEED = 350.f;
@@ -24,15 +26,15 @@ static const float RED_TINT_DECAY_RATE = 0.7f;
 static const float dedgeSpeedX = 500.f;
 
 enum {
-	FRAME_DIM_WIDTH = 48,//41,
-	FRAME_DIM_HEIGHT = 48,//38,
+	FRAME_DIM_WIDTH = 48,
+	FRAME_DIM_HEIGHT = 48,
 	IMAGE_DIM_WIDTH = 192,
 	IMAGE_DIM_HEIGHT = 48,
 	NUM_FRAMES = 4
 };
 
 /*----------------------------------------------------*/
-// ENEMI
+// ENEMY 1
 /*----------------------------------------------------*/
 
 void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)

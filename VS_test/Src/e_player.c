@@ -242,6 +242,7 @@ void InitializePlayer(E_Player *player) {
 	player->go.pos.x = 960.f;
 	player->go.width = 75.f;
 	player->go.height = 75.f;
+	player->go.faceDir = 0;
 	player->grounded = 0;
 	player->currAmmo = -1;
 	player->maxAmmo = -1;

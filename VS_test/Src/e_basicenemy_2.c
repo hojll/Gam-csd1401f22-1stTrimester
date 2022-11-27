@@ -7,11 +7,6 @@
 #include "utilities.h"
 
 Messenger g_messenger;
-//static const float E_SPEED = 700.f;
-//static const float GRAVITY = 200.f;
-//static const float MAX_GRAV_VEL = 1500.f;
-//static const float JUMP_VEL = -2500.f;
-//static const float JUMP_RANGE = 20.f;
 static const float JUMP_ANIM_SPEED = 0.1f;
 static const float ACTIVE_ANIM_SPEED = 0.1f;
 static const float RED_TINT_DECAY_RATE = 0.7f;
@@ -23,6 +18,7 @@ enum {
 	NUM_FRAMES_ACTIVE = 4,
 	NUM_FRAMES_JUMP = 6
 };
+// The sprite animation datas for enemy 2
 SpriteAnimData enemy2Animations[ANIM_ENEMY_2_NUM_ANIM];
 
 void Enemy_2_ActiveUpdate(E_Basic_Enemy* enemy) {
