@@ -153,7 +153,8 @@ void main_menu_update(void)
 			alpha[1] -= ALPHA_DECREMENT;
 			if (timer <= 0.0f)
 			{
-				exit(0);
+				//exit(0);
+				CP_Engine_Terminate();
 			}
 		}
 	}

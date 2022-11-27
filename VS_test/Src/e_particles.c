@@ -21,8 +21,8 @@ void Particle_ActiveUpdate(E_Particle* particle)
 
 	if (!particle->collided)
 	{
-		particle->go.vel.x += AIR_RESISTANCE * g_scaledDt * -(particle->go.vel.x / (float)abs((float)particle->go.vel.x));
-		particle->go.vel.y += AIR_RESISTANCE * g_scaledDt * -(particle->go.vel.y / (float)abs((float)particle->go.vel.y));
+		particle->go.vel.x += AIR_RESISTANCE * g_scaledDt * -(particle->go.vel.x / (float)abs((int)particle->go.vel.x));
+		particle->go.vel.y += AIR_RESISTANCE * g_scaledDt * -(particle->go.vel.y / (float)abs((int)particle->go.vel.y));
 		particle->go.vel.y += GRAVITY * g_scaledDt;
 	}
 }

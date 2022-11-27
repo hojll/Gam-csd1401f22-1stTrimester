@@ -961,7 +961,7 @@ void game_update(void)
                     bullets[i].collide_pos.x = enemies[j].go.pos.x + enemies[j].go.width / 2.f + bullets[i].go.width / 2.f;
 
 
-                if (!EnemyTakeDamage(&enemies[j], 1, &bullets[i]))
+                if (!EnemyTakeDamage(&enemies[j], 1, &bullets[i].go))
                 {
                     EnemyBloodSplatter(enemies[j]);
                     killconfirmed(&enemies[j]);
@@ -1441,6 +1441,6 @@ void game_update(void)
 void game_exit(void)
 {
     for (int i = 0; i < 50; i++) {
-        CP_Sound_Free(SoundArray[i]);
+        CP_Sound_Free(&SoundArray[i]);
     }
 }
