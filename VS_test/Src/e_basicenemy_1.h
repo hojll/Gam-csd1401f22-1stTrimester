@@ -66,7 +66,7 @@ typedef struct E_Basic_Enemy {
 	float bossTimer;	// For the boss
 	int isDying;
 
-	void (*Update[STATE_ENEMY_NUM_STATES])(E_BASIC_ENEMY_STATES_1*);
+	void (*Update[STATE_ENEMY_NUM_STATES])(E_Basic_Enemy*);
 } E_Basic_Enemy;
 /*-----------------------------------------------------------------*/
 // Other references
