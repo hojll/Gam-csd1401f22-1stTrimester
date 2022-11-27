@@ -28,6 +28,7 @@ void main_menu_init(void);
 void main_menu_update(void);
 void main_menu_exit(void);
 
+// Initialize the scene.
 void splash_screen_init(void)
 {
 	CP_System_SetFrameRate(60.0f);
@@ -62,6 +63,7 @@ void splash_screen_init(void)
 	CP_Sound_Play(SoundFx[0]);
 }
 
+// Updates the scene.
 void splash_screen_update(void)
 {
 	//INPUT
@@ -102,7 +104,7 @@ void splash_screen_update(void)
 		alpha -= inc_amt;
 	}
 
-	//RENDER
+#pragma region RENDER
 	CP_Graphics_ClearBackground(CP_Color_Create(0, 0, 0, 255));
 	if (!game_flag)
 	CP_Image_Draw(logo, CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.5f, (float)CP_Image_GetWidth(logo), (float)CP_Image_GetHeight(logo), alpha);
@@ -126,7 +128,7 @@ void splash_screen_update(void)
 		CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha));
 		CP_Font_DrawText("OZNOLA", CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.8f);
 	}
-	
+#pragma endregion
 
 	if (timer > 0.1f)
 	{
@@ -141,6 +143,7 @@ void splash_screen_update(void)
 
 }
 
+// Exits the scene.
 void splash_screen_exit(void)
 {
 	CP_Image_Free(&logo);

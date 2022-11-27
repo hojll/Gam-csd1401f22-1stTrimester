@@ -1181,7 +1181,7 @@ void game_update(void)
 
     CP_Settings_Stroke(CP_Color_Create(0, 0, 0, 255));
     // Background
-    CP_Image_Draw(backgroundSprite, CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.5f, 1920, 1800, 255);
+    CP_Image_Draw(backgroundSprite, CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.5f, 1920, 1080, 255);
 
     CP_Matrix camTransform = CP_Matrix_Translate(cameraPos);
     CP_Settings_ApplyMatrix(camTransform);

@@ -30,18 +30,7 @@ void title_format(void) {
 	CP_Settings_TextSize(180.0f);
 }
 
-void text_format(void)
-{
-	// FONT COLOR
-	CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
-
-	// FONT ALIGNMENT
-	CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
-
-	// FONT SIZE
-	CP_Settings_TextSize(50.0f);
-}
-
+// Moves the texts left.
 void next_page(void)
 {
 	if (delay > 0)
@@ -58,6 +47,7 @@ void next_page(void)
 	}
 }
 
+// Moves the texts right.
 void previous_page(void)
 {
 	if (delay < 1000)
@@ -74,6 +64,7 @@ void previous_page(void)
 	}
 }
 
+// Initialize the scene.
 void credits_init(void)
 {
 	ypos[0] = CP_System_GetWindowHeight() * 0.15f; // CREDITS [ Title]
@@ -107,11 +98,14 @@ void credits_init(void)
 	CP_Sound_Play(SoundFx[0]);
 }
 
+// Updates the scene.
 void credits_update(void)
 {
+	// Quits the scene when Q is pressed.
 	if (CP_Input_KeyTriggered(KEY_Q))
 		CP_Engine_Terminate();
 
+#pragma region SELECTOR_LOOPBACK
 	if (selector > 1)
 	{
 		selector = 0;
@@ -120,7 +114,9 @@ void credits_update(void)
 	{
 		selector = 1;
 	}
+#pragma endregion
 
+#pragma region POSITION_SETTING
 	if (xpos[1] < CP_System_GetWindowWidth() * 0.501f && next == 2)
 	{
 		next = 1;
@@ -146,18 +142,21 @@ void credits_update(void)
 		xpos[4] = CP_System_GetWindowWidth() * 1.49f;
 		xpos[5] = CP_System_GetWindowWidth() * 1.51f;
 	}
+#pragma endregion
 
+#pragma region FUNCTION_CALL
 	if (next == 2)
 	{
 		next_page();
-		
 	}
 
 	if (next == -1)
 	{
 		previous_page();
 	}
-	
+#pragma endregion
+
+#pragma region BUTTON_SELECTED 
 	if (selector == 0)
 	{
 		back_alpha = 255;
@@ -193,7 +192,9 @@ void credits_update(void)
 			}
 		}
 	}
+#pragma endregion
 
+#pragma region USER_INPUT
 	if (CP_Input_KeyTriggered(KEY_W) || CP_Input_KeyTriggered(KEY_UP))
 	{
 		--selector;
@@ -202,8 +203,9 @@ void credits_update(void)
 	{
 		++selector;
 	}
+#pragma endregion
 
-
+#pragma region DRAWING_OF_TEXT
 	CP_Graphics_ClearBackground(CP_Color_Create(20, 5, 5, 255));
 	// draw texts n stuff
 	title_format();
@@ -281,13 +283,13 @@ void credits_update(void)
 	CP_Settings_Fill(CP_Color_Create(255, 255, 255, 150));
 	CP_Font_DrawText("PRESS W OR S TO MOVE SELECTION", CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.93f);
 	CP_Font_DrawText("PRESS SPACE OR ENTER TO SELECT", CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.96f);
-
+#pragma endregion
 }
 
+// Exits the scene.
 void credits_exit(void)
 {
 	for (int i = 0; i < 3; i++) {
 		CP_Sound_Free(&SoundFx[i]);
 	}
-
 }

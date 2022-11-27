@@ -18,6 +18,8 @@ for (int i = 0; i < MAX_TEXT_POPUP; ++i)
     }
 }
 //////////////////////////////////////////*/
+
+// Assigns a TextPopUp struct with the relevant data.
 void set_popup(TextPopUp *text, float x, float y, CP_Color color, int font_size, float duration, char *string)
 {
 	text->go.active = 1;
@@ -30,6 +32,7 @@ void set_popup(TextPopUp *text, float x, float y, CP_Color color, int font_size,
 	text->go.vel.y = 3;
 }
 
+// Decrements the time and sets the active once its over.
 void update_popup(TextPopUp *text)
 {
 	int alpha_decrement = (int)(255 / (60 * text->go.timer));
@@ -56,6 +59,7 @@ void update_popup(TextPopUp *text)
 	}
 }
 
+// Draws the TextPopUp struct.
 void draw_popup(TextPopUp* text)
 {
 	CP_Settings_Fill(text->color);
