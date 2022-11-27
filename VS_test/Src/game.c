@@ -1108,7 +1108,7 @@ void game_update(void)
             //EnemyPathing(&enemies[j], walls, &player, playerPrevPlatform, MAX_WALLS);
             //EnemyPathing(&enemies[j], ai_nodes, &player, playerPrevPlatform, MAX_PATHFINDING_NODES);
             //EnemyPathing3(&enemies[j], ai_nodes, &player, playerPrevPlatform, MAX_PATHFINDING_NODES, walls, e2_spawnPos);
-            EnemyPathing4(&enemies[j], &player, playerPrevPlatform, MAX_PATHFINDING_NODES, walls, ai_nodes, e2_spawnPos);
+            EnemyPathing4(&enemies[j], player, playerPrevPlatform, MAX_PATHFINDING_NODES, walls, ai_nodes, e2_spawnPos);
         }
 
     }

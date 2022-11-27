@@ -1,3 +1,5 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+
 #include <stdio.h>
 #include "CProcessing.h"
 

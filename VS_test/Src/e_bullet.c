@@ -1,3 +1,6 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+
+
 #include "e_bullet.h"
 #include "messenger.h"
 #include "utilities.h"

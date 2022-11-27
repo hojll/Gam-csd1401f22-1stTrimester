@@ -1,3 +1,5 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+
 #include "e_weaponBox.h"
 
 const float GRAVITY = 60.f;

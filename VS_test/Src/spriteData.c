@@ -1,3 +1,5 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+
 #include "spriteData.h"
 // I heard inline makes it faster... Does it?
 void UpdateSpriteAnim(SpriteAnimInstance* anim, float dt) {

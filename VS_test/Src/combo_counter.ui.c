@@ -1,3 +1,5 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+
 #include "combo_counter_ui.h"
 #include "easing.h"
 

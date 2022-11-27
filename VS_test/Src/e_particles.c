@@ -1,3 +1,5 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+
 #include "e_particles.h"
 #include "messenger.h"
 #include <math.h>

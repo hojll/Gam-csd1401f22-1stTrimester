@@ -1,3 +1,5 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+
 #include "e_enemyBoss_1.h"
 #include "messenger.h"
 #include "collision.h"

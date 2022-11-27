@@ -1,3 +1,5 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+
 #include "e_basicenemy_2.h"
 #include "messenger.h"
 #include "collision.h"

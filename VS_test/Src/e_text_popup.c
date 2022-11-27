@@ -1,3 +1,5 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+
 #include "e_text_popup.h"
 
 /*TO CREATE A POPUP TEXT
