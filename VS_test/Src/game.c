@@ -325,6 +325,8 @@ void game_init(void)
     SoundArray[12] = CP_Sound_Load("./Assets/SFX/Dedede(Wave_Cleared).mp3");
     SoundArray[13] = CP_Sound_Load("./Assets/SFX/ZhengZheng(Wave_Start).mp3");
     SoundArray[14] = CP_Sound_Load("./Assets/SFX/Zzsh(Player_Dash).mp3");
+    SoundArray[15] = CP_Sound_Load("./Assets/SFX/GameOver(Game_End).mp3");
+    SoundArray[16] = CP_Sound_Load("./Assets/SFX/Bloong(Game_Instructions).mp3");
     backgroundSprite = CP_Image_Load("./Assets/background.png");
     CP_System_SetFrameRate(60.f);
     printf("Image: %-15s|  dims: %d, %d\n","player", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
@@ -760,6 +762,7 @@ void game_update(void)
         {
             if (CP_Input_KeyTriggered(KEY_ENTER)) 
             {
+                CP_Sound_Play(SoundArray[16]);
                 ++instructions;
                 if (instructions == 2)
                 {
@@ -886,26 +889,31 @@ void game_update(void)
                 continue;
             if (AABB(player[i].go, enemies[j].go) && player[i].state != STATE_PLAYER_ROLLING)
             {
+                if (!GAMEOVER)
+                {
+                    CP_Sound_Play(SoundArray[0]);
+                    CP_Sound_Play(SoundArray[15]);
+                    for (int p = 0; p < MAX_TEXT_POPUP; ++p)
+                    {
+                        if (!(popUp[p].go.active))
+                        {
+                            set_popup(&popUp[p],
+                                player->go.pos.x,
+                                player->go.pos.y - player->go.height / 2.f - 10.f,
+                                CP_Color_Create(255, 0, 0, 255),
+                                (int)DEFAULT_FONT_SIZE,
+                                3.0f,
+                                "DIED");
+                            break;
+                        }
+                    }
+                }
                 enemies[j].go.active = 0;
                 player[i].go.active = 0;
                 GAMEOVER = 1;
                 wave_spawningtimer = 0;
                 wavetextpopup = 0;
-                CP_Sound_Play(SoundArray[0]);
-                for (int p = 0; p < MAX_TEXT_POPUP; ++p)
-                {
-                    if (!(popUp[p].go.active))
-                    {
-                        set_popup(&popUp[p],
-                        player->go.pos.x,
-                        player->go.pos.y - player->go.height / 2.f - 10.f,
-                        CP_Color_Create(255, 0, 0, 255),
-                        (int)DEFAULT_FONT_SIZE,
-                        3.0f,
-                        "DIED");
-                        break;
-                    }
-                }
+                
             }
         }
     }
@@ -1010,6 +1018,7 @@ void game_update(void)
             wave_spawningtimer = 0;
             wavetextpopup = 0;
             CP_Sound_Play(SoundArray[0]);
+            CP_Sound_Play(SoundArray[15]);
             for (int p = 0; p < MAX_TEXT_POPUP; ++p)
             {
                 if (!(popUp[p].go.active))
@@ -1383,19 +1392,6 @@ void game_update(void)
         }
     }
 
-    if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
-    {
-        for (int i = 0; i < MAX_TEXT_POPUP; ++i)
-        {
-            if (!(popUp[i].go.active))
-            {
-                set_popup(&popUp[i], CP_Input_GetMouseX(), CP_Input_GetMouseY(), CP_Color_Create(255, 0, 0, 255), 50, 3.0f, "Why U Click?");
-                break;
-            }
-        }
-
-    }
-
     update_bullet_bar(player[0].currAmmo, player[0].maxAmmo);
     for (int i = 0; i < MAX_TEXT_POPUP; ++i)
     {
@@ -1413,6 +1409,7 @@ void game_update(void)
     if (GAMEOVER)
     {
         game_over_popup(highest_combo);
+        
     }
 
     if (gamestart == -1)

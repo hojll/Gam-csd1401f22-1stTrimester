@@ -17,6 +17,7 @@ static float executive_name_starter = 0;
 static float executive_offset = 45.0f;
 static int back_alpha = 255;
 static int next_alpha = 255;
+static CP_Sound SoundFx[3];
 
 void title_format(void) {
 	// FONT COLOR
@@ -99,6 +100,11 @@ void credits_init(void)
 	ui_xpos[1] = CP_System_GetWindowWidth() * 0.05f;
 	executive_name_starter = CP_System_GetWindowHeight() * 0.57f;
 
+	SoundFx[0] = CP_Sound_Load("./Assets/SFX/Hello(Menu_Welcome).mp3");
+	SoundFx[1] = CP_Sound_Load("./Assets/SFX/Swish(Credit_Next).mp3");
+	SoundFx[2] = CP_Sound_Load("./Assets/SFX/Swoosh(Credit_Previous).mp3");
+
+	CP_Sound_Play(SoundFx[0]);
 }
 
 void credits_update(void)
@@ -144,6 +150,7 @@ void credits_update(void)
 	if (next == 2)
 	{
 		next_page();
+		
 	}
 
 	if (next == -1)
@@ -176,10 +183,12 @@ void credits_update(void)
 		{
 			if (next == -1 || next == 0)
 			{
+				CP_Sound_Play(SoundFx[1]);
 				next = 2;
 			}	
 			else if (next == 1 || next == 2)
 			{
+				CP_Sound_Play(SoundFx[2]);
 				next = -1;
 			}
 		}
@@ -277,5 +286,8 @@ void credits_update(void)
 
 void credits_exit(void)
 {
+	for (int i = 0; i < 3; i++) {
+		CP_Sound_Free(SoundFx[i]);
+	}
 
 }

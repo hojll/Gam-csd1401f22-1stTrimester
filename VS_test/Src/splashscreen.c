@@ -21,6 +21,8 @@ static float current_y_pos;
 static float timer = 0.0f;
 static int frame = 0;
 static char game_flag = 0;
+static char sound_bool = 0;
+static CP_Sound SoundFx[2];
 
 void main_menu_init(void);
 void main_menu_update(void);
@@ -52,6 +54,11 @@ void splash_screen_init(void)
 	inc_amt = (int)(255 / (60 * TIME));
 	current_x_pos = 0;
 	current_y_pos = 0;
+
+	SoundFx[0] = CP_Sound_Load("./Assets/SFX/Digipen(Opening).mp3");
+	SoundFx[1] = CP_Sound_Load("./Assets/SFX/Oznola(Logo).mp3");
+
+	CP_Sound_Play(SoundFx[0]);
 }
 
 void splash_screen_update(void)
@@ -101,16 +108,22 @@ void splash_screen_update(void)
 
 	if (game_flag)
 	{
+		if (!sound_bool)
+		{
+			CP_Sound_Play(SoundFx[1]);
+			sound_bool = 1;
+		}
+		
 		CP_Image_DrawSubImage(game_logo,
 			CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.37f,
-			720.f, 720.f,
-			0.f + (480.f * frame), 0.f,
-			480.f + (480.f * frame), 480.f,
+			720.0f, 720.0f,
+			0.0f + (480.0f * (float)frame), 0.0f,
+			480.0f + (480.0f * (float)frame), 480.0f,
 			alpha);
 		CP_Settings_TextSize(200.0f);
 		CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
 		CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha));
-		CP_Font_DrawText("OZNOLAND", CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.8f);
+		CP_Font_DrawText("OZNOLA", CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.8f);
 	}
 	
 
@@ -130,4 +143,7 @@ void splash_screen_update(void)
 void splash_screen_exit(void)
 {
 	CP_Image_Free(&logo);
+	for (int i = 0; i < 2; i++) {
+		CP_Sound_Free(SoundFx[i]);
+	}
 }

@@ -12,6 +12,8 @@ static int selector_count;
 static char selected;
 static float timer;
 static float button_movement;
+static CP_Sound SoundFx[4];
+static char sound_bool = 0;
 
 void game_init(void);
 void game_update(void);
@@ -85,10 +87,17 @@ void main_menu_init(void)
 	y_position[2] = CP_System_GetWindowHeight() * 0.65f;
 	y_position[3] = CP_System_GetWindowHeight() * 0.8f;
 	selector_count = 0;
-	timer = 0.5f;
+	timer = 0.8f;
 	button_movement = 0.0f;
 	selected = 0;
 	alpha[0] = 255, alpha[1] = 255, alpha[2] = 255;
+	SoundFx[0] = CP_Sound_Load("./Assets/SFX/Hello(Menu_Welcome).mp3");
+	SoundFx[1] = CP_Sound_Load("./Assets/SFX/Play(Menu_Start).mp3");
+	SoundFx[2] = CP_Sound_Load("./Assets/SFX/Credits(Menu_Credits).mp3");
+	SoundFx[3] = CP_Sound_Load("./Assets/SFX/Byebye(Menu_Exit).mp3");
+
+	CP_Sound_Play(SoundFx[0]);
+	sound_bool = 0;
 }
 
 void main_menu_update(void)
@@ -123,6 +132,7 @@ void main_menu_update(void)
 	if ((CP_Input_KeyTriggered(KEY_ENTER) || CP_Input_KeyTriggered(KEY_SPACE)))
 	{
 		selected = 1;
+		
 	}
 
 	if (selected)
@@ -131,6 +141,11 @@ void main_menu_update(void)
 		timer -= CP_System_GetDt();
 		if (selector_count == 0)
 		{
+			if (!sound_bool)
+			{
+				CP_Sound_Play(SoundFx[1]);
+				sound_bool = 1;
+			}
 			alpha[1] -= ALPHA_DECREMENT;
 			alpha[2] -= ALPHA_DECREMENT;
 			if (timer <= 0.0f)
@@ -140,6 +155,11 @@ void main_menu_update(void)
 		}
 		if (selector_count == 1)
 		{
+			if (!sound_bool)
+			{
+				CP_Sound_Play(SoundFx[2]);
+				sound_bool = 1;
+			}
 			alpha[0] -= ALPHA_DECREMENT;
 			alpha[2] -= ALPHA_DECREMENT;
 			if (timer <= 0.0f)
@@ -149,6 +169,11 @@ void main_menu_update(void)
 		}
 		if (selector_count == 2)
 		{
+			if (!sound_bool)
+			{
+				CP_Sound_Play(SoundFx[3]);
+				sound_bool = 1;
+			}
 			alpha[0] -= ALPHA_DECREMENT;
 			alpha[1] -= ALPHA_DECREMENT;
 			if (timer <= 0.0f)
@@ -193,5 +218,7 @@ void main_menu_update(void)
 
 void main_menu_exit(void)
 {
-
+	for (int i = 0; i < 4; i++) {
+		CP_Sound_Free(SoundFx[i]);
+	}
 }
