@@ -99,6 +99,8 @@ E_Basic_Enemy*InitializeEnemy_2(E_Basic_Enemy *enemy)
 	enemy->tracking = 0;
 	enemy->isDying = 0;
 	enemy->myfloor = NULL;
+	enemy->enemy_prevNode = NULL;
+	enemy->enemy_shortestNode = NULL;
 	// random direction
 	int randomdir = returnRange(1, 20);
 	if (randomdir >= 10)
