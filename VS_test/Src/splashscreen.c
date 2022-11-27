@@ -144,6 +144,6 @@ void splash_screen_exit(void)
 {
 	CP_Image_Free(&logo);
 	for (int i = 0; i < 2; i++) {
-		CP_Sound_Free(SoundFx[i]);
+		CP_Sound_Free(&SoundFx[i]);
 	}
 }

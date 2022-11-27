@@ -219,6 +219,6 @@ void main_menu_update(void)
 void main_menu_exit(void)
 {
 	for (int i = 0; i < 4; i++) {
-		CP_Sound_Free(SoundFx[i]);
+		CP_Sound_Free(&SoundFx[i]);
 	}
 }
