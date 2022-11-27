@@ -287,7 +287,7 @@ void credits_update(void)
 void credits_exit(void)
 {
 	for (int i = 0; i < 3; i++) {
-		CP_Sound_Free(SoundFx[i]);
+		CP_Sound_Free(&SoundFx[i]);
 	}
 
 }
