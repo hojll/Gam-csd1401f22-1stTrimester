@@ -6,7 +6,7 @@
 #include "spriteData.h"
 
 #define TIME 1
-#define FULLSCREEN 0
+#define FULLSCREEN 1
 
 static CP_Image logo;
 static CP_Image game_logo;
@@ -34,6 +34,7 @@ void splash_screen_init(void)
 	if (FULLSCREEN)
 	{
 		CP_System_FullscreenAdvanced(1920, 1080);
+		CP_System_ShowCursor(0);
 	}
 	else {
 		CP_System_SetWindowSize(1920, 1080);
