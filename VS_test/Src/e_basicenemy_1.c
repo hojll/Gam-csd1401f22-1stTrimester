@@ -69,13 +69,20 @@ void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)
 
 			enemy->go.pos.x += enemy->go.vel.x * g_scaledDt;
 			enemy->go.pos.y += enemy->go.vel.y * g_scaledDt;*/
-
+		{
+			float prevX = enemy->go.pos.x;
 			if (enemy->enemy_shortestNode)
 			{
 				enemy->floatingtimer += 1 * CP_System_GetDt();
 				enemy->go.pos.x = EaseInOutQuint(enemy->go.pos.x, enemy->enemy_shortestNode->pos.x, enemy->floatingtimer / 10);
 				enemy->go.pos.y = EaseInOutQuint(enemy->go.pos.y, enemy->enemy_shortestNode->pos.y, enemy->floatingtimer / 10);
 			}
+			if (enemy->go.pos.x < prevX)
+				enemy->currAnim.flip = 1;
+			else
+				enemy->currAnim.flip = 0;
+
+		}
 			//printf("??? %.1f %.1f\n", enemy->enemy_shortestNode->pos.x, enemy->enemy_shortestNode->pos.y);
 			//printf("enemy dir, enemy speed %.1f %.1f   %.1f%.1f\n", enemy->go.dir.x, enemy->go.dir.y, enemy->go.vel.x, enemy->go.vel.y);
 			break;
@@ -102,9 +109,9 @@ void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)
 				enemy->go.pos.x = 960.f;
 
 			}
+			enemy->go.faceDir = (int)enemy->go.vel.x;
+			enemy->currAnim.flip = enemy->go.faceDir < 0;
 		}
-		enemy->go.faceDir = (int)enemy->go.vel.x;
-		enemy->currAnim.flip = enemy->go.faceDir < 0;
 		enemy->redTintVal = enemy->redTintVal + (-255.f) * RED_TINT_DECAY_RATE * g_scaledDt;
 	}
 }
