@@ -243,11 +243,13 @@ void waveSpawnFunction(int index, int enemyType) {
     spawntimer[index] += 1 * g_scaledDt;
     if (spawntimer[index] > BASE_SPAWN_FREQUENCY) {
         spawntimer[index] = 0;
+        int randompos = CP_Random_RangeInt(1, 100);
+
         switch (enemyType) // spawn enemy once
         {
         case 0: //brain dead enemy
         {
-            int randompos = returnRange(1, 50);
+            //int randompos = returnRange(1, 50);
             if (randompos <= 25)
                 SpawnEnemy(0, e_spawnPos1);
             else
@@ -256,7 +258,6 @@ void waveSpawnFunction(int index, int enemyType) {
             break;
         case 1: // chasing enemy
         {
-            int randompos = (1, 100);
             if (randompos <= 25)
                 SpawnEnemy(1, e2_spawnPos[0].pos);
             else if (randompos <= 50)
@@ -269,7 +270,7 @@ void waveSpawnFunction(int index, int enemyType) {
             break;
         case 2: // flying enemy
         {
-            int randompos = returnRange(1, 100);
+            //int randompos = returnRange(1, 100);
             if (randompos <= 25)
                 SpawnEnemy(2, e2_spawnPos[0].pos);
             else if (randompos <= 50)
@@ -282,7 +283,7 @@ void waveSpawnFunction(int index, int enemyType) {
             break;
         case 3: // boss enemy
         {
-            int randompos = returnRange(1, 50);
+            //int randompos = returnRange(1, 50);
             if (randompos <= 25)
                 SpawnEnemy(3, e_spawnPos1);
             else
