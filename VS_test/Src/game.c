@@ -888,6 +888,7 @@ void game_update(void)
                 continue;
             if (!enemies[j].go.active)
                 continue;
+            
             if (AABB(player[i].go, enemies[j].go) && player[i].state != STATE_PLAYER_ROLLING)
             {
                 if (!GAMEOVER)
@@ -1012,6 +1013,8 @@ void game_update(void)
         }
         if (shownodes == 1)
             continue;
+        if (GAMEOVER == 1)
+            continue;
         if (AABB(player[0].go, bossBullets[i].go)) {
             bossBullets[i].go.active = 0;
             player[0].go.active = 0;
@@ -1034,6 +1037,7 @@ void game_update(void)
                     break;
                 }
             }
+            
         }
 
     }
