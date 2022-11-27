@@ -149,7 +149,7 @@ void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type)
 		CP_Sound_Play(SoundArray[5]);
 		break;
 	case BULLET_DUAL:
-		CreateBullet(position, -facedir, BULLET_DEFAULT, 1);
+		CreateBullet(position, -facedir, BULLET_DEFAULT);
 		CP_Sound_Play(SoundArray[6]);
 		break;
 	case BULLET_BLACK_HOLE:
