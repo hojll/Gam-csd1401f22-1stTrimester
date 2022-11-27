@@ -130,13 +130,13 @@ void game_over_popup(int score)
 	CP_Settings_Fill(CP_Color_Create(0, 0, 0, 150));
 	CP_Graphics_DrawRect((float)CP_System_GetWindowWidth() * 0.5f, (float)CP_System_GetWindowHeight() * 0.5f, (float)CP_System_GetWindowWidth(), (float)CP_System_GetWindowHeight());
 	
-	CP_Settings_TextSize(300.0f);
+	CP_Settings_TextSize(450.0f);
 	CP_Settings_Fill(CP_Color_Create(255, 100, 100, 255));
-	CP_Font_DrawText(highscore, x_position[1], y_position[0] - 175.0f);
+	CP_Font_DrawText(highscore, x_position[1], y_position[0] + 100.0f);
 	
 	CP_Settings_TextSize(150.0f);
 	CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
-	CP_Font_DrawText("GAME OVER", x_position[1], y_position[0]);
+	CP_Font_DrawText("GAME OVER", x_position[1], y_position[0] - 140.0f);
 
 	CP_Settings_TextSize(100.0f);
 	CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[1]));
