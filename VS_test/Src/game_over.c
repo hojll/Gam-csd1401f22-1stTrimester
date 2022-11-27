@@ -1,5 +1,5 @@
 //All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
-
+//Joel Loh	    loh.j@digipen.edu
 #include "CProcessing.h"
 #include <stdio.h>
 #include "restart.h"
@@ -45,11 +45,13 @@ int arrow_offset(void)
 {
 	if (selector_count == 0)
 	{
-		return 190;
+		//return 190;
+		return 320;
 	}
 	if (selector_count == 1)
 	{
-		return 250;
+		//return 250;
+		return 480;
 	}
 	return 0;
 }
@@ -140,10 +142,10 @@ void game_over_popup(int score)
 
 	CP_Settings_TextSize(100.0f);
 	CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[1]));
-	CP_Font_DrawText("RESTART", x_position[1], y_position[1]);
+	CP_Font_DrawText("RESTART GAME", x_position[1], y_position[1]);
 
 	CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[2]));
-	CP_Font_DrawText("MAIN MENU", x_position[1], y_position[2]);
+	CP_Font_DrawText("RETURN TO MAIN MENU", x_position[1], y_position[2]);
 
 	// Triangle Selector
 	CP_Graphics_DrawTriangle(x_position[1] - arrow_offset(), y_position[selector_count + 1] + 3.0f, x_position[1] - 30.0f - arrow_offset(), y_position[selector_count + 1] - 10.0f + 3.0f, x_position[1] - 30.0f - arrow_offset(), y_position[selector_count + 1] + 10.0f + 3.0f);

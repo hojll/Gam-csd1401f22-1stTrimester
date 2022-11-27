@@ -1,4 +1,5 @@
 //All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Ryan Ho		    r.ho@digipen.edu
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -42,8 +43,7 @@ void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)
 	if (enemy->go.active)	// TODO: Remove either this one or updateenemylist active check
 	{
 		if (enemy->hitstun > 0) {
-			enemy->hitstun -= 1 * CP_System_GetDt();
-			
+			enemy->hitstun -= CP_System_GetDt();			
 			return;
 		}
 		UpdateSpriteAnim(&enemy->currAnim, g_scaledDt);
@@ -75,7 +75,7 @@ void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)
 			float prevX = enemy->go.pos.x;
 			if (enemy->enemy_shortestNode)
 			{
-				enemy->floatingtimer += 1 * CP_System_GetDt();
+				enemy->floatingtimer += CP_System_GetDt();
 				enemy->go.pos.x = EaseInOutQuint(enemy->go.pos.x, enemy->enemy_shortestNode->pos.x, enemy->floatingtimer / 10);
 				enemy->go.pos.y = EaseInOutQuint(enemy->go.pos.y, enemy->enemy_shortestNode->pos.y, enemy->floatingtimer / 10);
 			}
@@ -123,7 +123,7 @@ void Enemy_ActiveUpdate(E_Basic_Enemy *enemy)
 void Enemy_DeadUpdate(E_Basic_Enemy* enemy)
 {
 	int end = 2;
-	enemy->floatingtimer += 1 * CP_System_GetDt();
+	enemy->floatingtimer += CP_System_GetDt();
 	if (enemy->floatingtimer > end) {
 		enemy->go.active = 0;
 		enemy->isDying = 0;
@@ -217,14 +217,12 @@ int EnemyTakeDamage(E_Basic_Enemy* enemy, int dmg, GameObject *bullet)
 		enemy->go.dir.x = 0;
 		enemy->go.dir.y = 0;
 		// nice
-		if (bullet->faceDir < 1) {
+		if (bullet->faceDir < 1)
 			enemy->go.prevPos.x = -60;
-		}
 		else
-			enemy->go.prevPos.x = 1980;
-
+			enemy->go.prevPos.x = 1980;	
 		enemy->go.prevPos.y = CP_Random_RangeFloat(-20, enemy->go.pos.y - 30);
-
+		enemy->enemy_shortestNode = NULL;
 		enemy->isDying = 1;
 		enemy->state = STATE_ENEMY_DEAD;
 		return 0;
@@ -469,7 +467,7 @@ void EnemyPathing4(E_Basic_Enemy* enemy, E_Player* player, GameObject* p_prevflo
 	{
 		//printf("enemy 1 working \n");
 		if (enemy->floatingtimer > 0.f) { // enemy is doing an action jumping etc
-			enemy->floatingtimer -= 1 * CP_System_GetDt();
+			enemy->floatingtimer -= CP_System_GetDt();
 		}
 		else // do path finding 
 		{
@@ -556,7 +554,7 @@ void EnemyPathing4(E_Basic_Enemy* enemy, E_Player* player, GameObject* p_prevflo
 	{
 		//printf("enemy 1 working \n");
 		if (enemy->floatingtimer > 0.f) { // enemy is doing an action jumping etc
-			enemy->floatingtimer -= 1 * CP_System_GetDt();
+			enemy->floatingtimer -= CP_System_GetDt();
 		}
 		else // do path finding 
 		{

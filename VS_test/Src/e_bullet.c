@@ -1,4 +1,5 @@
 //All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Alvin Yeo	    a.yeo@digipen.edu
 
 
 #include "e_bullet.h"
@@ -135,6 +136,7 @@ void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type)
 	go.vel.y = 0.f;
 	go.width = 20.f;
 	go.height = 20.f;
+	go.active = 1;
 	bullet.lifetime = -100.f;
 	bullet.color = CP_Color_Create(0, 100, 0, 255);
 	switch (type)
@@ -163,7 +165,7 @@ void CreateBullet(CP_Vector position, int facedir, BULLET_TYPE type)
 		CP_Sound_Play(SoundArray[7]);
 		break;
 	default:
-		CP_Sound_Play(SoundArray[2]);
+  		CP_Sound_Play(SoundArray[2]);
 		break;
 	}
 	

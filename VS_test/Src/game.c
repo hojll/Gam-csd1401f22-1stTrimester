@@ -1,3 +1,11 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+/*
+//Alvin Yeo	    a.yeo@digipen.edu
+//Alonzo Nalpon	a.nalpon@digipen.edu
+//Joel Loh	    loh.j@digipen.edu
+//Ryan Ho		r.ho@digipen.edu
+*/
+
 #include <stdio.h>
 #include "cprocessing.h"
 #include <stdlib.h>
@@ -338,8 +346,8 @@ void game_init(void)
     SoundArray[16] = CP_Sound_Load("./Assets/SFX/Bloong(Game_Instructions).mp3");
     backgroundSprite = CP_Image_Load("./Assets/background.png");
     CP_System_SetFrameRate(60.f);
-    printf("Image: %-15s|  dims: %d, %d\n","player", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
-    printf("Image: %-15s| dims: %d, %d\n", "background", CP_Image_GetWidth(backgroundSprite), CP_Image_GetHeight(backgroundSprite));
+    //printf("Image: %-15s|  dims: %d, %d\n","player", CP_Image_GetWidth(sprites[SPRITE_PLAYER]), CP_Image_GetHeight(sprites[SPRITE_PLAYER]));
+    //printf("Image: %-15s| dims: %d, %d\n", "background", CP_Image_GetWidth(backgroundSprite), CP_Image_GetHeight(backgroundSprite));
     // END OF MEDIA INITIALIZATION
     
     CP_Settings_RectMode(CP_POSITION_CENTER);
@@ -631,41 +639,36 @@ void game_update(void)
     // Update Enemy Lists
     UpdateEnemyList(enemies, MAX_ENEMIES);
 
-    if (CP_Input_KeyTriggered(KEY_Q))
-        CP_Engine_Terminate();
 
-    // Debug Spawn Enemy
-    {
+    if (shownodes) {
         // Debug Spawn Enemy
-        if (CP_Input_KeyTriggered(KEY_EQUAL)) {
-            SpawnEnemyMessage enemy;
-            int random_pos = returnRange(1, 50);
-            if (random_pos <= 25)
-                enemy.position = e_spawnPos1;
-            else
-                enemy.position = e_spawnPos2;
+        {
+            // Debug Spawn Enemy
+            if (CP_Input_KeyTriggered(KEY_EQUAL)) {
+                SpawnEnemy(0, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
+            }
 
-            enemy.tracking = 0;
-            g_messenger.messages[MSG_SPAWN_ENEMY1](&enemy);
-            ++maxspawnCount[0];
-        }
+            if (CP_Input_MouseTriggered(MOUSE_BUTTON_RIGHT))
+            {
+                //++maxspawnCount[1];
+                SpawnEnemy(1, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
+            }
+            if (CP_Input_MouseTriggered(MOUSE_BUTTON_MIDDLE))
+            {
+                //++maxspawnCount[3];
+                SpawnEnemy(3, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
+            }
+            if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
+            {
+                //++maxspawnCount[2];
+                SpawnEnemy(2, e2_spawnPos[3].pos);
+            }
 
-        if (CP_Input_MouseTriggered(MOUSE_BUTTON_RIGHT))
-        {
-            //++maxspawnCount[1];
-            SpawnEnemy(1, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
-        }
-        if (CP_Input_MouseTriggered(MOUSE_BUTTON_MIDDLE))
-        {
-            //++maxspawnCount[3];
-            SpawnEnemy(3, CP_Vector_Set(CP_Input_GetMouseWorldX(), CP_Input_GetMouseWorldY()));
-        }
-        if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
-        {
-            //++maxspawnCount[2];
-            SpawnEnemy(2, e2_spawnPos[3].pos);
+            if (CP_Input_KeyTriggered(KEY_Q))
+                CP_Engine_Terminate();
         }
     }
+    
 
     
 #pragma region ENEMY_SPAWN_STUFF
@@ -1145,7 +1148,7 @@ void game_update(void)
             shownodes = 0;
         else if (shownodes == 0)
             shownodes = 1;
-        printf("debug toggle %d\n", shownodes);
+        //printf("debug toggle %d\n", shownodes);
     }
     
 
@@ -1275,20 +1278,7 @@ void game_update(void)
             }
 
 
-            //CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y, enemies[i].go.height);
-            //CP_Graphics_DrawCircle(enemies[i].go.pos.x, enemies[i].go.pos.y + enemies[i].go.height + 20, 5);
-            //CP_Settings_Tint(CP_Color_Create(255, 0, 0, (int)enemies[i].redTintVal));
-            //RenderSpriteAnim(&enemies[i].currAnim, sprites[SPRITE_ENEMY_1 + enemies[i].type], enemies[i].go.pos.x,
-            //    enemies[i].go.pos.y, enemies[i].go.width, enemies[i].go.height, 255);
-            
-            
-            
-            if (shownodes == 1) {
-                CP_Settings_Stroke(CP_Color_Create(255, 0, 0, 255));
-                if (enemies[i].enemy_shortestNode)
-                    CP_Graphics_DrawLine(enemies[i].go.pos.x, enemies[i].go.pos.y + enemies[i].go.height * 0.5f ,
-                    enemies[i].enemy_shortestNode->pos.x, enemies[i].enemy_shortestNode->pos.y);
-            }            
+                     
             // Remove tint from enemy
             CP_Settings_NoTint();
         }

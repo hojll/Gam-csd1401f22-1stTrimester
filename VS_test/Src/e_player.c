@@ -1,4 +1,6 @@
 //All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Alvin Yeo	    a.yeo@digipen.edu
+//Alonzo Nalpon	a.nalpon@digipen.edu
 
 #include "e_player.h"
 #include <stdio.h>

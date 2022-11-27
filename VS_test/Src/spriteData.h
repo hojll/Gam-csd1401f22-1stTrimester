@@ -1,3 +1,7 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Alonzo Nalpon	a.nalpon@digipen.edu
+
+
 #ifndef SPRITE_DATA_H
 #define SPRITE_DATA_H
 #include <math.h>

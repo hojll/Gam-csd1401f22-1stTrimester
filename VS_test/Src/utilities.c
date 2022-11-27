@@ -1,5 +1,5 @@
 //All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
-
+//Ryan Ho		r.ho@digipen.edu
 #include "utilities.h"
 #include <stdio.h>
 #include <stdlib.h>

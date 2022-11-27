@@ -1,4 +1,6 @@
 //All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Alonzo Nalpon			a.nalpon@digipen.edu
+//Ryan Ho		r.ho@digipen.edu
 
 #include "e_enemyBoss_1.h"
 #include "messenger.h"

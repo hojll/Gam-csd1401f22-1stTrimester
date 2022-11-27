@@ -1,4 +1,7 @@
 //All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Alonzo Nalpon			a.nalpon@digipen.edu
+//Ryan Ho		r.ho@digipen.edu
+
 
 #include "e_basicenemy_2.h"
 #include "messenger.h"
@@ -99,6 +102,8 @@ E_Basic_Enemy*InitializeEnemy_2(E_Basic_Enemy *enemy)
 	enemy->tracking = 0;
 	enemy->isDying = 0;
 	enemy->myfloor = NULL;
+	enemy->enemy_prevNode = NULL;
+	enemy->enemy_shortestNode = NULL;
 	// random direction
 	int randomdir = returnRange(1, 20);
 	if (randomdir >= 10)

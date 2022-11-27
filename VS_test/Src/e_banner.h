@@ -1,3 +1,6 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Joel Loh	    loh.j@digipen.edu
+
 #ifndef EBANNER_H
 #define EBANNER_H
 #include "entities.h"
