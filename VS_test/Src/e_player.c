@@ -144,7 +144,7 @@ void Player_RollUpdate(E_Player* player) {
 	// Can be changed any time. Const values until then
 	UpdateSpriteAnim(&player->currAnim, g_scaledDt);
 	player->go.timer += g_scaledDt;
-	if (player->currAnim.state) {
+	if (player->go.timer> ROLL_DURATION) {
 
 		player->state = STATE_PLAYER_ACTIVE;
 		player->animState = ANIM_PLAYER_ACTIVE_IDLE;
@@ -153,8 +153,8 @@ void Player_RollUpdate(E_Player* player) {
 	}
 
 	// If it's not over then update velocity
-	player->go.vel.x = (float)player->go.faceDir * ROLL_SPEED;
-	player->go.pos = CP_Vector_Add(player->go.pos, CP_Vector_Scale(player->go.vel, g_scaledDt));
+	player->go.vel.x = (float)player->go.faceDir * ROLL_SPEED * g_scaledDt;
+	player->go.pos = CP_Vector_Add(player->go.pos, player->go.vel);
 
 	// Particle Effect (Trail)
 	int currAfterImage = (int)(player->go.timer / (ROLL_DURATION / PLAYER_ROLL_AFTERIMAGE));
