@@ -193,7 +193,7 @@ void main_menu_update(void)
 	button_text_format();
 	CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[0]));
 	// Play
-	CP_Font_DrawText("PLAY", text_offset(0), y_position[1]);
+	CP_Font_DrawText("START GAME", text_offset(0), y_position[1]);
 
 	// Tutorial
 	CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[1]));
@@ -201,7 +201,7 @@ void main_menu_update(void)
 
 	// Exit
 	CP_Settings_Fill(CP_Color_Create(255, 255, 255, alpha[2]));
-	CP_Font_DrawText("EXIT", text_offset(2), y_position[3]);
+	CP_Font_DrawText("QUIT GAME", text_offset(2), y_position[3]);
 
 	CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
 	CP_Settings_TextSize(30.0f);
