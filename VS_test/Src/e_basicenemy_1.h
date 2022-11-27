@@ -1,4 +1,5 @@
 //All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Ryan Ho		r.ho@digipen.edu
 
 #ifndef E_BASICENEMY_1
 #define E_BASICENEMY_1

@@ -1,5 +1,5 @@
 //All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
-
+//Author: Ryan Ho		    r.ho@digipen.edu
 #include "combo_counter_ui.h"
 #include "easing.h"
 

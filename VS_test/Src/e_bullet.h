@@ -1,3 +1,7 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Alvin Yeo	    a.yeo@digipen.edu
+
+
 #ifndef EBULLET_H
 #define EBULLET_H
 #include "entities.h"

@@ -1,3 +1,6 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Joel Loh	    loh.j@digipen.edu
+
 #ifndef UI_H
 #define UI_H
 

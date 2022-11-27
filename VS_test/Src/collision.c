@@ -1,4 +1,5 @@
 //All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Author: Alvin Yeo	    a.yeo@digipen.edu
 
 #include "collision.h"
 #include <math.h>

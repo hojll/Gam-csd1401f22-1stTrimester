@@ -1,3 +1,6 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Alonzo Nalpon	a.nalpon@digipen.edu
+
 #ifndef MESSENGER_H
 #define MESSENGER_H
 #include "cprocessing.h"

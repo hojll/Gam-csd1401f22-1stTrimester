@@ -1,3 +1,8 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Alonzo Nalpon	a.nalpon@digipen.edu
+//Ryan Ho		r.ho@digipen.edu
+
+
 #ifndef E_ENEMY_BOSS_1_H
 #define E_ENEMY_BOSS_1_H
 

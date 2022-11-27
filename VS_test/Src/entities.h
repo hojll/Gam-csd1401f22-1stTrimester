@@ -1,3 +1,8 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Alvin Yeo	    a.yeo@digipen.edu
+//Alonzo Nalpon	a.nalpon@digipen.edu
+//Ryan Ho		r.ho@digipen.edu
+
 #ifndef ENTITIES_H
 #define ENTITIES_H
 #include "cprocessing.h"

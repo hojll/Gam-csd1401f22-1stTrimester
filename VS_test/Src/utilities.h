@@ -1,3 +1,6 @@
+//All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Ryan Ho		r.ho@digipen.edu
+
 #ifndef UTILITIES_H
 #define UTILITIES_H
 #include "cprocessing.h"

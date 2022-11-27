@@ -1,5 +1,5 @@
 //All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
-
+//Joel Loh	    loh.j@digipen.edu
 #include "CProcessing.h"
 #include "e_banner.h"
 

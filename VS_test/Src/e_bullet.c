@@ -1,4 +1,5 @@
 //All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
+//Alvin Yeo	    a.yeo@digipen.edu
 
 
 #include "e_bullet.h"

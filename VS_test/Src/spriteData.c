@@ -1,5 +1,6 @@
 //All content © 2021 DigiPen (SINGAPORE) Corporation, all rights reserved.
-
+//Alonzo Nalpon	a.nalpon@digipen.edu [Framework]
+//Joel Loh	    loh.j@digipen.edu [Art]
 #include "spriteData.h"
 
 /// <summary>
