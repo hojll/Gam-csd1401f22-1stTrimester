@@ -118,7 +118,7 @@ void Player_ActiveUpdate(E_Player* player) {
 		else
 			player->currAmmo--;
 
-		CreateBullet(player->go.pos, player->go.faceDir, player->currBullet, 1);
+		CreateBullet(player->go.pos, player->go.faceDir, player->currBullet);
 	}
 	// Rolling
 	if (CP_Input_KeyTriggered(KEY_LEFT_SHIFT)) {
