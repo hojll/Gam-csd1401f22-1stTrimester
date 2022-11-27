@@ -39,7 +39,7 @@ void draw_banner(Banner* banner)
 	if (banner->go.active)
 	{
 		CP_Settings_Fill(CP_Color_Create(255, 255, 255, banner->color.a - 120));
-		CP_Graphics_DrawRect(CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.4f, CP_System_GetWindowWidth(), 150.0f);
+		CP_Graphics_DrawRect(CP_System_GetWindowWidth() * 0.5f, (float)CP_System_GetWindowHeight() * 0.4f, (float)CP_System_GetWindowWidth(), 150.0f);
 		CP_Settings_Fill(banner->color);
 		CP_Font_DrawText(banner->text, CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.4f);
 	}

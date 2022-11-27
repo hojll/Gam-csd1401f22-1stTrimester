@@ -13,10 +13,10 @@ CP_BOOL AABB(GameObject gameObjectA, GameObject gameObjectB)
 
 COLLISION_DIRECTION AABB_Direction(GameObject gameObjectA, GameObject gameObjectB)
 {
-    float top = fabs((gameObjectA.pos.y + gameObjectA.height / 2.f) - (gameObjectB.pos.y - gameObjectB.height / 2.f));
-    float bottom = fabs((gameObjectA.pos.y - gameObjectA.height / 2.f) - (gameObjectB.pos.y + gameObjectB.height / 2.f));
-    float left = fabs((gameObjectA.pos.x + gameObjectA.width / 2.f) - (gameObjectB.pos.x - gameObjectB.width / 2.f));
-    float right = fabs((gameObjectA.pos.x - gameObjectA.width / 2.f) - (gameObjectB.pos.x + gameObjectB.width / 2.f));
+    float top = (float)fabs((gameObjectA.pos.y + gameObjectA.height / 2.f) - (gameObjectB.pos.y - gameObjectB.height / 2.f));
+    float bottom = (float)fabs((gameObjectA.pos.y - gameObjectA.height / 2.f) - (gameObjectB.pos.y + gameObjectB.height / 2.f));
+    float left = (float)fabs((gameObjectA.pos.x + gameObjectA.width / 2.f) - (gameObjectB.pos.x - gameObjectB.width / 2.f));
+    float right = (float)fabs((gameObjectA.pos.x - gameObjectA.width / 2.f) - (gameObjectB.pos.x + gameObjectB.width / 2.f));
 
     if (top < bottom && top < left && top < right)
         return COLLISION_TOP;

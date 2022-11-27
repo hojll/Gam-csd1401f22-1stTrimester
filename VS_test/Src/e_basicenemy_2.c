@@ -2,6 +2,7 @@
 #include "messenger.h"
 #include "collision.h"
 #include "easing.h"
+#include "utilities.h"
 
 Messenger g_messenger;
 //static const float E_SPEED = 700.f;

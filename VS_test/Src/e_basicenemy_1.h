@@ -6,7 +6,7 @@
 #include "entities.h"
 #include "e_player.h"
 
-#define MAX_PATHFINDING_NODES 12
+#define MAX_PATHFINDING_NODES 8
 enum {
 	HEALTH_ENEMY_1 = 2,
 	HEALTH_ENEMY_2 = 1,

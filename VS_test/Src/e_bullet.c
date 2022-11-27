@@ -93,7 +93,7 @@ void DestroyBullet(E_Bullet* bullet)
 		{
 			temp_go.pos = bullet->go.pos;
 			temp_go.faceDir = bullet->go.faceDir;
-			temp_go.vel = CP_Vector_Scale(CP_Vector_Normalize(CP_Vector_Set(bullet->go.faceDir, SHOTGUN_Y_DIR)), SHOTGUN_SPEED);
+			temp_go.vel = CP_Vector_Scale(CP_Vector_Normalize(CP_Vector_Set((float)bullet->go.faceDir, SHOTGUN_Y_DIR)), SHOTGUN_SPEED);
 			temp_go.width = CP_Random_RangeFloat(10.f, 20.f);
 			temp_go.height = temp_go.width;
 			bullet_msg.type = BULLET_DEFAULT;

@@ -21,7 +21,7 @@ void WeaponBox_ActiveUpdate(E_WeaponBox* weaponBox)
 		weaponBox->alpha += (float)MAX_TRIGO / (float)FADE_TIME * CP_System_GetDt();
 		// Wrap around so it never hits max
 		weaponBox->alpha = (float)((int)weaponBox->alpha % MAX_TRIGO);
-		weaponBox->color = CP_Color_Create(139, 69, 19, weaponBox->alpha);
+		weaponBox->color = CP_Color_Create(139, 69, 19, (int)weaponBox->alpha);
 	}
 
 	if (!weaponBox->grounded && weaponBox->go.vel.y < MAX_GRAV_VEL)

@@ -101,9 +101,9 @@ void splash_screen_update(void)
 	{
 		CP_Image_DrawSubImage(game_logo,
 			CP_System_GetWindowWidth() * 0.5f, CP_System_GetWindowHeight() * 0.37f,
-			720, 720,
-			0 + (480 * frame), 0,
-			480 + (480 * frame), 480,
+			720.f, 720.f,
+			0.f + (480.f * frame), 0.f,
+			480.f + (480.f * frame), 480.f,
 			alpha);
 		CP_Settings_TextSize(200.0f);
 		CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);

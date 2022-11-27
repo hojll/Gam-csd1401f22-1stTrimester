@@ -2,7 +2,7 @@
 #define E_ENEMY_BOSS_1_H
 
 #include "e_basicenemy_1.h"
-#define MAX_PATHFINDING_NODES 8
+//#define MAX_PATHFINDING_NODES 8
 /*-----------------------------------------------------------------*/
 // E_ENEMY_BOSS ENTITY 1
 /*-----------------------------------------------------------------*/

@@ -6,7 +6,7 @@
 void printComboCounter(CP_Vector pos, int scale, int r, int g, int b, int alpha);
 void printComboCountdownTimer(CP_Vector pos, CP_Vector wh, int r, int g, int b, int alpha);
 
-void updateComboCounterTimer(double* count, double *timer, double deduct, double combotime);
+void updateComboCounterTimer(int* count, double *timer, double deduct, double combotime);
 void addcombotime(double *timer, double addedtime);
 float updateOznometerFade(float alpha,double *timer, double combotime);
 #endif

@@ -223,7 +223,7 @@ void MessageSpawnEnemyBullet(void* messageInfo) {
 void MessageToPlayerDir(void* messageInfo) {
     ToPlayerDirMessage* msg = (ToPlayerDirMessage*)messageInfo;
     if (msg->entityPos.y > player[0].go.pos.y - player[0].go.height / 2.f)
-        msg->direction = player[0].go.pos.x - msg->entityPos.x;
+        msg->direction = (int)(player[0].go.pos.x - msg->entityPos.x);
 }
 #pragma endregion
 
@@ -716,10 +716,10 @@ void game_update(void)
             }
             break;
         case 1: // spawn
-            waveSpawnFunction(0, 0, 0);
-            waveSpawnFunction(1, 1, 1);
-            waveSpawnFunction(2, 2, 2);
-            waveSpawnFunction(3, 3, 3);
+            waveSpawnFunction(0, 0);
+            waveSpawnFunction(1, 1);
+            waveSpawnFunction(2, 2);
+            waveSpawnFunction(3, 3);
             
             // check if all enemies are spawned
             // change state machine if max enemies spawned reach
@@ -793,14 +793,14 @@ void game_update(void)
 
         //player out of bounds
         if (player[i].go.pos.x > CP_System_GetWindowWidth() - 100)
-            player[i].go.pos.x = 100;
+            player[i].go.pos.x = 100.f;
         else if (player[i].go.pos.x < 100)
-            player[i].go.pos.x = CP_System_GetWindowWidth() - 100;
+            player[i].go.pos.x = (float)(CP_System_GetWindowWidth() - 100);
 
         if (player[i].go.pos.y > CP_System_GetWindowHeight() - 100)
-            player[i].go.pos.y = 100;
+            player[i].go.pos.y = 100.f;
         else if (player[i].go.pos.y < 100)
-            player[i].go.pos.y = CP_System_GetWindowHeight() - 100;
+            player[i].go.pos.y = (float)(CP_System_GetWindowHeight() - 100);
 
         // Player - Wall
         for (int j = 0; j < MAX_WALLS; ++j)
@@ -1326,8 +1326,8 @@ void game_update(void)
     float oznoalpha = updateOznometerFade(255, &combocounter_timer, COMBO_TIME);
     updateComboCounterTimer(&combocounter,&combocounter_timer, COMBO_TIME_DEDUCTION, COMBO_TIME);
 
-    printComboCounter(CP_Vector_Set(CP_System_GetWindowWidth() / 2.f - 0.2f, 40), 52, 0, 0, 0, oznoalpha);
-    printComboCounter(CP_Vector_Set(CP_System_GetWindowWidth() / 2.f, 40), 50, 194, 46, 19, oznoalpha);
+    printComboCounter(CP_Vector_Set(CP_System_GetWindowWidth() / 2.f - 0.2f, 40), 52, 0, 0, 0, (int)oznoalpha);
+    printComboCounter(CP_Vector_Set(CP_System_GetWindowWidth() / 2.f, 40), 50, 194, 46, 19, (int)oznoalpha);
     
     CP_Vector barpos = CP_Vector_Set(CP_System_GetWindowWidth() * 0.20F, 
         CP_System_GetWindowHeight() * 0.015F);
@@ -1335,7 +1335,7 @@ void game_update(void)
         CP_Settings_StrokeWeight(0.f);
     printComboCountdownTimer(CP_Vector_Set(CP_System_GetWindowWidth() / 2.f - barpos.x / 2.f, 64),
         CP_Vector_Set((float)(combocounter_timer / COMBO_TIME) * barpos.x
-        , barpos.y), 194, 46, 19, oznoalpha);
+        , barpos.y), 194, 46, 19, (int)oznoalpha);
     CP_Settings_StrokeWeight(3.f);
     char combocountertxt[5];
     sprintf_s(combocountertxt, sizeof((int)combocounter), "%d", combocounter);

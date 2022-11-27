@@ -6,7 +6,7 @@ void printComboCounter(CP_Vector pos, int scale, int r, int g, int b, int alpha)
 	// FONT COLOR
 	CP_Settings_Fill(CP_Color_Create(r, g, b, alpha));
 	CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
-	CP_Settings_TextSize(scale);
+	CP_Settings_TextSize((float)scale);
 	CP_Font_DrawText("Oznometer", pos.x, pos.y);
 }
 
@@ -27,7 +27,7 @@ void addcombotime(double* timer, double addedtime)
 	}
 }
 
-void updateComboCounterTimer(double* count, double *timer, double deduct, double combotime)
+void updateComboCounterTimer(int* count, double *timer, double deduct, double combotime)
 {
 	//printf("timer %lf \n", *timer);
 
