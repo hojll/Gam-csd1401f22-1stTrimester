@@ -708,11 +708,11 @@ void game_update(void)
                 scalar += 0.1f;
                 totalenemieskilled = 0;
                 maxspawnCount[0] += 2;
-                if (wave > 2)
+                if (wave > 1)
                     maxspawnCount[1] += 2;
-                if (wave > 4)
+                if (wave > 2)
                     maxspawnCount[2] += 1;
-                if (wave > 5)
+                if (wave > 3)
                     maxspawnCount[3] += 2;
 
                 for (int i = 0; i < MAX_BANNER; ++i)
